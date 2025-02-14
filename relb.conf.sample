@@ -1,0 +1,13 @@
+;
+; Sample relb configuration file 
+;
+; bind: [[server name|ip address]:]port
+;
+bind: 4389
+;
+;SERVIDORES A LOS QUE REDIRIGIR
+;
+;
+server: 192.168.1.203:3389,210
+
+admin: 8182
