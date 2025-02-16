@@ -1,7 +1,7 @@
 ;
 ; Sample relb configuration file 
 ;
-; bind: [[server name|ip address]:]port
+; bind: [[server name|IPv4 address]:]port
 ;
 bind: 4389
 ;
