@@ -8,6 +8,8 @@ bind: 4389
 ;SERVIDORES A LOS QUE REDIRIGIR
 ;
 ;
+; server: (server name|IPv4 address):port,weight,max connections
+;
 server: 192.168.1.203:3389,210
 
 admin: 8182
