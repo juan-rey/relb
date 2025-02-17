@@ -1,10 +1,10 @@
 2015-04-30 0.9.11(beta 3-pre)
 				- try other servers when assigned server failed
 				bugfix
-2010-04-?? 0.9.10(beta 2)
+2010-04-06 0.9.10(beta 2)
 				 - multiple bind addresses
 				 bugfix: minor config issues
-2009-12-22 0.9.9 (beta 1)
+2009-12-22 0.9.9(beta 1)
 				 - IP filters rules
 				 - Compiles on Linux ( some issues fixed )
                  - Code reformating
