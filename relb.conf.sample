@@ -1,15 +1,88 @@
-;
-; Sample relb configuration file 
-;
-; bind: [[server name|IPv4 address]:]port
-;
+#
+# Sample relb configuration file 
+#
+# 
+# /etc/relb.conf
+# %system32%\drivers\etc\relb.conf
+
+# TAG bind
+# Where should I expect connections ?
+# Format->bind: [ip/name:]port
+#
+# bind: [[server name|IPv4 address]:]port
+#
 bind: 4389
-;
-;SERVIDORES A LOS QUE REDIRIGIR
-;
-;
-; server: (server name|IPv4 address):port,weight,max connections
-;
+
+#
+#alsobind: [[server name|IPv4 address]:]port
+#
+
+# TAG server
+# Available server for incoming connections
+# Format->server: ip/name:port[,weight[,max connections]] 
+
+server: 192.168.1.201:3389,100,20
+server: 192.168.1.202:3389,120
+server: 192.168.1.203:3389,130
+#
+# server: (server name|IPv4 address):port[,weight[,max connections]]
+#
 server: 192.168.1.203:3389,210
 
+#
+#retryserver: 
+#
+# TAG retryserver
+# How many seconds should I wait when a server was not available before retrying
+# Format-> retryserver: seconds
+# default value 30 seconds
+
+
+retryserver:60
+
+#
+#filter:  
+#
+
+
+# TAG filter
+# Uses filters, in the same order as in the config file, as rules to skip denied servers 
+# untill it finds the first allowed server using the assignation algoritm
+# Format-> client_ip/mask server_ip/mask "allow"/"deny"
+
+filter: 192.168.102.1/255.255.255.0 192.168.1.201/255.255.255.255 allow
+filter: 127.0.0.1/8 192.168.1.203/31 allow
+filter: 127.0.0.1/8 192.168.1.203/16 deny
+
+# TAG admin
+# Enables web administration on a specific port
+# Format->admim: [ip/name:]port
+# default port 8182
+
 admin: 8182
+#
+#admin: [[server name|IPv4 address]:]port 
+#
+admin: 8182
+
+
+# TAG task
+# Set some basic tasks
+# Format->task: task_type interval_seconds [firs_run_datetime]
+# first_run_datetime => (date time/date/time)
+# date format is YYYYMMAA with or with out '/'
+# time is HH:mm:ss where HH is 24 h format
+
+task: update 60 20090605 21:22:23
+task: clean 3600 08:00:00
+task: purge 86400 2009/09/07
+#
+#task: 
+#
+task: purge 86400 21:28:23
+
+#
+#conperthread: 
+#
+#
+
