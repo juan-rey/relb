@@ -1,11 +1,15 @@
 #
 # Sample relb configuration file 
 #
-# 
-# /etc/relb.conf
-# %system32%\drivers\etc\relb.conf
+# Default config file path 
+# Linux -> /etc/relb.conf
+# Windows -> %system32%\drivers\etc\relb.conf
+#
+# Plain text format 
+# Comment lines starts with '#' or ';' or '/'
+#
 
-# TAG bind
+# TAG bind (mandatory)
 # Where should I expect connections ?
 # Format->bind: [ip/name:]port
 #
