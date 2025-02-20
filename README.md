@@ -4,32 +4,28 @@ RELB (RELB Easy Load Balancer)
 
 1. Introduction
 
-RELB is generic TCP load balancer, its main features are: 
+RELB is a generic TCP load balancer. Its main features are: 
 
-- Handles several hundred connections with a low resources use.
-- Transparent for client/server.
-- Easily configurable.
-- Flexible smart server assignation or just round-robin.
-- Persisten connection, IP address based "Session Directory", so if client lost connection when it reconnects is assigned to the same server.
-- Filters. Allow or deny a client to be assigned to a server.
-- Manageable with a built-in web admin page.
-- Basic tasks. Purge dead connections, disconnect all...
-- Multi Operating Sysem and multiplataform (Linux/Windows...).
+- Handles several hundred connections while using minimal system resources.
+- Transparent to both clients and servers.
+- Easy to configure.
+- Flexible server assignment with smart routing or simple round-robin.
+- Persistent connections with an IP address-based "Session Directory", ensuring that if a client loses connection, it is reassigned to the same server upon reconnection.
+- Filters to allow or deny a client from being assigned to a server.
+- Manageable via a built-in web admin page.
+- Basic tasks, such as purging dead connections or disconnecting all connections.
+- Multi-operating system and cross-platform support (Linux/Windows, etc.).
 
-It is suitable for most of TCP services/applications and can also be used as a port redirector.
+It is suitable for most TCP services/applications and can also be used as a port redirector.
 
 2. Configuration
 
-
-
 3. Management
 
-Use the web administration, http://localhost:8182 by default, for a basic management.
+Use the web administration at [http://localhost:8182](http://localhost:8182) by default for basic management.
 
 4. Acknowledgment
 
 RELB uses Hovik Melikyan's C++ Portable Types Library (PTypes) (http://www.melikyan.com/ptypes/)
 
 5. Support RELB
-
-

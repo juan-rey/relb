@@ -2,43 +2,43 @@
 # Sample relb configuration file 
 #
 # Plain text format 
-# Comment lines starts with '#' or ';' or '/'
+# Comment lines start with '#' or ';' or '/'
 #
-# Default config file path 
+# Default configuration file path 
 # Linux -> /etc/relb.conf
 # Windows -> %system32%\drivers\etc\relb.conf
 #
 
 # TAG bind (mandatory)
-# Where to expect incoming connections
-# Format-> bind: [[server_name | IPv4_address]:]port
+# Where to listen for incoming connections
+# Format -> bind: [[server_name | IPv4_address]:]port
 #
 bind: 4389
 
 # TAG alsobind (optional, multiple)
-# Where to expect incoming connections
-# Format-> alsobind: [[server_name | IPv4_address]:]port
+# Additional address to listen for incoming connections
+# Format -> alsobind: [[server_name | IPv4_address]:]port
 #
 
 # TAG server (mandatory, multiple)
-# Available server for incoming connections
-# Format-> server: (server_name | IPv4_address):port[,weight[,max_connections]]
+# Servers available for incoming connections
+# Format -> server: (server_name | IPv4_address):port[,weight[,max_connections]]
 #
 server: 192.168.1.201:3389,100,20
 server: 192.168.1.202:3389,120
 server: 192.168.1.203:3389,130
 
 # TAG retryserver (optional)
-# How many seconds should I wait when a server was not available before retrying
-# Format-> retryserver: seconds
-# default value 30 seconds
+# How many seconds to wait when a server was not available before retrying
+# Format -> retryserver: seconds
+# Default value: 30 seconds
 #
 retryserver:60
 
 # TAG filter (optional, multiple)
-# Uses filters, in the same order as in the config file, as rules to skip denied servers 
-# untill it finds the first allowed server using the assignation algoritm
-# Format-> client_ip/mask server_ip/mask "allow"/"deny"
+# Use filters, in the same order as in the config file, as rules to skip denied servers
+# until finding the first allowed server using the assignment algorithm
+# Format -> client_ip/mask server_ip/mask "allow"/"deny"
 #
 filter: 192.168.102.1/255.255.255.0 192.168.1.201/255.255.255.255 allow
 filter: 127.0.0.1/8 192.168.1.203/31 allow
@@ -46,24 +46,24 @@ filter: 127.0.0.1/8 192.168.1.203/16 deny
 
 # TAG admin (optional)
 # Enables web administration on a specific port
-# Format-> admin: [[server_name | IPv4_address]:]port
-# default port 8182
+# Format -> admin: [[server_name | IPv4_address]:]port
+# Default port: 8182
 #
 admin: 8182
 
 # TAG task (optional, multiple)
 # Set some basic tasks
-# Format-> task: task_type interval_seconds [firs_run_datetime]
+# Format -> task: task_type interval_seconds [first_run_datetime]
 # task_type = update | clean | purge
 # first_run_datetime => (date time/date/time)
-# date format is YYYYMMAA with or with out '/'
-# time is HH:mm:ss where HH is 24 h format
+# Date format is YYYYMMDD with or without '/'
+# Time format is HH:mm:ss in 24-hour format
 #
 task: update 60 20090605 21:22:23
 task: clean 3600 08:00:00
 task: purge 86400 2009/09/07
 
 # TAG conperthread (optional)
-# Advanced, connections per thread
-# Format-> conperthread: num_connections
+# Advanced: connections per thread
+# Format -> conperthread: num_connections
 #
