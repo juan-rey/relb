@@ -20,6 +20,8 @@ It is suitable for most TCP services/applications and can also be used as a port
 
 2. Configuration
 
+You must set up a proper configuration file in order for it to work. See relb.conf.sample for more information about the available options you can use.
+
 3. Management
 
 Use the web administration at [http://localhost:8182](http://localhost:8182) by default for basic management.
