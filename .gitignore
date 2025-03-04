@@ -56,7 +56,7 @@ mono_crash.*
 [Rr]eleases/
 x64/
 x86/
-[Ww][Ii][Nn]32/
+#[Ww][Ii][Nn]32/
 [Aa][Rr][Mm]/
 [Aa][Rr][Mm]64/
 bld/
@@ -482,4 +482,4 @@ m4/lt~obsolete.m4
 # (meta build system like autotools,
 # can automatically generate from config.status script
 # (which is called by configure script))
-Makefile
+#Makefile
