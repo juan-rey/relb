@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
     printf("\n%s - %s %s (%s)\n", APP_SHORT_NAME, APP_FULL_NAME, APP_VERSION, APP_WEB);
     printf("(C) %s\n", APP_COPYRIGHT );
     printf("%s uses Hovik Melikyan's C++ Portable Types Library (PTypes) (http://www.melikyan.com/ptypes/)\n", APP_SHORT_NAME );
-    printf("Usage: %s [%s] [%s] [%s] [(%s)/%s]\n\n", APP_FILE, UNINSTALL_SERVICE_TEXT, INSTALL_SERVICE_TEXT, SHOW_LICENSE, RUN_AS_SERVICE, RUN_IN_CONSOLE_TEXT);
+    printf("Usage: %s [%s] [%s] [%s] [(%s)|%s]\n\n", APP_FILE, UNINSTALL_SERVICE_TEXT, INSTALL_SERVICE_TEXT, SHOW_LICENSE, RUN_AS_SERVICE, RUN_IN_CONSOLE_TEXT);
  
 #ifdef DEBUG     
 console = true;
@@ -117,18 +117,18 @@ printf("DEBUG_MODE\n");
             return 0;
 		}
         config.getFirstBind();
-        Bind gg( config.getConnectionsPerThread());
-        gg.setAdmin( config.getAdminEnabled(), config.getAdminIP(), config.getAdminPort() );
+        Bind bind_server( config.getConnectionsPerThread());
+        bind_server.setAdmin( config.getAdminEnabled(), config.getAdminIP(), config.getAdminPort() );
 
 		do
         {
-            gg.addAddress( config.getAddressPort(), config.getAddressIP());
+            bind_server.addAddress( config.getAddressPort(), config.getAddressIP());
         }
         while( config.getNextAddress() );
 
         do
         {
-            gg.addServer( (const char *) config.getServerName(),  config.getServerIP(), config.getServerPort(), config.getServerWeight(), config.getServerMaxConnections() );
+            bind_server.addServer( (const char *) config.getServerName(),  config.getServerIP(), config.getServerPort(), config.getServerWeight(), config.getServerMaxConnections() );
         }
         while( config.getNextServer() );
 
@@ -137,9 +137,9 @@ printf("DEBUG_MODE\n");
 			while( config.getNextTask() )
 			{
 				if( config.getTaskFixedTime() )
-					gg.addTask( config.getTaskType(), config.getTaskFirstRun(),  config.getTaskInterval() );
+					bind_server.addTask( config.getTaskType(), config.getTaskFirstRun(),  config.getTaskInterval() );
 				else
-					gg.addTask( config.getTaskType(), config.getTaskInterval() );
+					bind_server.addTask( config.getTaskType(), config.getTaskInterval() );
 				
 			}
 		}
@@ -148,12 +148,12 @@ printf("DEBUG_MODE\n");
 		{
 			while( config.getNextFilter() )
 			{
-				gg.addFilter( config.getFilterSourceIP(), config.getFilterSourceMask(), config.getFilterDestIP(), config.getFilterDestMask(), config.getFilterAllow() );	
+				bind_server.addFilter( config.getFilterSourceIP(), config.getFilterSourceMask(), config.getFilterDestIP(), config.getFilterDestMask(), config.getFilterAllow() );	
 			}
 		}
 
-        gg.setServerRetry( config.getServerRetryTime() );
-        gg.startListening(); 
+        bind_server.setServerRetry( config.getServerRetryTime() );
+        bind_server.startListening(); 
            
         if( !console )
         {
