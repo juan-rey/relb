@@ -16,7 +16,7 @@ USING_PTYPES
 
 MessaggeQueue::MessaggeQueue(void)
 {
-	pts = NULL;
+    pts = NULL;
 }
 
 MessaggeQueue::~MessaggeQueue(void)
@@ -29,8 +29,8 @@ bool MessaggeQueue::post(message* msg)
  
     bool val = jobqueue::post(msg);
 
-	if( pts )
-	  pts->post();
+    if( pts )
+      pts->post();
  
     return val;
 }
@@ -39,15 +39,15 @@ bool MessaggeQueue::post(message* msg)
 bool MessaggeQueue::post(int id, pintptr param)
 {
     TRACE( TRACE_VERBOSE )("%s - sending a message with a post()\n",  curr_local_time() );  
-	bool val = jobqueue::post(id, param );
+    bool val = jobqueue::post(id, param );
  
-	if( pts )
-	  pts->post();
+    if( pts )
+      pts->post();
 
     return val;
 }
 
 void MessaggeQueue::setTrigger( timedsem * p)
 {
-	pts = p;
+    pts = p;
 }

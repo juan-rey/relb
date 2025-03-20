@@ -48,51 +48,51 @@ console = true;
 printf("DEBUG_MODE\n");
 #endif
   
-	if(argc>1)
-	{
-		
-		if(strcmp(argv[1],UNINSTALL_SERVICE_TEXT)==0)
-		{
+    if(argc>1)
+    {
+        
+        if(strcmp(argv[1],UNINSTALL_SERVICE_TEXT)==0)
+        {
 #ifdef WIN32
-			if(DeleteService())
-				printf("\n\nService UnInstalled Sucessfully\n");
-			else
-				printf("\n\nError UnInstalling Service\n");
+            if(DeleteService())
+                printf("\n\nService UnInstalled Sucessfully\n");
+            else
+                printf("\n\nError UnInstalling Service\n");
 #else
-				printf("\n\nNot implemented yet\n");
+                printf("\n\nNot implemented yet\n");
 #endif	
-			terminar = true;
-		}
+            terminar = true;
+        }
 
-		if(strcmp(argv[1],INSTALL_SERVICE_TEXT)==0)
-		{
+        if(strcmp(argv[1],INSTALL_SERVICE_TEXT)==0)
+        {
 #ifdef WIN32
-			if(InstallService())
-				printf("\n\nService Installed Sucessfully\n");
-			else
-				printf("\n\nError Installing Service\n");
+            if(InstallService())
+                printf("\n\nService Installed Sucessfully\n");
+            else
+                printf("\n\nError Installing Service\n");
 #else
-				printf("\n\nNot implemented yet\n");
+                printf("\n\nNot implemented yet\n");
 #endif	
-			terminar = true;
-		}
-	
-		if(strcmp(argv[1],RUN_IN_CONSOLE_TEXT)==0)
-		{
-			printf("\n\nRunning in console\n");
-			console = true;
-		}
+            terminar = true;
+        }
+    
+        if(strcmp(argv[1],RUN_IN_CONSOLE_TEXT)==0)
+        {
+            printf("\n\nRunning in console\n");
+            console = true;
+        }
 
-		if(strcmp(argv[1],SHOW_LICENSE)==0)
-		{
-			printf("%s",LICENSE_TEXT);
-			terminar = true;
-		}
+        if(strcmp(argv[1],SHOW_LICENSE)==0)
+        {
+            printf("%s",LICENSE_TEXT);
+            terminar = true;
+        }
 
-	}
-	
-	if( !terminar )
-	{
+    }
+    
+    if( !terminar )
+    {
         int err;
         char salir = ' ';
         AppConfig config;
@@ -112,15 +112,15 @@ printf("DEBUG_MODE\n");
 #endif
         
         if( !config.loadConfig() )
-		{
-			printf("I could not load config file\n");
+        {
+            printf("I could not load config file\n");
             return 0;
-		}
+        }
         config.getFirstBind();
         Bind bind_server( config.getConnectionsPerThread());
         bind_server.setAdmin( config.getAdminEnabled(), config.getAdminIP(), config.getAdminPort() );
 
-		do
+        do
         {
             bind_server.addAddress( config.getAddressPort(), config.getAddressIP());
         }
@@ -132,25 +132,25 @@ printf("DEBUG_MODE\n");
         }
         while( config.getNextServer() );
 
-		if( config.getTasksCount() > 0 )
-		{
-			while( config.getNextTask() )
-			{
-				if( config.getTaskFixedTime() )
-					bind_server.addTask( config.getTaskType(), config.getTaskFirstRun(),  config.getTaskInterval() );
-				else
-					bind_server.addTask( config.getTaskType(), config.getTaskInterval() );
-				
-			}
-		}
+        if( config.getTasksCount() > 0 )
+        {
+            while( config.getNextTask() )
+            {
+                if( config.getTaskFixedTime() )
+                    bind_server.addTask( config.getTaskType(), config.getTaskFirstRun(),  config.getTaskInterval() );
+                else
+                    bind_server.addTask( config.getTaskType(), config.getTaskInterval() );
+                
+            }
+        }
 
-		if( config.getFilterCount() > 0 )
-		{
-			while( config.getNextFilter() )
-			{
-				bind_server.addFilter( config.getFilterSourceIP(), config.getFilterSourceMask(), config.getFilterDestIP(), config.getFilterDestMask(), config.getFilterAllow() );	
-			}
-		}
+        if( config.getFilterCount() > 0 )
+        {
+            while( config.getNextFilter() )
+            {
+                bind_server.addFilter( config.getFilterSourceIP(), config.getFilterSourceMask(), config.getFilterDestIP(), config.getFilterDestMask(), config.getFilterAllow() );	
+            }
+        }
 
         bind_server.setServerRetry( config.getServerRetryTime() );
         bind_server.startListening(); 
@@ -174,7 +174,7 @@ printf("DEBUG_MODE\n");
 #ifdef WIN32           
         WSACleanup();  
 #endif           
-	}
+    }
            
     return EXIT_SUCCESS;
 }

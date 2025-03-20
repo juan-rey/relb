@@ -21,29 +21,29 @@ USING_PTYPES
 class ControlObject
 {
 public:
-	ControlObject(void);
-	~ControlObject(void);
-	virtual void post() = 0;
+    ControlObject(void);
+    ~ControlObject(void);
+    virtual void post() = 0;
 };
 
 class ControlSocket: public ControlObject
 {
 public:
-	ControlSocket(void);
-	~ControlSocket(void);
-	void post();
-	void addToFDSET( fd_set * set );
+    ControlSocket(void);
+    ~ControlSocket(void);
+    void post();
+    void addToFDSET( fd_set * set );
 #ifdef WIN32	
-	int checkSocket( );
+    int checkSocket( );
 #else
-	int checkSocket( fd_set * set  );
+    int checkSocket( fd_set * set  );
 #endif	
 private:
 #ifdef WIN32	
-	int sock;
+    int sock;
 #else
-	int fd[2];
-	char buffer[1];
+    int fd[2];
+    char buffer[1];
 #endif
 };
 

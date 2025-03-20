@@ -21,8 +21,8 @@ USING_PTYPES
 class Socket
 {
 protected:
-	virtual void cleanup();
-	
+    virtual void cleanup();
+    
  public:
     Socket( int sockfd, ipaddress * srcip, unsigned short srcport );
     Socket( const ipaddress * dstip, unsigned short dstport);
@@ -38,7 +38,7 @@ protected:
     void getSocket();
     void addToFDSET( fd_set * set );
     int isInFDSET( fd_set * set );
-	int checkSocket();
+    int checkSocket();
  private:
     int sock;
     ipaddress ip;

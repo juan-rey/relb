@@ -54,15 +54,15 @@ public:
       
 private:
     bool setDefaultValues();
-	bool loadFile();
+    bool loadFile();
     void processConfigLine( const char * line );
     bool checkConfig();    
-	void cleanBindList();
+    void cleanBindList();
     void printErrors();
     void cleanErrors();
 
 public:
-	//config retrieving functions
+    //config retrieving functions
     bool getFirstBind();
     bool getNextBind();
 /*
@@ -79,25 +79,25 @@ public:
     int getServerRetryTime();
     int getTasksCount();
     bool getNextTask();
-	TASK_TYPE getTaskType();
-	int getTaskInterval();
-	datetime getTaskFirstRun();
-	bool  getTaskFixedTime();
+    TASK_TYPE getTaskType();
+    int getTaskInterval();
+    datetime getTaskFirstRun();
+    bool  getTaskFixedTime();
     bool getAdminEnabled();
     unsigned short getAdminPort();
     ipaddress getAdminIP();
     int getConnectionsPerThread();
-	int getFilterCount();
+    int getFilterCount();
     bool getNextFilter();
-	ipaddress getFilterSourceIP();
-	ipaddress getFilterSourceMask();
-	ipaddress getFilterDestIP();
-	ipaddress getFilterDestMask();
-	bool getFilterAllow();
-	int getAddressCount();
-	bool getNextAddress();
-	ipaddress getAddressIP();
-	unsigned short getAddressPort();
+    ipaddress getFilterSourceIP();
+    ipaddress getFilterSourceMask();
+    ipaddress getFilterDestIP();
+    ipaddress getFilterDestMask();
+    bool getFilterAllow();
+    int getAddressCount();
+    bool getNextAddress();
+    ipaddress getAddressIP();
+    unsigned short getAddressPort();
 
 private:
    //config variables
@@ -116,8 +116,8 @@ private:
     //auxiliar variables set to return servers values
     int currentBind;
     int currentServet;
-	int currentTask;
-	int currentFilter;
-	int currentAddress;
+    int currentTask;
+    int currentFilter;
+    int currentAddress;
 };
 #endif

@@ -54,44 +54,44 @@ void ThreadedConnectionManager::execute()
   to.tv_usec = (timeout % 1000) * 1000;
   ConnectionPeer * cpeer = NULL;
 #ifdef DEBUG
-	int times_check = 1;
+    int times_check = 1;
 #endif
 
   while( !finish )
   {
 
-	while( to_be_closed.get_count() )
-	{
-	  //let's check if it's connected
-	  i = 0;
-	  while( i < peer_list.get_count() )
-	  {
-		peer_list[i]->closePInfo( to_be_closed.top());
-		i++;
-	  }
-		
-	  //let's check if it's connected	  
-	  i = 0;
-	  while( i < connecting_peer_list.get_count() )
-	  {
-		connecting_peer_list[i]->closePInfo( to_be_closed.top());
-		i++;
-	  }      
-	  to_be_closed.pop();
-	}
+    while( to_be_closed.get_count() )
+    {
+      //let's check if it's connected
+      i = 0;
+      while( i < peer_list.get_count() )
+      {
+        peer_list[i]->closePInfo( to_be_closed.top());
+        i++;
+      }
+        
+      //let's check if it's connected	  
+      i = 0;
+      while( i < connecting_peer_list.get_count() )
+      {
+        connecting_peer_list[i]->closePInfo( to_be_closed.top());
+        i++;
+      }      
+      to_be_closed.pop();
+    }
 
-	t.tv_sec = to.tv_sec;
-	t.tv_usec = to.tv_usec;
+    t.tv_sec = to.tv_sec;
+    t.tv_usec = to.tv_usec;
 
-	FD_ZERO(&setr);
-	FD_ZERO(&setw);
-	//FD_ZERO(&sete);
+    FD_ZERO(&setr);
+    FD_ZERO(&setw);
+    //FD_ZERO(&sete);
 
-	  //control_socket.addToFDSET(&setr);
+      //control_socket.addToFDSET(&setr);
 
     connected_peers = 0;
       //Rellenamos la lista de socket
-	  //Solo los conectados los que estan en conexion darian error en el select
+      //Solo los conectados los que estan en conexion darian error en el select
       while( connected_peers < peer_list.get_count() )
       {
         cpeer = peer_list[connected_peers];
@@ -115,124 +115,124 @@ void ThreadedConnectionManager::execute()
         connected_peers++;
       }
 
-	  connecting_peers = 0;
-	  while( connecting_peers < connecting_peer_list.get_count() )
-	  {
-		TRACE( TRACE_CONNECTIONS )("%s - Checkin ongoing server connections\n",  curr_local_time());
-		cpeer = connecting_peer_list[connecting_peers];
-		if( cpeer )
-		{
-			  if( !finish && cpeer->isActive() )
-			  {
-				TRACE( TRACE_IOSOCKETERROR )("%s - Addind connecting socket to select\n", curr_local_time() );
-				cpeer->addToFDSETC( &setr, &setw );
-			  }
-			  else
-			  {
-				//TODO LATER 1.1 añadir notificacion desconexion aqui
-				TRACE( TRACE_CONNECTIONS )("%s - There is an unactive peer, let's delete it\n",  curr_local_time());              
-				connecting_peer_list.del(connecting_peers);
-				delete cpeer;
-				TRACE( TRACE_CONNECTIONS )("%s - There was an unactive peer, remain %d %d %d\n",  curr_local_time(), connecting_peer_list.get_count(), connected_peers, connecting_peers);
-				connecting_peers--;
-				currentconnections--;
-			  }
-		}
-		connecting_peers++;
-	  }
+      connecting_peers = 0;
+      while( connecting_peers < connecting_peer_list.get_count() )
+      {
+        TRACE( TRACE_CONNECTIONS )("%s - Checkin ongoing server connections\n",  curr_local_time());
+        cpeer = connecting_peer_list[connecting_peers];
+        if( cpeer )
+        {
+              if( !finish && cpeer->isActive() )
+              {
+                TRACE( TRACE_IOSOCKETERROR )("%s - Addind connecting socket to select\n", curr_local_time() );
+                cpeer->addToFDSETC( &setr, &setw );
+              }
+              else
+              {
+                //TODO LATER 1.1 añadir notificacion desconexion aqui
+                TRACE( TRACE_CONNECTIONS )("%s - There is an unactive peer, let's delete it\n",  curr_local_time());              
+                connecting_peer_list.del(connecting_peers);
+                delete cpeer;
+                TRACE( TRACE_CONNECTIONS )("%s - There was an unactive peer, remain %d %d %d\n",  curr_local_time(), connecting_peer_list.get_count(), connected_peers, connecting_peers);
+                connecting_peers--;
+                currentconnections--;
+              }
+        }
+        connecting_peers++;
+      }
       
     //comprobamos cambios
       if( !finish )  
       {   
 //TODO ver fd_count de setw, sino nil	
-		   control_socket.addToFDSET(&setr);
-		  if( connected_peers || connecting_peers )
-		  {
-			  TRACE( TRACE_VERY_VERBOSE && TRACE_IOSOCKET )("%s - Checking socket changes - with SOME connections\n", curr_local_time());	
-			  res = ::select( FD_SETSIZE, &setr, &setw, nil, nil);//&t );
-			  TRACE( TRACE_VERY_VERBOSE && TRACE_IOSOCKET )("%s - Exit - Checking socket changes - with SOME connections\n", curr_local_time());	
-		  }
-		  else
-		  {
-			 TRACE( TRACE_VERY_VERBOSE && TRACE_IOSOCKET )("%s - Checking socket changes - with no connections\n", curr_local_time());		
-			  res = ::select( FD_SETSIZE, &setr,  nil, nil, nil );// &t );
-			 TRACE( TRACE_VERY_VERBOSE && TRACE_IOSOCKET )("%s - Exit - Checking socket changes - with no connections\n", curr_local_time());
+           control_socket.addToFDSET(&setr);
+          if( connected_peers || connecting_peers )
+          {
+              TRACE( TRACE_VERY_VERBOSE && TRACE_IOSOCKET )("%s - Checking socket changes - with SOME connections\n", curr_local_time());	
+              res = ::select( FD_SETSIZE, &setr, &setw, nil, nil);//&t );
+              TRACE( TRACE_VERY_VERBOSE && TRACE_IOSOCKET )("%s - Exit - Checking socket changes - with SOME connections\n", curr_local_time());	
+          }
+          else
+          {
+             TRACE( TRACE_VERY_VERBOSE && TRACE_IOSOCKET )("%s - Checking socket changes - with no connections\n", curr_local_time());		
+              res = ::select( FD_SETSIZE, &setr,  nil, nil, nil );// &t );
+             TRACE( TRACE_VERY_VERBOSE && TRACE_IOSOCKET )("%s - Exit - Checking socket changes - with no connections\n", curr_local_time());
 
-				  
-		  }
+                  
+          }
                 if( res > 0 )
                 {
-					i = 0;
+                    i = 0;
 #ifndef WIN32					
-				    control_socket.checkSocket( &setr );	
+                    control_socket.checkSocket( &setr );	
 #endif
 #ifdef DEBUG						
-					if( !( connected_peers || connecting_peers ) )
-						TRACE( TRACE_IOSOCKET )("%s - Checking socket changes with res %d\n", curr_local_time(), res);
+                    if( !( connected_peers || connecting_peers ) )
+                        TRACE( TRACE_IOSOCKET )("%s - Checking socket changes with res %d\n", curr_local_time(), res);
 #endif					
-					TRACE( TRACE_VERY_VERBOSE && TRACE_IOSOCKET )("%s - Checking socket changes\n", curr_local_time());
-					while( i < peer_list.get_count() )
-					{
-					  cpeer = peer_list[i];
-					  if( cpeer )
-						cpeer->manageConnections( &setr , &setw );
-					  i++;
-					}
+                    TRACE( TRACE_VERY_VERBOSE && TRACE_IOSOCKET )("%s - Checking socket changes\n", curr_local_time());
+                    while( i < peer_list.get_count() )
+                    {
+                      cpeer = peer_list[i];
+                      if( cpeer )
+                        cpeer->manageConnections( &setr , &setw );
+                      i++;
+                    }
 
-				    i = 0;
-					while( i < connecting_peer_list.get_count() )
-					{
-						cpeer = connecting_peer_list[i];
-						if( cpeer )
-						{
-							if( cpeer->manageConnectingPeer( &setr , &setw ) )
-							{
-									TRACE( TRACE_IOSOCKETERROR )("%s - New peer\n", curr_local_time() );
-									connecting_peer_list.del(i);
-									peer_list.add( cpeer );
-									i--;
-									//TODO LATER 1.1 añadir notificacion conexion aqui
+                    i = 0;
+                    while( i < connecting_peer_list.get_count() )
+                    {
+                        cpeer = connecting_peer_list[i];
+                        if( cpeer )
+                        {
+                            if( cpeer->manageConnectingPeer( &setr , &setw ) )
+                            {
+                                    TRACE( TRACE_IOSOCKETERROR )("%s - New peer\n", curr_local_time() );
+                                    connecting_peer_list.del(i);
+                                    peer_list.add( cpeer );
+                                    i--;
+                                    //TODO LATER 1.1 añadir notificacion conexion aqui
 
-							}
-						}
-						i++;
-					}
-				  
+                            }
+                        }
+                        i++;
+                    }
+                  
                 }
                 else
                 {
-					 if( res < 0 )
-					 {
+                     if( res < 0 )
+                     {
 
-						TRACE( TRACE_IOSOCKETERROR )("%s - select retuned with error %d\n", curr_local_time(), socket_errno );
+                        TRACE( TRACE_IOSOCKETERROR )("%s - select retuned with error %d\n", curr_local_time(), socket_errno );
 
-						if( socket_errno == EBADF
+                        if( socket_errno == EBADF
 #ifdef WSAENOTSOCK
-							|| socket_errno == WSAENOTSOCK
+                            || socket_errno == WSAENOTSOCK
 #endif
-						)
-						{
+                        )
+                        {
 
 #ifndef WIN32		
-							if( control_socket.checkSocket( &setr ) >= 0  )
-							   checkConnections();							
+                            if( control_socket.checkSocket( &setr ) >= 0  )
+                               checkConnections();							
 #else
-							if( control_socket.checkSocket() >= 0  )
-							   checkConnections();										
+                            if( control_socket.checkSocket() >= 0  )
+                               checkConnections();										
 #endif							
 
-						}
-						else
-						{
-							//else EINTR EINVAL
+                        }
+                        else
+                        {
+                            //else EINTR EINVAL
 
-						TRACE( TRACE_IOSOCKETERROR )("%s - select retuned with error EINTR  or EINVAL\n", curr_local_time() );							
-						}
-					 }
-					 else
-					 {
-						 TRACE( TRACE_VERY_VERBOSE )("%s - select function finished with timeout\n", curr_local_time() );
-					 }
+                        TRACE( TRACE_IOSOCKETERROR )("%s - select retuned with error EINTR  or EINVAL\n", curr_local_time() );							
+                        }
+                     }
+                     else
+                     {
+                         TRACE( TRACE_VERY_VERBOSE )("%s - select function finished with timeout\n", curr_local_time() );
+                     }
 
                 }
       }
@@ -243,31 +243,31 @@ void ThreadedConnectionManager::execute()
 
 void ThreadedConnectionManager::checkConnections()
 {
-	int i = 0;
+    int i = 0;
     ConnectionPeer * cpeer = NULL;
 
     TRACE( TRACE_CONNECTIONS )("%s - Checking connections in ThreadedConnectionManager\n",  curr_local_time());              
 
-	while( i < connecting_peer_list.get_count() )
-	{
-		cpeer = connecting_peer_list[i];
-		if( cpeer )
-		{
-			 cpeer->checkConnectingPeers();
-		}
-		i++;
-	}
+    while( i < connecting_peer_list.get_count() )
+    {
+        cpeer = connecting_peer_list[i];
+        if( cpeer )
+        {
+             cpeer->checkConnectingPeers();
+        }
+        i++;
+    }
 
-	i = 0;
-	while( i < peer_list.get_count() )
-	{
-		cpeer = peer_list[i];
-		if( cpeer )
-		{
-			cpeer->checkPeers();
-		}
-		i++;
-	}
+    i = 0;
+    while( i < peer_list.get_count() )
+    {
+        cpeer = peer_list[i];
+        if( cpeer )
+        {
+            cpeer->checkPeers();
+        }
+        i++;
+    }
 }
 
 void ThreadedConnectionManager::cleanup()
@@ -309,11 +309,11 @@ void ThreadedConnectionManager::cleanup()
 
 int ThreadedConnectionManager::addConectionPeer(ConnectionPeer  * peer)
 {
-	//TODO LATER 1.1 añadir notificacion conexion aqui ??
+    //TODO LATER 1.1 añadir notificacion conexion aqui ??
     currentconnections++;
     connecting_peer_list.add( peer );
     TRACE( TRACE_CONNECTIONS )("%s - New peer added, now %d\n",  curr_local_time(),  connecting_peer_list.get_count() + peer_list.get_count() );
-	control_socket.post();
+    control_socket.post();
     return 0;
 } 
 

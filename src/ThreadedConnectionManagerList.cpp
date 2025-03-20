@@ -76,11 +76,11 @@ ThreadedConnectionManager * ThreadedConnectionManagerList::getFreeThreadedConnec
     int i=1;
     int freeconections = -1;//lista[0]->getFreeConnections();
     pcm = NULL;
-	int current = 0;//lista[0];
+    int current = 0;//lista[0];
     
     while( i < m_list.get_count() )
     {
-	  current = m_list[i]->getFreeConnections();
+      current = m_list[i]->getFreeConnections();
       if(  current > freeconections  && current > 0 )
       {
         freeconections = current;

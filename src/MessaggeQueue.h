@@ -19,16 +19,16 @@ USING_PTYPES
 
 
 class MessaggeQueue :
-	public jobqueue
+    public jobqueue
 {
 public:
-	MessaggeQueue(void);
-	~MessaggeQueue(void);
+    MessaggeQueue(void);
+    ~MessaggeQueue(void);
     bool post( message* msg );
     bool post( int id, pintptr param = 0 );
-	void setTrigger( timedsem * p);
+    void setTrigger( timedsem * p);
 private:
-	timedsem * pts;
+    timedsem * pts;
 
 };
 

@@ -16,44 +16,44 @@ Please consult the file "LICENSE.txt" for details.
 <style type=\"text/css\">\n\
 <!--                 \n\
 .rwaBody{\n\
-	font-family: Arial, Helvetica, sans-serif;\n\
-	font-size: 12px;\n\
-	color: #666666;\n\
+    font-family: Arial, Helvetica, sans-serif;\n\
+    font-size: 12px;\n\
+    color: #666666;\n\
 }\n\
 .rwaTitle {\n\
 font-family: Arial, Helvetica, sans-serif;\n\
-	color: #2B75B1;\n\
-	font-weight: bold;\n\
+    color: #2B75B1;\n\
+    font-weight: bold;\n\
 }\n\
 .rwaTableHeader{\n\
-	font-family: Arial, Helvetica, sans-serif;\n\
-	font-size: 12px;\n\
-	color: #FFFFFF;\n\
+    font-family: Arial, Helvetica, sans-serif;\n\
+    font-size: 12px;\n\
+    color: #FFFFFF;\n\
  background-color: #2B75B1;\n\
 }\n\
 table.sample {\n\
-	border-width: 1px 1px 1px 1px;\n\
-	border-spacing: 2px;\n\
-	border-style: outset outset outset outset;\n\
-	border-color: #AAAAAA;\n\
-	border-collapse: collapse;\n\
-	background-color: white;\n\
+    border-width: 1px 1px 1px 1px;\n\
+    border-spacing: 2px;\n\
+    border-style: outset outset outset outset;\n\
+    border-color: #AAAAAA;\n\
+    border-collapse: collapse;\n\
+    background-color: white;\n\
 }\n\
 table.sample th {\n\
-	border-width: 1px 1px 1px 1px;\n\
-	padding: 1px 1px 1px 1px;\n\
-	border-style: inset inset inset inset;\n\
-	border-color: #AAAAAA;\n\
-	background-color: #2B75B1;\n\
-	-moz-border-radius: 0px 0px 0px 0px;\n\
+    border-width: 1px 1px 1px 1px;\n\
+    padding: 1px 1px 1px 1px;\n\
+    border-style: inset inset inset inset;\n\
+    border-color: #AAAAAA;\n\
+    background-color: #2B75B1;\n\
+    -moz-border-radius: 0px 0px 0px 0px;\n\
 }\n\
 table.sample td {\n\
-	border-width: 1px 1px 1px 1px;\n\
-	padding: 1px 1px 1px 1px;\n\
-	border-style: inset inset inset inset;\n\
-	border-color: #AAAAAA;\n\
-	background-color: white;\n\
-	-moz-border-radius: 0px 0px 0px 0px;\n\
+    border-width: 1px 1px 1px 1px;\n\
+    padding: 1px 1px 1px 1px;\n\
+    border-style: inset inset inset inset;\n\
+    border-color: #AAAAAA;\n\
+    background-color: white;\n\
+    -moz-border-radius: 0px 0px 0px 0px;\n\
 }\n\
 </style>\n\
 "

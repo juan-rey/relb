@@ -53,14 +53,14 @@ ConnectionPeer::~ConnectionPeer()
 void ConnectionPeer::addToFDSETR( fd_set * set )
 {
 TRACE( TRACE_VERY_VERBOSE )("%s - pClient was %d  and  %d bytes free\n",  curr_local_time(),(int) (void *) pClient, bytes_to_receive_in_bufferforserver );
-	
+    
   if( pClient && bytes_to_receive_in_bufferforserver )
   {
       pClient->addToFDSET( set );
   }
 
 TRACE( TRACE_VERY_VERBOSE )("%s - pServer was %d  and  %d bytes free\n",  curr_local_time(),(int) (void *) pServer, bytes_to_receive_in_bufferforclient );
-	
+    
   if( pServer && bytes_to_receive_in_bufferforclient )
   {
       pServer->addToFDSET( set ); 
@@ -85,14 +85,14 @@ void ConnectionPeer::addToFDSETC( fd_set * setr, fd_set * setw )
 
   if( pClient && bytes_to_receive_in_bufferforserver )
   {
-	  TRACE( TRACE_CONNECTIONS )("%s - Checking ongoing connection A\n", curr_local_time());  
+      TRACE( TRACE_CONNECTIONS )("%s - Checking ongoing connection A\n", curr_local_time());  
       pClient->addToFDSET( setr );
   }
 
 
   if( pServer )
   {
-	  TRACE( TRACE_CONNECTIONS )("%s - Checking ongoing connection B\n", curr_local_time());  
+      TRACE( TRACE_CONNECTIONS )("%s - Checking ongoing connection B\n", curr_local_time());  
       pServer->addToFDSET( setw );  
   }
 }
@@ -123,19 +123,19 @@ void ConnectionPeer::closeClient()
       pClient->close();    
       delete pClient;
       pClient = NULL;    
-	  r_offset_bufferforclient = 0;
-	  w_offset_bufferforclient = 0;
-	  bytes_to_receive_in_bufferforclient = STAMBUFFERSOCKET; 
-	  bytes_to_send_in_bufferforclient = 0;
+      r_offset_bufferforclient = 0;
+      w_offset_bufferforclient = 0;
+      bytes_to_receive_in_bufferforclient = STAMBUFFERSOCKET; 
+      bytes_to_send_in_bufferforclient = 0;
       if( pServer && !bytes_to_send_in_bufferforserver )
-	  {
+      {
          closeServer();
-	  }
-	  else
-	  {
-		  if( !pServerConnected )
-			  closeServer();
-	  }
+      }
+      else
+      {
+          if( !pServerConnected )
+              closeServer();
+      }
     }
     
     if( !isActive())
@@ -148,25 +148,25 @@ void ConnectionPeer::closeClient()
 // just for testing purposes
 void ConnectionPeer::closeServer2()
 {
-	if( pServer )
-	  pServer->close(); 
+    if( pServer )
+      pServer->close(); 
 }
 
 void ConnectionPeer::closeClient2()
 {
-	if( pClient )
-	  pClient->close(); 
+    if( pClient )
+      pClient->close(); 
 }
 void ConnectionPeer::closeServer3()
 {
-	if( pServer )
-	  pServer->close2(); 
+    if( pServer )
+      pServer->close2(); 
 }
 
 void ConnectionPeer::closeClient3()
 {
-	if( pClient )
-	  pClient->close2(); 
+    if( pClient )
+      pClient->close2(); 
 }
 #endif
 
@@ -178,14 +178,14 @@ void ConnectionPeer::closeServer()
       pServer->close();     
       delete pServer;
       pServer = NULL;
-	  w_offset_bufferforserver = 0;
-	  r_offset_bufferforserver = 0;
-	  bytes_to_receive_in_bufferforserver = STAMBUFFERSOCKET; 
-	  bytes_to_send_in_bufferforserver = 0;
+      w_offset_bufferforserver = 0;
+      r_offset_bufferforserver = 0;
+      bytes_to_receive_in_bufferforserver = STAMBUFFERSOCKET; 
+      bytes_to_send_in_bufferforserver = 0;
       if( pClient &&  !bytes_to_send_in_bufferforclient )
-	  {
+      {
         closeClient();
-	  }
+      }
     } 
     
     if( !isActive())
@@ -211,20 +211,20 @@ bool ConnectionPeer::manageConnectingPeer( fd_set * setr , fd_set * setw )
         TRACE( TRACE_IOSOCKET )("%s - reading from client\n", curr_local_time());
         getMissingDataFromClient();
       }
-	
-	  if( pServer )
-	  {
-		  if( pServer->isInFDSET( setw ) )
-		  {
-			TRACE( TRACE_IOSOCKET )("%s - connecting to server\n", curr_local_time());
-			pServerConnected = true;
-			if( pjq && pinfo )
-			{
-			  pjq->post( STATUS_CONNECTION_ESTABLISHED, pintptr(pinfo) );
-			}
-			ret = true;       
-		  }
-	  }
+    
+      if( pServer )
+      {
+          if( pServer->isInFDSET( setw ) )
+          {
+            TRACE( TRACE_IOSOCKET )("%s - connecting to server\n", curr_local_time());
+            pServerConnected = true;
+            if( pjq && pinfo )
+            {
+              pjq->post( STATUS_CONNECTION_ESTABLISHED, pintptr(pinfo) );
+            }
+            ret = true;       
+          }
+      }
    }
    else
    {
@@ -245,12 +245,12 @@ bool ConnectionPeer::manageConnectingPeer( fd_set * setr , fd_set * setw )
           {
             pjq->post( STATUS_PEER_CONNECTION_CANCELLED, pintptr(pinfo) );
           }
-		  ret = true;
+          ret = true;
         }
-		else
-		{
-		  ret = false;
-		}
+        else
+        {
+          ret = false;
+        }
       }
       
       if( pServer )
@@ -261,7 +261,7 @@ bool ConnectionPeer::manageConnectingPeer( fd_set * setr , fd_set * setw )
             {
               pjq->post( STATUS_PEER_CONNECTION_CANCELLED, pintptr(pinfo) ); 
             }
-			ret = false;             
+            ret = false;             
       }
    }
 
@@ -283,8 +283,8 @@ void ConnectionPeer::manageConnections( fd_set * setr , fd_set * setw )
 #endif
       }
 #ifndef OPTIMIZE_PEER_READING 
-	  else
-	  {
+      else
+      {
 #endif
           if( pServer->isInFDSET( setw ) )
           {
@@ -292,33 +292,33 @@ void ConnectionPeer::manageConnections( fd_set * setr , fd_set * setw )
             sendMissingDataToServer();        
           }
 #ifndef OPTIMIZE_PEER_READING 
-	  }
+      }
 #endif
 
-	if(pServer)
-	{
-		  if( pServer->isInFDSET( setr ) )
-		  {
-			TRACE( TRACE_IOSOCKET )("%s - i am reading from server\n", curr_local_time());
+    if(pServer)
+    {
+          if( pServer->isInFDSET( setr ) )
+          {
+            TRACE( TRACE_IOSOCKET )("%s - i am reading from server\n", curr_local_time());
 
-			getMissingDataFromServer();
+            getMissingDataFromServer();
 #ifndef OPTIMIZE_PEER_READING 
-			sendMissingDataToClient(); 
+            sendMissingDataToClient(); 
 #endif
-		  }
+          }
 #ifndef OPTIMIZE_PEER_READING 
-		  else
-		  {
+          else
+          {
 #endif
-			  if( pClient->isInFDSET( setw ) )
-			  {
-				TRACE( TRACE_IOSOCKET )("%s - i can send to client\n", curr_local_time());
-				sendMissingDataToClient();
-			  }
+              if( pClient->isInFDSET( setw ) )
+              {
+                TRACE( TRACE_IOSOCKET )("%s - i can send to client\n", curr_local_time());
+                sendMissingDataToClient();
+              }
 #ifndef OPTIMIZE_PEER_READING 
-		  }
+          }
 #endif 
-	}
+    }
    }
    else
    {
@@ -375,8 +375,8 @@ void ConnectionPeer::getMissingDataFromClient()
     {
       TRACE( TRACE_IOSOCKET )( "%s - i recieved %d/%d bytes from client \n", curr_local_time(), ret, bytes_to_receive_in_bufferforserver );    
       w_offset_bufferforserver  += ret;
-	  bytes_to_send_in_bufferforserver += ret;
-	  bytes_to_receive_in_bufferforserver -= ret;
+      bytes_to_send_in_bufferforserver += ret;
+      bytes_to_receive_in_bufferforserver -= ret;
     }
     else
     {
@@ -388,10 +388,10 @@ void ConnectionPeer::getMissingDataFromClient()
           closeClient();
           if( pjq && pinfo )
           {
-			  if( pServerConnected )
+              if( pServerConnected )
                  pjq->post( STATUS_CLIENT_DISCONNECTED_OK, pintptr(pinfo) );
-			  else
-				 pjq->post( STATUS_CONNECTION_FAILED, pintptr(pinfo) );
+              else
+                 pjq->post( STATUS_CONNECTION_FAILED, pintptr(pinfo) );
           }
         }
         else
@@ -400,10 +400,10 @@ void ConnectionPeer::getMissingDataFromClient()
           closeClient();
           if( pjq && pinfo )
           {
-			if( pServerConnected )
+            if( pServerConnected )
               pjq->post( STATUS_CLIENT_CONNECTION_LOST, pintptr(pinfo) );
-			else
-			  pjq->post( STATUS_CONNECTION_FAILED, pintptr(pinfo) );
+            else
+              pjq->post( STATUS_CONNECTION_FAILED, pintptr(pinfo) );
 
           }          
         }
@@ -423,8 +423,8 @@ void ConnectionPeer::getMissingDataFromServer()
     {
       TRACE( TRACE_IOSOCKET )( "%s - i read %d/%d bytes from server\n", curr_local_time(), ret, bytes_to_receive_in_bufferforclient );
       w_offset_bufferforclient += ret;
-	  bytes_to_receive_in_bufferforclient -= ret; 
-	  bytes_to_send_in_bufferforclient += ret;
+      bytes_to_receive_in_bufferforclient -= ret; 
+      bytes_to_send_in_bufferforclient += ret;
     }
     else
     {
@@ -464,14 +464,14 @@ void ConnectionPeer::sendMissingDataToClient()
     {
       TRACE( TRACE_IOSOCKET )("%s - i sent %d/%d bytes from client\n", curr_local_time(), ret, bytes_to_send_in_bufferforclient  );      
       r_offset_bufferforclient += ret;
-	  bytes_to_send_in_bufferforclient -= ret;
+      bytes_to_send_in_bufferforclient -= ret;
 
-	  if( w_offset_bufferforclient && !bytes_to_send_in_bufferforclient )
-	  {
-		r_offset_bufferforclient = 0;
-		w_offset_bufferforclient = 0;
-		bytes_to_receive_in_bufferforclient = STAMBUFFERSOCKET; 
-	  }
+      if( w_offset_bufferforclient && !bytes_to_send_in_bufferforclient )
+      {
+        r_offset_bufferforclient = 0;
+        w_offset_bufferforclient = 0;
+        bytes_to_receive_in_bufferforclient = STAMBUFFERSOCKET; 
+      }
 
       if( !pServer )
       {
@@ -524,15 +524,15 @@ void ConnectionPeer::sendMissingDataToServer()
     {
       TRACE( TRACE_IOSOCKET )( "%s - i sent %d/%d bytes to server\n", curr_local_time(), ret, bytes_to_send_in_bufferforserver  );          
       r_offset_bufferforserver += ret;
-	  bytes_to_send_in_bufferforserver -= ret;
+      bytes_to_send_in_bufferforserver -= ret;
 
-	  if( w_offset_bufferforserver && !bytes_to_send_in_bufferforserver )
-	  {
-		w_offset_bufferforserver = 0;
-		r_offset_bufferforserver = 0;
-	    bytes_to_receive_in_bufferforserver = STAMBUFFERSOCKET;
-	  }
-	  
+      if( w_offset_bufferforserver && !bytes_to_send_in_bufferforserver )
+      {
+        w_offset_bufferforserver = 0;
+        r_offset_bufferforserver = 0;
+        bytes_to_receive_in_bufferforserver = STAMBUFFERSOCKET;
+      }
+      
       if( !pClient )
       {
           TRACE( TRACE_CONNECTIONS )( "%s - i sent to sever but client was already disconnected\n", curr_local_time() );
@@ -575,70 +575,70 @@ void ConnectionPeer::sendMissingDataToServer()
 
 bool ConnectionPeer::checkPeers(  )
 {
-	bool val = false;
+    bool val = false;
 
   if ( pServer )
   {
-	 if( pServer->checkSocket() < 0 )
-	 {
+     if( pServer->checkSocket() < 0 )
+     {
           TRACE( TRACE_IOSOCKET )("%s - there was an error with server socket\n", curr_local_time());
-		  TRACE( TRACE_CONNECTIONS )("%s - unexpected server disconnetion, select() function failed\n", curr_local_time());
-		  closeServer();
-		  if( pjq && pinfo )
-		  {
-			pjq->post( STATUS_SERVER_CONNECTION_LOST, pintptr(pinfo) );
-		  }
-	 }
+          TRACE( TRACE_CONNECTIONS )("%s - unexpected server disconnetion, select() function failed\n", curr_local_time());
+          closeServer();
+          if( pjq && pinfo )
+          {
+            pjq->post( STATUS_SERVER_CONNECTION_LOST, pintptr(pinfo) );
+          }
+     }
   }
 
   if ( pClient )
   {
 
-	 if( pClient->checkSocket() < 0 )
-	 {
+     if( pClient->checkSocket() < 0 )
+     {
           TRACE( TRACE_IOSOCKET )("%s - There was an error with client socket\n", curr_local_time());
-		  TRACE( TRACE_CONNECTIONS )("%s - unexpected client disconnetion, select() function failed\n", curr_local_time());
-		  closeClient();
-		  if( pjq && pinfo )
-		  {
-			pjq->post( STATUS_CLIENT_CONNECTION_LOST, pintptr(pinfo) );
-		  }
-	 }
+          TRACE( TRACE_CONNECTIONS )("%s - unexpected client disconnetion, select() function failed\n", curr_local_time());
+          closeClient();
+          if( pjq && pinfo )
+          {
+            pjq->post( STATUS_CLIENT_CONNECTION_LOST, pintptr(pinfo) );
+          }
+     }
   }
 
-	return val;
+    return val;
 }
 
 bool ConnectionPeer::checkConnectingPeers( /*fd_set * setr*/  )
 {
-	bool val = false;
+    bool val = false;
 
   if ( pServer )
   {
-		 if( pServer->checkSocket() < 0 )
-		 {
-			  TRACE( TRACE_CONNECTIONS )("%s - unexpected server disconnetion, select() function failed (2)\n", curr_local_time());
-			  closeServer();
-			  if( pjq && pinfo )
-			  {
-				pjq->post( STATUS_SERVER_CONNECTION_LOST, pintptr(pinfo) );
-			  }
-		 }
+         if( pServer->checkSocket() < 0 )
+         {
+              TRACE( TRACE_CONNECTIONS )("%s - unexpected server disconnetion, select() function failed (2)\n", curr_local_time());
+              closeServer();
+              if( pjq && pinfo )
+              {
+                pjq->post( STATUS_SERVER_CONNECTION_LOST, pintptr(pinfo) );
+              }
+         }
 
   }
 
   if ( pClient )
   {
      if( pClient->checkSocket() < 0 )
-	 {
-		  TRACE( TRACE_CONNECTIONS )("%s - unexpected client disconnetion, select() function failed (2)\n", curr_local_time());
+     {
+          TRACE( TRACE_CONNECTIONS )("%s - unexpected client disconnetion, select() function failed (2)\n", curr_local_time());
           closeClient();
           if( pjq && pinfo )
           {
             pjq->post( STATUS_CLIENT_CONNECTION_LOST, pintptr(pinfo) );
           }
-	 }
+     }
   }
 
-	return val;
+    return val;
 }

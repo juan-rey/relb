@@ -79,13 +79,13 @@ Socket::Socket( const ipaddress * dstip, unsigned short dstport )//, ControlObje
  ioctlsocket( sock, FIONBIO, (u_long FAR*) &nonBlocking);
 #endif
 
-	sockaddr_in sa;
-	memset(&sa, 0, sizeof(sa));
-	sa.sin_family = AF_INET;
-	sa.sin_port = htons( port );
-	sa.sin_addr.s_addr = ip;  
-	connect( sock, (sockaddr*)&sa, sizeof(sa));
-	TRACE( TRACE_CONNECTIONS )("%s - exiting from connect()\n", curr_local_time());  
+    sockaddr_in sa;
+    memset(&sa, 0, sizeof(sa));
+    sa.sin_family = AF_INET;
+    sa.sin_port = htons( port );
+    sa.sin_addr.s_addr = ip;  
+    connect( sock, (sockaddr*)&sa, sizeof(sa));
+    TRACE( TRACE_CONNECTIONS )("%s - exiting from connect()\n", curr_local_time());  
 }
 
 Socket::Socket( const char * dsthost, int dstport)
@@ -130,7 +130,7 @@ int Socket::sendNB( const char * buffer, int max )
   if( sock > 0 )
   { 
     ret = send( sock,  buffer, max, NONBLOCKINGFLAGS );
-	TRACE( (TRACE_VERY_VERBOSE &&  TRACE_IOSOCKET) )("%s - could wrote %d\n", curr_local_time(), ret );
+    TRACE( (TRACE_VERY_VERBOSE &&  TRACE_IOSOCKET) )("%s - could wrote %d\n", curr_local_time(), ret );
     if( ret < 0 )
     {
       if(( socket_errno == EAGAIN ) || ( socket_errno == EWOULDBLOCK ))
@@ -139,7 +139,7 @@ int Socket::sendNB( const char * buffer, int max )
       }
       else //otros errores como ECONNRESET
       {
-	   
+       
        TRACE( TRACE_IOSOCKET )("%s - I coud not write all in socket\n", curr_local_time());
 #ifdef WIN32
        TRACE( TRACE_IOSOCKET )("%s - Error %d %d\n", curr_local_time(), socket_errno, WSAGetLastError() );
@@ -168,7 +168,7 @@ int Socket::recieveNB( char * buffer,  int max )
   if( sock > 0 )
   {
     ret = recv( sock,  buffer, max, NONBLOCKINGFLAGS );
-	TRACE( (TRACE_VERY_VERBOSE && TRACE_IOSOCKET) )("%s - could read %d\n", curr_local_time(), ret );
+    TRACE( (TRACE_VERY_VERBOSE && TRACE_IOSOCKET) )("%s - could read %d\n", curr_local_time(), ret );
     if( ret < 0 )
     {
       if(( socket_errno == EAGAIN)||( socket_errno == EWOULDBLOCK ))
@@ -228,21 +228,21 @@ void Socket::getSocket()
 
 int Socket::checkSocket()
 {
-	int ret = -1;
-	
-	TRACE( TRACE_VERY_VERBOSE )("%s - I am going to check the socket %d\n", curr_local_time(), sock ); 
+    int ret = -1;
+    
+    TRACE( TRACE_VERY_VERBOSE )("%s - I am going to check the socket %d\n", curr_local_time(), sock ); 
 
-	if( sock > 0 )
-	{
-		fd_set setr;
-		timeval to;
-		to.tv_sec = 0;
-		to.tv_usec = 0;
-		FD_ZERO( &setr );
-		FD_SET( sock, &setr );
-		ret =::select(FD_SETSIZE, &setr, nil, nil, &to );
-		TRACE( TRACE_VERY_VERBOSE )("%s - Really checking the socket, ret was %d but not %d\n", curr_local_time(), ret, int(-1));
-	}
+    if( sock > 0 )
+    {
+        fd_set setr;
+        timeval to;
+        to.tv_sec = 0;
+        to.tv_usec = 0;
+        FD_ZERO( &setr );
+        FD_SET( sock, &setr );
+        ret =::select(FD_SETSIZE, &setr, nil, nil, &to );
+        TRACE( TRACE_VERY_VERBOSE )("%s - Really checking the socket, ret was %d but not %d\n", curr_local_time(), ret, int(-1));
+    }
 
-	return ret;
+    return ret;
 }

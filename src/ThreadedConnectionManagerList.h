@@ -24,15 +24,15 @@ USING_PTYPES
 class ThreadedConnectionManagerList
 {
 public:
-  ThreadedConnectionManagerList();
-  virtual ~ThreadedConnectionManagerList();  
-  ThreadedConnectionManager * getFreeThreadedConnectionManager();
-  void setPeersPerThread( int ppt );
+    ThreadedConnectionManagerList();
+    virtual ~ThreadedConnectionManagerList();  
+    ThreadedConnectionManager * getFreeThreadedConnectionManager();
+    void setPeersPerThread( int ppt );
 private:
-  ThreadedConnectionManager * addNew();		
-  void cleanList();
-  void purifyList();
-  int peers_per_thread;
-  tpodlist<ThreadedConnectionManager*> m_list;
+    ThreadedConnectionManager * addNew();		
+    void cleanList();
+    void purifyList();
+    int peers_per_thread;
+    tpodlist<ThreadedConnectionManager*> m_list;
 };
 #endif

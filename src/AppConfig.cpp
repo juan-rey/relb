@@ -48,9 +48,9 @@ AppConfig::AppConfig()
    
     currentBind = 0;
     currentServet = 0;
-	currentFilter = 0;
-	currentAddress = 0;
-	currentTask = -1;
+    currentFilter = 0;
+    currentAddress = 0;
+    currentTask = -1;
 }
 
 bool AppConfig::getFirstBind()
@@ -228,7 +228,7 @@ ipaddress AppConfig::getAddressIP()
     if( currentBind < bind.get_count() )
     {
         if( currentAddress < bind[currentBind]->address.get_count() )
-			val =  bind[currentBind]->address[currentAddress]->src_ip;
+            val =  bind[currentBind]->address[currentAddress]->src_ip;
     }
 
     return val; 
@@ -241,7 +241,7 @@ unsigned short AppConfig::getAddressPort()
     if( currentBind < bind.get_count() )
     {
         if( currentAddress < bind[currentBind]->address.get_count() )
-			val =  bind[currentBind]->address[currentAddress]->src_port;
+            val =  bind[currentBind]->address[currentAddress]->src_port;
     }
 
     return val; 
@@ -282,7 +282,7 @@ ipaddress AppConfig::getFilterSourceIP()
     if( currentBind < bind.get_count() )
     {
         if( currentFilter < bind[currentBind]->filter.get_count() )
-			val =  bind[currentBind]->filter[currentFilter]->src_ip;
+            val =  bind[currentBind]->filter[currentFilter]->src_ip;
     }
 
     return val; 
@@ -295,7 +295,7 @@ ipaddress AppConfig::getFilterSourceMask()
     if( currentBind < bind.get_count() )
     {
         if( currentFilter < bind[currentBind]->filter.get_count() )
-			val =  bind[currentBind]->filter[currentFilter]->src_mask;
+            val =  bind[currentBind]->filter[currentFilter]->src_mask;
     }
 
     return val; 
@@ -308,7 +308,7 @@ ipaddress AppConfig::getFilterDestIP()
     if( currentBind < bind.get_count() )
     {
         if( currentFilter < bind[currentBind]->filter.get_count() )
-			val =  bind[currentBind]->filter[currentFilter]->dst_ip;
+            val =  bind[currentBind]->filter[currentFilter]->dst_ip;
     }
 
     return val; 
@@ -321,7 +321,7 @@ ipaddress AppConfig::getFilterDestMask()
     if( currentBind < bind.get_count() )
     {
         if( currentFilter < bind[currentBind]->filter.get_count() )
-			val =  bind[currentBind]->filter[currentFilter]->dst_mask;
+            val =  bind[currentBind]->filter[currentFilter]->dst_mask;
     }
 
     return val; 
@@ -334,7 +334,7 @@ bool AppConfig::getFilterAllow()
     if( currentBind < bind.get_count() )
     {
         if( currentFilter < bind[currentBind]->filter.get_count() )
-			val =  bind[currentBind]->filter[currentFilter]->allow;
+            val =  bind[currentBind]->filter[currentFilter]->allow;
     }
 
     return val; 
@@ -503,12 +503,12 @@ bool AppConfig::loadFile()
 
     if( !val )
     {
-		setDefaultValues();
-	}
-	else
-	{
-		printf("Loaded config file: %s\n", (const char *)configfile );
-	}
+        setDefaultValues();
+    }
+    else
+    {
+        printf("Loaded config file: %s\n", (const char *)configfile );
+    }
 
     return val;    
 }
@@ -534,7 +534,7 @@ bool AppConfig::loadConfig()
     {
         TRACE(TRACE_CONFIG)("%s - trying the default path\n", curr_local_time());        
 #ifdef WIN32
-		CHAR windir[MAX_WINDIR_PATH];
+        CHAR windir[MAX_WINDIR_PATH];
         GetWindowsDirectoryA( windir, MAX_WINDIR_PATH );
         configfile = string(windir) + "\\" + DEFAULT_CONFIG_FILE_PATH + string(DEFAULT_CONFIG_FILENAME);
 #else
@@ -543,12 +543,12 @@ bool AppConfig::loadConfig()
         loaded = loadFile();
     }
 
-	if( loaded )
-	{
-		loaded = checkConfig();
-		if( !loaded )
-		  printf("Config file was invalid\n"); 
-	}
+    if( loaded )
+    {
+        loaded = checkConfig();
+        if( !loaded )
+          printf("Config file was invalid\n"); 
+    }
 
     if( !loaded )
     {
@@ -572,33 +572,33 @@ bool AppConfig::setDefaultValues()
     http_admin_ip = DEFAULT_HTTP_IPADDRESS;
     minimun_server_reconnection_time = MINIMUN_SEVER_RECONNECTION_TIME;
 
-	return true;
+    return true;
 }
 
 bool AppConfig::checkConfig()
 {
     bool val = true;
     int i = 0;
-	int j = 0;
+    int j = 0;
     
-	if( http_admin_enabled )
-	{
-		if( !checkIP( &(http_admin_ip) ) )
-		{
-			TRACE(TRACE_CONFIG)("%s - admin web IP %s was not available\n", curr_local_time(), (const char *)  iptostring(http_admin_ip) );
-			printf("admin web IP %s was not available\n", (const char *) iptostring(http_admin_ip) );
-			val = false;
-		}
-		else
-		{
-			if( !checkPort( &(http_admin_ip), http_admin_port ) )
-			{
-				TRACE(TRACE_CONFIG)("%s - admin web: %d port was not available\n", curr_local_time(), http_admin_port );
-				printf("admin web port %d was not available\n",  http_admin_port);
-				val = false;
-			}
-		}
-	}
+    if( http_admin_enabled )
+    {
+        if( !checkIP( &(http_admin_ip) ) )
+        {
+            TRACE(TRACE_CONFIG)("%s - admin web IP %s was not available\n", curr_local_time(), (const char *)  iptostring(http_admin_ip) );
+            printf("admin web IP %s was not available\n", (const char *) iptostring(http_admin_ip) );
+            val = false;
+        }
+        else
+        {
+            if( !checkPort( &(http_admin_ip), http_admin_port ) )
+            {
+                TRACE(TRACE_CONFIG)("%s - admin web: %d port was not available\n", curr_local_time(), http_admin_port );
+                printf("admin web port %d was not available\n",  http_admin_port);
+                val = false;
+            }
+        }
+    }
 
     if( bind.get_count() == 0 )
     {
@@ -608,32 +608,32 @@ bool AppConfig::checkConfig()
     
     while( val && i < bind.get_count() )
     {
-		if( bind[i]->address.get_count() > 0 )
-		{
-			for( j = 0; j < bind[i]->address.get_count() ; j++ )
-			{
-				if( !checkIP( &(bind[i]->address[j]->src_ip) ) )
-				{
-					TRACE(TRACE_CONFIG)("%s - IP %s was not available\n", curr_local_time(), (const char *)  iptostring(bind[i]->address[j]->src_ip) );
-					printf("IP %s was not available\n", (const char *) iptostring(bind[i]->address[j]->src_ip) );
-					val = false;
-				}
-				else
-				{
-					if( !checkPort( &(bind[i]->address[j]->src_ip), bind[i]->address[j]->src_port ) )
-					{
-						TRACE(TRACE_CONFIG)("%s - %d port was not available\n", curr_local_time(), bind[i]->address[j]->src_port );
-						printf("port %d was not available\n",  bind[i]->address[j]->src_port );
-						val = false;
-					}
-				}
-			}
-		}
-		else
-		{
+        if( bind[i]->address.get_count() > 0 )
+        {
+            for( j = 0; j < bind[i]->address.get_count() ; j++ )
+            {
+                if( !checkIP( &(bind[i]->address[j]->src_ip) ) )
+                {
+                    TRACE(TRACE_CONFIG)("%s - IP %s was not available\n", curr_local_time(), (const char *)  iptostring(bind[i]->address[j]->src_ip) );
+                    printf("IP %s was not available\n", (const char *) iptostring(bind[i]->address[j]->src_ip) );
+                    val = false;
+                }
+                else
+                {
+                    if( !checkPort( &(bind[i]->address[j]->src_ip), bind[i]->address[j]->src_port ) )
+                    {
+                        TRACE(TRACE_CONFIG)("%s - %d port was not available\n", curr_local_time(), bind[i]->address[j]->src_port );
+                        printf("port %d was not available\n",  bind[i]->address[j]->src_port );
+                        val = false;
+                    }
+                }
+            }
+        }
+        else
+        {
             val = false;
             TRACE(TRACE_CONFIG)("%s - no bind address\n", curr_local_time());
-		}
+        }
 
         if( bind[i]->dst.get_count() == 0 )
         {
@@ -691,28 +691,28 @@ void AppConfig::processConfigLine( const char * line )
             h++;
         }
 
-		g = h;
+        g = h;
         while( line[g] != char(NULL) && line[g] != ','  && line[g] != ':')
         {  
             g++;
         }
 
-		if( line[g] == ':' )
-		{
-			char  * servername =  new char[g-h+1];
-			strncpy( servername, &(line[h]), g-h );
-			servername[g-h] = NULL;
-			dst_ip = phostbyname( servername );
+        if( line[g] == ':' )
+        {
+            char  * servername =  new char[g-h+1];
+            strncpy( servername, &(line[h]), g-h );
+            servername[g-h] = NULL;
+            dst_ip = phostbyname( servername );
 
-			if( dst_ip == ipnone )
-			{
-				dst_ip = ipany;
-			}
+            if( dst_ip == ipnone )
+            {
+                dst_ip = ipany;
+            }
           
-			TRACE(TRACE_CONFIG)("%s - web admin binding ip address %s\n", curr_local_time(), (const char *) iptostring(dst_ip) );  
+            TRACE(TRACE_CONFIG)("%s - web admin binding ip address %s\n", curr_local_time(), (const char *) iptostring(dst_ip) );  
 
-			h = g +1;
-		}
+            h = g +1;
+        }
 
         dst_port = atoi( &line[h] );
         TRACE(TRACE_CONFIG)("%s - web admin bindingn port %d\n", curr_local_time(), dst_port ); 
@@ -746,53 +746,53 @@ void AppConfig::processConfigLine( const char * line )
     }
     
     if( strncmp( (const char *) line, CONFIG_BIND_TAG, strlen(CONFIG_BIND_TAG)) == 0 
-		|| strncmp( (const char *) line, CONFIG_ALSOBIND_TAG, strlen(CONFIG_ALSOBIND_TAG)) == 0 )
+        || strncmp( (const char *) line, CONFIG_ALSOBIND_TAG, strlen(CONFIG_ALSOBIND_TAG)) == 0 )
     {
 
         int h,g;
         ipaddress dst_ip = ipany;
         unsigned short dst_port = 0;
         bool valid =  true;
-		bool alsobind = false ;
+        bool alsobind = false ;
 
 
-		alsobind = (strncmp( (const char *) line, CONFIG_ALSOBIND_TAG, strlen(CONFIG_ALSOBIND_TAG)) == 0 );
-		if( alsobind )
-		{
-			TRACE(TRACE_CONFIG)("%s - also bind tag\n", curr_local_time());
-			h = strlen(CONFIG_ALSOBIND_TAG); 
-		}
-		else
-		{
-			TRACE(TRACE_CONFIG)("%s - bind tag\n", curr_local_time());
-			h = strlen(CONFIG_BIND_TAG); 
-		}
+        alsobind = (strncmp( (const char *) line, CONFIG_ALSOBIND_TAG, strlen(CONFIG_ALSOBIND_TAG)) == 0 );
+        if( alsobind )
+        {
+            TRACE(TRACE_CONFIG)("%s - also bind tag\n", curr_local_time());
+            h = strlen(CONFIG_ALSOBIND_TAG); 
+        }
+        else
+        {
+            TRACE(TRACE_CONFIG)("%s - bind tag\n", curr_local_time());
+            h = strlen(CONFIG_BIND_TAG); 
+        }
         while( line[h] == ' ' || line[h] == '\t' )
         {
             h++;
         }
         
-		g = h;
+        g = h;
         while( line[g] != char(NULL) && line[g] != ','  && line[g] != ':')
         {  
             g++;
         }
 
-		if( line[g] == ':' )
-		{
-			char  * servername =  new char[g-h+1];
-			strncpy( servername, &(line[h]), g-h );
-			servername[g-h] = NULL;
-			dst_ip = phostbyname( servername );
+        if( line[g] == ':' )
+        {
+            char  * servername =  new char[g-h+1];
+            strncpy( servername, &(line[h]), g-h );
+            servername[g-h] = NULL;
+            dst_ip = phostbyname( servername );
 
-			if( dst_ip == ipnone )
-			{
-				dst_ip = ipany;
-			}
+            if( dst_ip == ipnone )
+            {
+                dst_ip = ipany;
+            }
           TRACE(TRACE_CONFIG)("%s - bind ip address %s\n", curr_local_time(), (const char *) iptostring(dst_ip) );  
 
-		  h = g +1;
-		}
+          h = g +1;
+        }
 
         dst_port = atoi( &line[h] );
         TRACE(TRACE_CONFIG)("%s - bind destination port %d\n", curr_local_time(), dst_port );        
@@ -803,26 +803,26 @@ void AppConfig::processConfigLine( const char * line )
                      
         if( valid )
         {
-			if( alsobind )
-			{
-				TRACE(TRACE_CONFIG)("%s - valid alsobind config\n", curr_local_time());
-				if( bind.get_count() > 0 )
-				{
-					bind[ bind.get_count() - 1 ]->address.add( new bind_address );
-					bind[ bind.get_count() - 1 ]->address[ (bind[ bind.get_count() - 1 ]->address.get_count() - 1) ]->src_ip = dst_ip;
-					bind[ bind.get_count() - 1 ]->address[ (bind[ bind.get_count() - 1 ]->address.get_count() - 1) ]->src_port = dst_port;
-				}
-			}
-			else
-			{
-				TRACE(TRACE_CONFIG)("%s - valid bind config\n", curr_local_time());
-				bind_conf * tmp = new bind_conf;
-				bind.add( tmp );
-				tmp->address.add( new bind_address );
-				tmp->address[0]->src_ip = dst_ip;
-				tmp->address[0]->src_port = dst_port;
+            if( alsobind )
+            {
+                TRACE(TRACE_CONFIG)("%s - valid alsobind config\n", curr_local_time());
+                if( bind.get_count() > 0 )
+                {
+                    bind[ bind.get_count() - 1 ]->address.add( new bind_address );
+                    bind[ bind.get_count() - 1 ]->address[ (bind[ bind.get_count() - 1 ]->address.get_count() - 1) ]->src_ip = dst_ip;
+                    bind[ bind.get_count() - 1 ]->address[ (bind[ bind.get_count() - 1 ]->address.get_count() - 1) ]->src_port = dst_port;
+                }
+            }
+            else
+            {
+                TRACE(TRACE_CONFIG)("%s - valid bind config\n", curr_local_time());
+                bind_conf * tmp = new bind_conf;
+                bind.add( tmp );
+                tmp->address.add( new bind_address );
+                tmp->address[0]->src_ip = dst_ip;
+                tmp->address[0]->src_port = dst_port;
 
-			}
+            }
         }                       
     }    
     
@@ -848,12 +848,12 @@ void AppConfig::processConfigLine( const char * line )
         i = 0;    
         while( line[h+i] != char(NULL) && line[h+i] != ','  && line[h+i] != ':' )
             i++;
-		char * servername =  new char[i+1];
+        char * servername =  new char[i+1];
  
-		strncpy( servername, &(line[h]), i );
-		servername[i] = NULL;
+        strncpy( servername, &(line[h]), i );
+        servername[i] = NULL;
         dst_ip = phostbyname( servername );
-		delete servername;
+        delete servername;
         TRACE(TRACE_CONFIG)("%s - destination server ip address %s\n", curr_local_time(), (const char *) iptostring(dst_ip) );
         if( dst_ip == ipnone )
         {
@@ -913,7 +913,7 @@ void AppConfig::processConfigLine( const char * line )
         int interval = 0;
         TASK_TYPE task_type = TASK_CLEAN_CONNECTIONS;
         datetime first_run = 0;
-		bool fixed_time = false;
+        bool fixed_time = false;
         bool valid =  true;
         
         TRACE(TRACE_CONFIG)("%s - TASK tag\n", curr_local_time());        
@@ -927,19 +927,19 @@ void AppConfig::processConfigLine( const char * line )
         }
 
         if( strncmp( &line[h], TASK_UPDATE_SERVER_INFO_TAG, strlen(TASK_UPDATE_SERVER_INFO_TAG)) == 0 )
-			task_type = TASK_UPDATE_SERVER_INFO;
+            task_type = TASK_UPDATE_SERVER_INFO;
 
         if( strncmp( &line[h], TASK_CLEAN_CONNECTIONS_TAG, strlen(TASK_CLEAN_CONNECTIONS_TAG)) == 0 )
-			task_type = TASK_CLEAN_CONNECTIONS;
+            task_type = TASK_CLEAN_CONNECTIONS;
 
         if( strncmp( &line[h], TASK_PURGE_CONNECTIONS_TAG, strlen(TASK_PURGE_CONNECTIONS_TAG)) == 0 )
-			task_type = TASK_PURGE_CONNECTIONS;
+            task_type = TASK_PURGE_CONNECTIONS;
 
-		while( line[h] != char(NULL) && line[h] != ' ' )
-			h++;
+        while( line[h] != char(NULL) && line[h] != ' ' )
+            h++;
 
-		while( line[h] == ' ' )
-			h++;
+        while( line[h] == ' ' )
+            h++;
 
         interval = atoi( &line[h] );
         TRACE(TRACE_CONFIG)("%s - task interval %d\n", curr_local_time(), interval );
@@ -949,100 +949,100 @@ void AppConfig::processConfigLine( const char * line )
         }
 
 
-		while( line[h] != char(NULL) && line[h] != ' ' )
-			h++;
-		
-		if( line[h] != char(NULL) )// Existe primera hora ejecución
-		{
-			int hour = 0;
-			int min = 0;
-			int sec = 0;
-			int year = 1;
-			int month = 1;
-			int day = 1;
+        while( line[h] != char(NULL) && line[h] != ' ' )
+            h++;
+        
+        if( line[h] != char(NULL) )// Existe primera hora ejecución
+        {
+            int hour = 0;
+            int min = 0;
+            int sec = 0;
+            int year = 1;
+            int month = 1;
+            int day = 1;
 
-		   while( line[h] == ' ' )
-			 h++;
+           while( line[h] == ' ' )
+             h++;
 
-			if( atoi( &(line[h]) ) <  24 )// si solo se especifica hora
-			{
-				hour = atoi( &(line[h]) );
-				while( line[h] != char(NULL) && line[h] != ':' )
-			      h++;
-				if( line[h] != char(NULL) )
-					h++;
-				min = atoi( &(line[h]) );
-				while( line[h] != char(NULL) && line[h] != ':' )
-			      h++;
-				if( line[h] != char(NULL) )
-					h++;
-				sec = atoi( &(line[h]) );
-				year = 1;
-				month = 1;
-				day = 1;
+            if( atoi( &(line[h]) ) <  24 )// si solo se especifica hora
+            {
+                hour = atoi( &(line[h]) );
+                while( line[h] != char(NULL) && line[h] != ':' )
+                  h++;
+                if( line[h] != char(NULL) )
+                    h++;
+                min = atoi( &(line[h]) );
+                while( line[h] != char(NULL) && line[h] != ':' )
+                  h++;
+                if( line[h] != char(NULL) )
+                    h++;
+                sec = atoi( &(line[h]) );
+                year = 1;
+                month = 1;
+                day = 1;
 
-				decodedate( NOW_UTC, year, month, day );
-				first_run = encodedate( year, month, day ) + encodetime( hour, min, sec);
-				if( first_run < NOW_UTC )
-					first_run = encodedate( year, month, day + 1) + encodetime( hour, min, sec);
-				fixed_time = true;
+                decodedate( NOW_UTC, year, month, day );
+                first_run = encodedate( year, month, day ) + encodetime( hour, min, sec);
+                if( first_run < NOW_UTC )
+                    first_run = encodedate( year, month, day + 1) + encodetime( hour, min, sec);
+                fixed_time = true;
 
-			}
-			else
-			{
-				if( atoi(&(line[h])) > 9999 )//YYYYMMDD
-				{
-					year = atoi( &(line[h]) )/10000;
-					month = (atoi( &(line[h]) ) - (year * 10000))/100;
-					day = atoi( &(line[h]) )- (year * 10000) - (month * 100);
+            }
+            else
+            {
+                if( atoi(&(line[h])) > 9999 )//YYYYMMDD
+                {
+                    year = atoi( &(line[h]) )/10000;
+                    month = (atoi( &(line[h]) ) - (year * 10000))/100;
+                    day = atoi( &(line[h]) )- (year * 10000) - (month * 100);
 
-					first_run = encodedate( year, month, day );
-					fixed_time = true;
-				}
-				else//YYYY/MM/DD
-				{
-					year = atoi( &(line[h]) );
-					while( line[h] != char(NULL) && line[h] != '/' )
-					  h++;
-					if( line[h] != char(NULL) )
-					  h++;
-					month = atoi( &(line[h]) );
-					while( line[h] != char(NULL) && line[h] != '/' )
-					  h++;
-				    if( line[h] != char(NULL) )
-					  h++;
-					day = atoi( &(line[h]) );
+                    first_run = encodedate( year, month, day );
+                    fixed_time = true;
+                }
+                else//YYYY/MM/DD
+                {
+                    year = atoi( &(line[h]) );
+                    while( line[h] != char(NULL) && line[h] != '/' )
+                      h++;
+                    if( line[h] != char(NULL) )
+                      h++;
+                    month = atoi( &(line[h]) );
+                    while( line[h] != char(NULL) && line[h] != '/' )
+                      h++;
+                    if( line[h] != char(NULL) )
+                      h++;
+                    day = atoi( &(line[h]) );
 
-					first_run = encodedate( year, month, day );
-					fixed_time = true;
-				}
+                    first_run = encodedate( year, month, day );
+                    fixed_time = true;
+                }
 
-				//si luego hay hora
+                //si luego hay hora
 
-				while( line[h] != char(NULL) && line[h] != ' ' )
-					h++;
+                while( line[h] != char(NULL) && line[h] != ' ' )
+                    h++;
 
-				while( line[h] == ' ' )
-					h++;
+                while( line[h] == ' ' )
+                    h++;
 
-				hour = atoi( &(line[h]) );
-				while( line[h] != char(NULL) && line[h] != ':' )
-			      h++;
-				if( line[h] != char(NULL) )
-					h++;
-				min = atoi( &(line[h]) );
-				while( line[h] != char(NULL) && line[h] != ':' )
-			      h++;
-				if( line[h] != char(NULL) )
-					h++;
-				sec = atoi( &(line[h]) );
+                hour = atoi( &(line[h]) );
+                while( line[h] != char(NULL) && line[h] != ':' )
+                  h++;
+                if( line[h] != char(NULL) )
+                    h++;
+                min = atoi( &(line[h]) );
+                while( line[h] != char(NULL) && line[h] != ':' )
+                  h++;
+                if( line[h] != char(NULL) )
+                    h++;
+                sec = atoi( &(line[h]) );
 
-				first_run += encodetime( hour, min, sec);
-			}
+                first_run += encodetime( hour, min, sec);
+            }
 
-			valid = isvalid( first_run );
-			TRACE(TRACE_CONFIG)("%s - First run (UTC) %s\n", curr_local_time(), (const char*) dttostring( first_run, "%Y%m%d %H:%M:%S"));
-		}
+            valid = isvalid( first_run );
+            TRACE(TRACE_CONFIG)("%s - First run (UTC) %s\n", curr_local_time(), (const char*) dttostring( first_run, "%Y%m%d %H:%M:%S"));
+        }
        
         if( valid )
         {
@@ -1050,11 +1050,11 @@ void AppConfig::processConfigLine( const char * line )
             if( bind.get_count() > 0 )
             {
                 task_info * tmp = new task_info;
-				tmp->task_type = task_type;
-				tmp->fixed_time =  fixed_time;
-				tmp->run_interval_ms = interval;
-				tmp->next_run_time = first_run;
-				//TODO 1.1 UTC???
+                tmp->task_type = task_type;
+                tmp->fixed_time =  fixed_time;
+                tmp->run_interval_ms = interval;
+                tmp->next_run_time = first_run;
+                //TODO 1.1 UTC???
                 
                 bind[ bind.get_count() - 1 ]->tasks.add( tmp );
             }
@@ -1062,16 +1062,16 @@ void AppConfig::processConfigLine( const char * line )
         
     }
 
-	if( strncmp( (const char *) line, CONFIG_FILTER_TAG, strlen(CONFIG_FILTER_TAG)) == 0 )
+    if( strncmp( (const char *) line, CONFIG_FILTER_TAG, strlen(CONFIG_FILTER_TAG)) == 0 )
     { 
         bool valid =  true;
         int h,i = 0;
-		filterinfo * filter =  new filterinfo;
-		filter->allow = true;
-		filter->src_ip = ipany;
-		filter->src_mask = ipany;
-		filter->dst_ip = ipany;
-		filter->dst_mask = ipany;
+        filterinfo * filter =  new filterinfo;
+        filter->allow = true;
+        filter->src_ip = ipany;
+        filter->src_mask = ipany;
+        filter->dst_ip = ipany;
+        filter->dst_mask = ipany;
 
         TRACE(TRACE_CONFIG)("%s - filter tag\n", curr_local_time());        
         
@@ -1087,12 +1087,12 @@ void AppConfig::processConfigLine( const char * line )
             i++;
 
         //(char*)line)[h+i] = NULL;   
-		char * servername =  new char[i+1];
-		strncpy( servername, &(line[h]), i );
-		servername[i] = NULL;
-		filter->src_ip = phostbyname( servername );
-		TRACE(TRACE_CONFIG)("%s - filter ip server address %s\n", curr_local_time(), servername );
-		delete servername;
+        char * servername =  new char[i+1];
+        strncpy( servername, &(line[h]), i );
+        servername[i] = NULL;
+        filter->src_ip = phostbyname( servername );
+        TRACE(TRACE_CONFIG)("%s - filter ip server address %s\n", curr_local_time(), servername );
+        delete servername;
 
         TRACE(TRACE_CONFIG)("%s - filter ip source address %s\n", curr_local_time(), (const char *) iptostring(filter->src_ip) );
         if( filter->src_ip == ipnone )
@@ -1101,50 +1101,50 @@ void AppConfig::processConfigLine( const char * line )
         }
         
         h = h+i;
-		i = 0;
-		
-		if( line[h] != char(NULL) )
-			h++;
+        i = 0;
+        
+        if( line[h] != char(NULL) )
+            h++;
 
         while( line[h+i] != char(NULL) && line[h+i] != '/'  && line[h+i] != ' ' )
             i++;
 
         if( i > 2 )
-		{
-			servername =  new char[i+1];
-			strncpy( servername, &(line[h]), i );
-			servername[i] = NULL;
-			filter->src_mask = phostbyname( servername );
-			delete servername;
-		}
-		else
-		{
-			int mask_number = atoi( &(line[h]) );
-			filter->src_mask = ipaddress(
-				(mask_number>7)?255:(256- ( 1 << (8 - mask_number))), 
-				(mask_number>15)?255:((mask_number<9)?0:(256-( 1 << (8-(mask_number-8))))),
-				(mask_number>23)?255:((mask_number<17)?0:(256-( 1 << (8-(mask_number-16))))),
-				(mask_number>31)?255:((mask_number<25)?0:(256-( 1<< (8-(mask_number-24))))));
-			
-		}
+        {
+            servername =  new char[i+1];
+            strncpy( servername, &(line[h]), i );
+            servername[i] = NULL;
+            filter->src_mask = phostbyname( servername );
+            delete servername;
+        }
+        else
+        {
+            int mask_number = atoi( &(line[h]) );
+            filter->src_mask = ipaddress(
+                (mask_number>7)?255:(256- ( 1 << (8 - mask_number))), 
+                (mask_number>15)?255:((mask_number<9)?0:(256-( 1 << (8-(mask_number-8))))),
+                (mask_number>23)?255:((mask_number<17)?0:(256-( 1 << (8-(mask_number-16))))),
+                (mask_number>31)?255:((mask_number<25)?0:(256-( 1<< (8-(mask_number-24))))));
+            
+        }
 
         TRACE(TRACE_CONFIG)("%s - filter ip source mask %s\n", curr_local_time(), (const char *) iptostring(filter->src_mask) );
 
         
         h = h+i;
-		i = 0;
+        i = 0;
 
-		if( line[h] != char(NULL) )
-			h++;
+        if( line[h] != char(NULL) )
+            h++;
 
         while( line[h+i] != char(NULL) && line[h+i] != '/'  && line[h+i] != ' ' )
             i++;
  
-		servername =  new char[i+1];
-		strncpy( servername, &(line[h]), i );
-		servername[i] = NULL;
-		filter->dst_ip = phostbyname( servername );
-		delete servername;
+        servername =  new char[i+1];
+        strncpy( servername, &(line[h]), i );
+        servername[i] = NULL;
+        filter->dst_ip = phostbyname( servername );
+        delete servername;
 
         TRACE(TRACE_CONFIG)("%s - filter ip dest address %s\n", curr_local_time(), (const char *) iptostring(filter->dst_ip) );
         if( filter->dst_ip == ipnone )
@@ -1153,63 +1153,63 @@ void AppConfig::processConfigLine( const char * line )
         }
         
         h = h+i;
-		i = 0;
+        i = 0;
 
-		if( line[h] != char(NULL) )
-			h++;
+        if( line[h] != char(NULL) )
+            h++;
 
         while( line[h+i] != char(NULL) && line[h+i] != ' '  && line[h+i] != '\t' )
             i++;
 
 
         if( i > 2 )
-		{
-			servername =  new char[i+1];
-			strncpy( servername, &(line[h]), i );
-			servername[i] = NULL;
-			filter->dst_mask = phostbyname( servername );
-			delete servername;
-		}
-		else
-		{
-			int mask_number = atoi( &(line[h]) );
-			filter->dst_mask = ipaddress(
-				(mask_number>7)?255:(256- ( 1 << (8 - mask_number))), 
-				(mask_number>15)?255:((mask_number<9)?0:(256-( 1 << (8-(mask_number-8))))),
-				(mask_number>23)?255:((mask_number<17)?0:(256-( 1 << (8-(mask_number-16))))),
-				(mask_number>31)?255:((mask_number<25)?0:(256-( 1<< (8-(mask_number-24))))));
-			
-		}
+        {
+            servername =  new char[i+1];
+            strncpy( servername, &(line[h]), i );
+            servername[i] = NULL;
+            filter->dst_mask = phostbyname( servername );
+            delete servername;
+        }
+        else
+        {
+            int mask_number = atoi( &(line[h]) );
+            filter->dst_mask = ipaddress(
+                (mask_number>7)?255:(256- ( 1 << (8 - mask_number))), 
+                (mask_number>15)?255:((mask_number<9)?0:(256-( 1 << (8-(mask_number-8))))),
+                (mask_number>23)?255:((mask_number<17)?0:(256-( 1 << (8-(mask_number-16))))),
+                (mask_number>31)?255:((mask_number<25)?0:(256-( 1<< (8-(mask_number-24))))));
+            
+        }
 
         TRACE(TRACE_CONFIG)("%s - filter ip dest mask %s\n", curr_local_time(), (const char *) iptostring(filter->dst_mask) );
 
         
         h = h+i;
 
-		if( line[h] != char(NULL) )
-		{
-			h++;
+        if( line[h] != char(NULL) )
+        {
+            h++;
 
 //			while( line[h] != char(NULL) && line[h] != ' '  && line[h] != '/t' )
 //				h++;
 
-			if( strncmp( &line[h], "deny", strlen("deny")) == 0 )
-			{
-				filter->allow = false;
-			}
-		}
+            if( strncmp( &line[h], "deny", strlen("deny")) == 0 )
+            {
+                filter->allow = false;
+            }
+        }
 
        
         if( valid && bind.get_count() > 0  )
         {
             TRACE(TRACE_CONFIG)("%s - valid filter\n", curr_local_time());              
-			bind[ bind.get_count() - 1 ]->filter.add( filter );
+            bind[ bind.get_count() - 1 ]->filter.add( filter );
 
         }  
-		else
-		{
-			delete filter;
-		}
+        else
+        {
+            delete filter;
+        }
     }
   } 
 }
@@ -1225,17 +1225,17 @@ void AppConfig::cleanBindList()
                 bind[0]->dst.del(0);
             }
 
-			while( bind[0]->address.get_count() )
+            while( bind[0]->address.get_count() )
             {
                 bind[0]->address.del(0);
             }
 
-			while( bind[0]->filter.get_count() )
+            while( bind[0]->filter.get_count() )
             {
                 bind[0]->filter.del(0);
             }
 
-			while( bind[0]->tasks.get_count() )
+            while( bind[0]->tasks.get_count() )
             {
                 bind[0]->tasks.del(0);
             }

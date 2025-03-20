@@ -42,8 +42,8 @@ const char * curr_local_time()
 {
 #ifdef DEBUG    
     int hours, mins, secs, msecs;
-	int year, month, day;
-	decodedate( NOW_LOCALTIME, year, month, day);	
+    int year, month, day;
+    decodedate( NOW_LOCALTIME, year, month, day);	
     decodetime( NOW_LOCALTIME, hours, mins, secs, msecs);
     sprintf( currlocaltimestring, "%d-%02d-%02d %02d:%02d:%02d,%03d", year, month, day, hours, mins, secs, msecs);
 #endif    
@@ -57,10 +57,10 @@ const char * given_local_time( datetime t )
 {
 #ifdef DEBUG    
     int hours, mins, secs, msecs;
-	int year, month, day;
-	decodedate( t, year, month, day);
+    int year, month, day;
+    decodedate( t, year, month, day);
     decodetime( t, hours, mins, secs, msecs);
-	sprintf( givenlocaltimestring, "%d-%02d-%02d %02d:%02d:%02d,%03d", year, month, day, hours, mins, secs, msecs);
+    sprintf( givenlocaltimestring, "%d-%02d-%02d %02d:%02d:%02d,%03d", year, month, day, hours, mins, secs, msecs);
 #endif    
     return givenlocaltimestring;
 }
@@ -93,25 +93,25 @@ const char * statusdesc( int status )
  
 bool ipmenor( ipaddress * iplt, ipaddress  * ipgt )
 {
-	bool menor = false;
-	for( int i = 0; i < IPADDRESS_SIZE; i++ )
-	{
-		if( iplt->data[i] > ipgt->data[i] )
-		{
-			i = IPADDRESS_SIZE;
-		}
-		else
-		{
-			if( iplt->data[i] < ipgt->data[i] )
-			{
-				menor = true;
-				i = IPADDRESS_SIZE;
+    bool menor = false;
+    for( int i = 0; i < IPADDRESS_SIZE; i++ )
+    {
+        if( iplt->data[i] > ipgt->data[i] )
+        {
+            i = IPADDRESS_SIZE;
+        }
+        else
+        {
+            if( iplt->data[i] < ipgt->data[i] )
+            {
+                menor = true;
+                i = IPADDRESS_SIZE;
 
-			}
-		}
-	}
+            }
+        }
+    }
 
-	return menor;
+    return menor;
 }
 
 ipaddress chartoipaddress( const char * ip )
@@ -153,12 +153,12 @@ ipaddress chartoipaddress( const char * ip )
 ipaddress masked_ip( const ipaddress * ip, const ipaddress * mask )
 {
 
-	return ipaddress( ip->data[0] &  mask->data[0], ip->data[1] &  mask->data[1], ip->data[2] &  mask->data[2], ip->data[3] &  mask->data[3] );
+    return ipaddress( ip->data[0] &  mask->data[0], ip->data[1] &  mask->data[1], ip->data[2] &  mask->data[2], ip->data[3] &  mask->data[3] );
 }
 
 bool checkIP( const ipaddress * ip )
 {
-	bool val = true;
+    bool val = true;
 
     sockaddr_in sa;
     memset(&sa, 0, sizeof(sa));
@@ -171,11 +171,11 @@ bool checkIP( const ipaddress * ip )
     int sockfd;
     sockfd = socket( sa.sin_family, SOCK_STREAM, 0 );
 
-	if( sockfd < 0 )
-	{
-		TRACE(TRACE_VERY_VERBOSE)("%s - could not create socket on that ip\n", curr_local_time());
-		val = false;
-	}
+    if( sockfd < 0 )
+    {
+        TRACE(TRACE_VERY_VERBOSE)("%s - could not create socket on that ip\n", curr_local_time());
+        val = false;
+    }
 
 #ifndef WIN32
     // Acording to Apache code: on windows this option causes
@@ -185,31 +185,31 @@ bool checkIP( const ipaddress * ip )
     if (::setsockopt( sockfd, SOL_SOCKET, SO_REUSEADDR, (const void*)&reuse, sizeof(reuse)) != 0)
     {
         TRACE(TRACE_VERY_VERBOSE)( "%s - socket address was not reusable\n", curr_local_time());
-		val = false;
+        val = false;
     }
 #endif
 
     if ( bind(sockfd, (sockaddr*)&sa, sizeof(sa)) != 0)
     {
         TRACE(TRACE_VERY_VERBOSE)( "%s - socket could not be binded\n", curr_local_time());
-		val = false;
+        val = false;
     }
 
 //¿ Puedo borrar el listen ?
     if ( listen(sockfd, 10) != 0)
     {
         TRACE(TRACE_VERY_VERBOSE)("%s - could not start listening\n", curr_local_time());
-		val = false;
+        val = false;
     }
 
-	closesocket( sockfd );
+    closesocket( sockfd );
 
 return val;
 }
 
 bool checkPort( const ipaddress * ip, unsigned short port )
 {
-	bool val = true;
+    bool val = true;
 
     sockaddr_in sa;
     memset(&sa, 0, sizeof(sa));
@@ -222,8 +222,8 @@ bool checkPort( const ipaddress * ip, unsigned short port )
     int sockfd;
     sockfd = socket( sa.sin_family, SOCK_STREAM, 0 );
 
-	if( sockfd < 0 )
-		val = false;
+    if( sockfd < 0 )
+        val = false;
 
 #ifndef WIN32
     // Acording to Apache code: on windows this option causes
@@ -233,23 +233,23 @@ bool checkPort( const ipaddress * ip, unsigned short port )
     if (::setsockopt( sockfd, SOL_SOCKET, SO_REUSEADDR, (const void*)&reuse, sizeof(reuse)) != 0)
     {
         TRACE(TRACE_VERY_VERBOSE && TRACE_CONNECTIONS )( "%s - socket address was not reusable\n", curr_local_time());
-		val = false;
+        val = false;
     }
 #endif
 
     if ( bind(sockfd, (sockaddr*)&sa, sizeof(sa)) != 0)
     {
         TRACE(TRACE_VERY_VERBOSE)( "%s - socket could not be binded\n", curr_local_time());
-		val = false;
+        val = false;
     }
 
     if ( listen(sockfd, 10) != 0)
     {
         TRACE(TRACE_VERY_VERBOSE)("%s - could not start listening\n", curr_local_time());
-		val = false;
+        val = false;
     }
 
-	closesocket( sockfd );
+    closesocket( sockfd );
 
 return val;
 }

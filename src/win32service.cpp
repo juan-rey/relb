@@ -43,7 +43,7 @@ void WINAPI ServiceMain( DWORD argc, LPTSTR *argv )
         service_running = true;
         while( service_running )
         {
-        	Sleep( 1000 );
+            Sleep( 1000 );
         }
     }
 
@@ -66,39 +66,39 @@ void WINAPI ServiceHandler(DWORD Opcode)
         case SERVICE_CONTROL_STOP:
             g_service_status.dwCurrentState  = SERVICE_STOPPED;
             SetServiceStatus( g_service_status_handle, &g_service_status );
-			      service_running = false;
-			      break;
+                  service_running = false;
+                  break;
  
     }
 }
 
 bool DeleteService()
 {
-	SC_HANDLE schSCManager;
-	SC_HANDLE hService;
-	bool value = true;
+    SC_HANDLE schSCManager;
+    SC_HANDLE hService;
+    bool value = true;
 
-	schSCManager = OpenSCManager(NULL,NULL,SC_MANAGER_ALL_ACCESS);
+    schSCManager = OpenSCManager(NULL,NULL,SC_MANAGER_ALL_ACCESS);
 
-	if ( schSCManager )
-	{
-    	hService = OpenService(schSCManager, TEXT(SERVICE_NAME_T), SERVICE_ALL_ACCESS);
+    if ( schSCManager )
+    {
+        hService = OpenService(schSCManager, TEXT(SERVICE_NAME_T), SERVICE_ALL_ACCESS);
 
-    	if( hService )
-    	{
-        	if( DeleteService(hService) == 0 )
-        		 value =  false;
+        if( hService )
+        {
+            if( DeleteService(hService) == 0 )
+                 value =  false;
 
-        	if( CloseServiceHandle(hService) == 0 )
-        		 value =  false;
+            if( CloseServiceHandle(hService) == 0 )
+                 value =  false;
         }
         else
         {
           value =  false;
         }
     }
-	else
-	{
+    else
+    {
         value =  false;
     }
 
@@ -107,18 +107,18 @@ bool DeleteService()
 
 bool InstallService()
 {
-	bool value = true;
+    bool value = true;
 #ifdef UNICODE
-	WCHAR module_fileName[(RELB_MAXFILENAMELEN + 1)*2];
+    WCHAR module_fileName[(RELB_MAXFILENAMELEN + 1)*2];
 #else
-	CHAR module_fileName[RELB_MAXFILENAMELEN + 1];
+    CHAR module_fileName[RELB_MAXFILENAMELEN + 1];
 #endif
-	SC_HANDLE sch_scmanager,sch_service;
+    SC_HANDLE sch_scmanager,sch_service;
 
-	GetModuleFileName( GetModuleHandle(NULL),  module_fileName, RELB_MAXFILENAMELEN );
-	sch_scmanager = OpenSCManager( NULL, NULL, SC_MANAGER_ALL_ACCESS );
+    GetModuleFileName( GetModuleHandle(NULL),  module_fileName, RELB_MAXFILENAMELEN );
+    sch_scmanager = OpenSCManager( NULL, NULL, SC_MANAGER_ALL_ACCESS );
 
-	if( sch_scmanager )
+    if( sch_scmanager )
     {
 
         sch_service = CreateService( sch_scmanager, TEXT(SERVICE_NAME_T), TEXT(SERVICE_DESCRIPTION_T),	
@@ -139,6 +139,6 @@ bool InstallService()
         value = false;
     }
 
-	return value;
+    return value;
 }
 #endif

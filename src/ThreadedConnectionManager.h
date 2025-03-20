@@ -30,8 +30,8 @@ USING_PTYPES
 class ThreadedConnectionManager: public thread
 {
 protected:
-	virtual void execute();
-	virtual void cleanup();
+    virtual void execute();
+    virtual void cleanup();
 public:
   ThreadedConnectionManager( int connections = DEFAULT_TCM_MAX_CONNECTIONS );
   virtual ~ThreadedConnectionManager();   
@@ -41,7 +41,7 @@ public:
   int getActiveConnections();
 private:
   void checkConnections();	
-	 
+     
   tobjlist<ConnectionPeer> peer_list;
   tobjlist<ConnectionPeer> connecting_peer_list;
   tobjlist<peer_info> to_be_closed; 	

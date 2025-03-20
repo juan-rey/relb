@@ -40,11 +40,11 @@ bool checkPort( const ipaddress * ip, unsigned short port );
 
 struct filterinfo
 {
-	ipaddress src_ip;
-	ipaddress src_mask;
+    ipaddress src_ip;
+    ipaddress src_mask;
     ipaddress dst_ip;
-	ipaddress dst_mask;
-	bool allow;
+    ipaddress dst_mask;
+    bool allow;
 };
 
 struct serverinfo
@@ -81,12 +81,12 @@ struct bind_address
 
 struct task_info
 {
-	TASK_TYPE task_type;
-	int run_interval_ms;
-	datetime next_run_time;
-	bool fixed_time;
-	datetime last_ran_time;
-	int last_ran_exitcode;
+    TASK_TYPE task_type;
+    int run_interval_ms;
+    datetime next_run_time;
+    bool fixed_time;
+    datetime last_ran_time;
+    int last_ran_exitcode;
 };
 
 #define NOW_UTC now()

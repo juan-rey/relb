@@ -21,7 +21,7 @@ USING_PTYPES
 class ConnectionPeerList 
 {
 public:
- tpodlist<ConnectionPeer> lista;
+    tpodlist<ConnectionPeer> lista;
 };
 #endif
 

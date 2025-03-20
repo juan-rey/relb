@@ -182,7 +182,7 @@ void AdminHTTPServer::execute()
         pinfo = NULL;
         if( msg->id != STATUS_CONNECTING_SERVER )
         {
-			current_item_index = 0;
+            current_item_index = 0;
             while( !pinfo && current_item_index < peer_list.get_count() )
             {
                 if( peer_list[current_item_index] == (peer_info *) msg->param )
@@ -204,39 +204,39 @@ void AdminHTTPServer::execute()
         else
         {
             pinfo = (peer_info *) msg->param;
-			int peer_index = 0;
-			
-			while(  peer_index < peer_list.get_count()  )
-			{
-				//Lets clean disconnected connection from the same IP
-				if( ( peer_list[peer_index]->src_ip == pinfo->src_ip ) && ( peer_list[peer_index]->status & STATUS_PEER_NOT_CONNECTED ) )
-				{					
-				    int server_index = 0;
-					while( server_index < server_list.get_count())
-					{
-						if(( server_list[server_index]->ip == peer_list[peer_index]->dst_ip ))
-						{
-							if( ( peer_list[peer_index]->status & STATUS_PEER_DISCONNECTED ) && ( server_list[server_index]->disconnected ))
-							  server_list[server_index]->disconnected = MAX( server_list[server_index]->disconnected - 1, 0);
-							else
-							  server_list[server_index]->finished = MAX( server_list[server_index]->finished -1, 0);
+            int peer_index = 0;
+            
+            while(  peer_index < peer_list.get_count()  )
+            {
+                //Lets clean disconnected connection from the same IP
+                if( ( peer_list[peer_index]->src_ip == pinfo->src_ip ) && ( peer_list[peer_index]->status & STATUS_PEER_NOT_CONNECTED ) )
+                {					
+                    int server_index = 0;
+                    while( server_index < server_list.get_count())
+                    {
+                        if(( server_list[server_index]->ip == peer_list[peer_index]->dst_ip ))
+                        {
+                            if( ( peer_list[peer_index]->status & STATUS_PEER_DISCONNECTED ) && ( server_list[server_index]->disconnected ))
+                              server_list[server_index]->disconnected = MAX( server_list[server_index]->disconnected - 1, 0);
+                            else
+                              server_list[server_index]->finished = MAX( server_list[server_index]->finished -1, 0);
 
-							TRACE( TRACE_CONNECTIONS )( "%s - AdminHttp - server %d, connecting %d, connected %d, finished %d, disconnected %d, total %d connections\n",  curr_local_time(), server_index, server_list[server_index]->connecting, server_list[server_index]->connected, server_list[server_index]->finished, server_list[server_index]->disconnected, server_list[server_index]->connecting + server_list[server_index]->connected + server_list[server_index]->finished + server_list[server_index]->disconnected );    
+                            TRACE( TRACE_CONNECTIONS )( "%s - AdminHttp - server %d, connecting %d, connected %d, finished %d, disconnected %d, total %d connections\n",  curr_local_time(), server_index, server_list[server_index]->connecting, server_list[server_index]->connected, server_list[server_index]->finished, server_list[server_index]->disconnected, server_list[server_index]->connecting + server_list[server_index]->connected + server_list[server_index]->finished + server_list[server_index]->disconnected );    
 
-							server_index = server_list.get_count();
-						}
-						server_index++;
-					}
+                            server_index = server_list.get_count();
+                        }
+                        server_index++;
+                    }
 
-					peer_list.del( peer_index );
-				}
-				else
-				{
-					peer_index++;
-				}
-			}
+                    peer_list.del( peer_index );
+                }
+                else
+                {
+                    peer_index++;
+                }
+            }
 
-			peer_list.add( pinfo );
+            peer_list.add( pinfo );
         }
         
         if( pinfo != NULL )
@@ -246,57 +246,57 @@ void AdminHTTPServer::execute()
               case STATUS_CONNECTION_LOST:
               case STATUS_DISCONNECTED_OK:
               case STATUS_CONNECTION_FAILED:
-			  case STATUS_PEER_CONNECTION_DELETED:
+              case STATUS_PEER_CONNECTION_DELETED:
                 {
-					int i = 0;
-					int peer_index = 0;
-					bool hay_mas_conectados = false;
+                    int i = 0;
+                    int peer_index = 0;
+                    bool hay_mas_conectados = false;
 
-					if( msg->id == STATUS_PEER_CONNECTION_DELETED )
-						hay_mas_conectados = true;//borro seguro
+                    if( msg->id == STATUS_PEER_CONNECTION_DELETED )
+                        hay_mas_conectados = true;//borro seguro
 
-					while(  peer_index < peer_list.get_count() && !hay_mas_conectados )
-					{
-						if( ( peer_index != current_item_index ) && !( peer_list[peer_index]->status & STATUS_PEER_NOT_CONNECTED ) && ( peer_list[peer_index]->src_ip == pinfo->src_ip ) )
-						{					
-							hay_mas_conectados = true;
-						}
-						else
-						{
-							peer_index++;
-						}
-					}
+                    while(  peer_index < peer_list.get_count() && !hay_mas_conectados )
+                    {
+                        if( ( peer_index != current_item_index ) && !( peer_list[peer_index]->status & STATUS_PEER_NOT_CONNECTED ) && ( peer_list[peer_index]->src_ip == pinfo->src_ip ) )
+                        {					
+                            hay_mas_conectados = true;
+                        }
+                        else
+                        {
+                            peer_index++;
+                        }
+                    }
 
                     while( i < server_list.get_count())
                     {
                         if(( server_list[i]->ip == pinfo->dst_ip ) && ( server_list[i]->port == pinfo->dst_port ))
                         {
                             //server_list[i]->connected = max( server_list[i]->connected - 1, 0);
-							if( msg->id == STATUS_CONNECTION_FAILED )
-							{
+                            if( msg->id == STATUS_CONNECTION_FAILED )
+                            {
                               server_list[i]->last_connection_failed = true;
                               server_list[i]->last_connection_attempt = NOW_UTC;
-							}
+                            }
 
-							if( msg->id & STATUS_CONNECTION_FAILED )
-								server_list[i]->connecting = MAX( server_list[i]->connecting - 1, 0);
-							else
+                            if( msg->id & STATUS_CONNECTION_FAILED )
+                                server_list[i]->connecting = MAX( server_list[i]->connecting - 1, 0);
+                            else
                                server_list[i]->connected = MAX( server_list[i]->connected - 1, 0);
 
-							if( hay_mas_conectados && current_item_index > -1 && current_item_index < peer_list.get_count() )
-							{
-								pinfo = NULL;
-								peer_list.del( current_item_index );
-							}
-							else
-							{
-								if( msg->id & STATUS_PEER_DISCONNECTED )
-									server_list[i]->disconnected++;
-								else
-									server_list[i]->finished++;
-							}
+                            if( hay_mas_conectados && current_item_index > -1 && current_item_index < peer_list.get_count() )
+                            {
+                                pinfo = NULL;
+                                peer_list.del( current_item_index );
+                            }
+                            else
+                            {
+                                if( msg->id & STATUS_PEER_DISCONNECTED )
+                                    server_list[i]->disconnected++;
+                                else
+                                    server_list[i]->finished++;
+                            }
 
-							TRACE( TRACE_CONNECTIONS )( "%s - AdminHttp - server %d, connecting %d, connected %d, finished %d, disconnected %d, total %d connections\n",  curr_local_time(), i, server_list[i]->connecting, server_list[i]->connected, server_list[i]->finished, server_list[i]->disconnected, server_list[i]->connecting + server_list[i]->connected + server_list[i]->finished + server_list[i]->disconnected );    
+                            TRACE( TRACE_CONNECTIONS )( "%s - AdminHttp - server %d, connecting %d, connected %d, finished %d, disconnected %d, total %d connections\n",  curr_local_time(), i, server_list[i]->connecting, server_list[i]->connected, server_list[i]->finished, server_list[i]->disconnected, server_list[i]->connecting + server_list[i]->connected + server_list[i]->finished + server_list[i]->disconnected );    
                             i = server_list.get_count();
                         }
                         i++;
@@ -311,10 +311,10 @@ void AdminHTTPServer::execute()
                         if(( server_list[i]->ip == pinfo->dst_ip ) && ( server_list[i]->port == pinfo->dst_port ))
                         {
                             server_list[i]->connected++;
-							server_list[i]->connecting = MAX( server_list[i]->connecting - 1, 0);
+                            server_list[i]->connecting = MAX( server_list[i]->connecting - 1, 0);
                             server_list[i]->last_connection_failed = false;
                             server_list[i]->last_connection_attempt = NOW_UTC;
-							TRACE( TRACE_CONNECTIONS )( "%s - AdminHttp - server %d, connecting %d, connected %d, finished %d, disconnected %d, total %d connections\n",  curr_local_time(), i, server_list[i]->connecting, server_list[i]->connected, server_list[i]->finished, server_list[i]->disconnected, server_list[i]->connecting + server_list[i]->connected + server_list[i]->finished + server_list[i]->disconnected );    
+                            TRACE( TRACE_CONNECTIONS )( "%s - AdminHttp - server %d, connecting %d, connected %d, finished %d, disconnected %d, total %d connections\n",  curr_local_time(), i, server_list[i]->connecting, server_list[i]->connected, server_list[i]->finished, server_list[i]->disconnected, server_list[i]->connecting + server_list[i]->connected + server_list[i]->finished + server_list[i]->disconnected );    
                             i = server_list.get_count();
                         }
                         i++;
@@ -330,7 +330,7 @@ void AdminHTTPServer::execute()
                         if(( server_list[i]->ip == pinfo->dst_ip ) && ( server_list[i]->port == pinfo->dst_port ))
                         {
                             server_list[i]->connecting++;
-							TRACE( TRACE_CONNECTIONS )( "%s - AdminHttp - server %d, connecting %d, connected %d, finished %d, disconnected %d, total %d connections\n",  curr_local_time(), i, server_list[i]->connecting, server_list[i]->connected, server_list[i]->finished, server_list[i]->disconnected, server_list[i]->connecting + server_list[i]->connected + server_list[i]->finished + server_list[i]->disconnected );    
+                            TRACE( TRACE_CONNECTIONS )( "%s - AdminHttp - server %d, connecting %d, connected %d, finished %d, disconnected %d, total %d connections\n",  curr_local_time(), i, server_list[i]->connecting, server_list[i]->connected, server_list[i]->finished, server_list[i]->disconnected, server_list[i]->connecting + server_list[i]->connected + server_list[i]->finished + server_list[i]->disconnected );    
                             i = server_list.get_count();
                         }
                         i++;
@@ -348,7 +348,7 @@ void AdminHTTPServer::execute()
     //server.poll();
     if( server.serve( client, gg, 1000 ) )
     {
-	  int i = 0;
+      int i = 0;
       default_redirection = true;
       buff[0]=1;
       while( (l = client.line(buff, 4096 )) > 0 )  
@@ -630,7 +630,7 @@ void AdminHTTPServer::list(  ipstream &client, ipaddress src_filter, ipaddress d
           if( dst_port != 0 && peer_list[i]->dst_port != dst_port )
             filterok = false;
 
-		  if( status_filter != 0 && !( peer_list[i]->status & status_filter ) )
+          if( status_filter != 0 && !( peer_list[i]->status & status_filter ) )
             filterok = false;          
           
           if( filterok )
@@ -654,22 +654,22 @@ void AdminHTTPServer::list(  ipstream &client, ipaddress src_filter, ipaddress d
                   switch( sort_by  )
                   {
                     case SORT_BY_SRC_IP:
-					  {
-					  if( ipmenor( &(pInfo->src_ip), &((*pList)[j]->src_ip )) )
-						  inserthere = true;
-						else
-							if( ( pInfo->src_ip == (*pList)[j]->src_ip ) && ( pInfo->src_port <  (*pList)[j]->src_port ))
-										inserthere = true;
-					   }
+                      {
+                      if( ipmenor( &(pInfo->src_ip), &((*pList)[j]->src_ip )) )
+                          inserthere = true;
+                        else
+                            if( ( pInfo->src_ip == (*pList)[j]->src_ip ) && ( pInfo->src_port <  (*pList)[j]->src_port ))
+                                        inserthere = true;
+                       }
                     break;
                     case SORT_BY_DST_IP:
-					  {
-					  if( ipmenor( &(pInfo->dst_ip), &((*pList)[j]->dst_ip )) )
-						  inserthere = true;
-						else
-							if( ( pInfo->dst_ip == (*pList)[j]->dst_ip ) && ( pInfo->dst_port <  (*pList)[j]->dst_port ))
-										inserthere = true;
-					   }
+                      {
+                      if( ipmenor( &(pInfo->dst_ip), &((*pList)[j]->dst_ip )) )
+                          inserthere = true;
+                        else
+                            if( ( pInfo->dst_ip == (*pList)[j]->dst_ip ) && ( pInfo->dst_port <  (*pList)[j]->dst_port ))
+                                        inserthere = true;
+                       }
                     break;                
                     case SORT_BY_STATUS:
                       if( pInfo->status < (*pList)[j]->status )
@@ -696,22 +696,22 @@ void AdminHTTPServer::list(  ipstream &client, ipaddress src_filter, ipaddress d
                   switch( sort_by  )
                   {
                     case SORT_BY_SRC_IP:
-					  {
-					  if( !ipmenor( &(pInfo->src_ip), &((*pList)[j]->src_ip)) && !( pInfo->src_ip == (*pList)[j]->src_ip ) )
-						  inserthere = true;
-						else
-							if( ( pInfo->src_ip == (*pList)[j]->src_ip ) && ( pInfo->src_port >= (*pList)[j]->src_port ) )
-										inserthere = true;
-					   }
+                      {
+                      if( !ipmenor( &(pInfo->src_ip), &((*pList)[j]->src_ip)) && !( pInfo->src_ip == (*pList)[j]->src_ip ) )
+                          inserthere = true;
+                        else
+                            if( ( pInfo->src_ip == (*pList)[j]->src_ip ) && ( pInfo->src_port >= (*pList)[j]->src_port ) )
+                                        inserthere = true;
+                       }
                     break;
                     case SORT_BY_DST_IP:
-					  {
-					  if( !ipmenor( &(pInfo->dst_ip), &((*pList)[j]->dst_ip )) && !( pInfo->dst_ip == (*pList)[j]->dst_ip ))
-						  inserthere = true;
-						else
-							if( ( pInfo->dst_ip == (*pList)[j]->dst_ip ) && ( pInfo->dst_port >= (*pList)[j]->dst_port ))
-										inserthere = true;
-					   }
+                      {
+                      if( !ipmenor( &(pInfo->dst_ip), &((*pList)[j]->dst_ip )) && !( pInfo->dst_ip == (*pList)[j]->dst_ip ))
+                          inserthere = true;
+                        else
+                            if( ( pInfo->dst_ip == (*pList)[j]->dst_ip ) && ( pInfo->dst_port >= (*pList)[j]->dst_port ))
+                                        inserthere = true;
+                       }
                     break;
                     case SORT_BY_STATUS:
                       if( pInfo->status >= (*pList)[j]->status )
@@ -738,11 +738,11 @@ void AdminHTTPServer::list(  ipstream &client, ipaddress src_filter, ipaddress d
               
               if( inserthere )
               {
-				  pList->ins( j - 1, pInfo );
+                  pList->ins( j - 1, pInfo );
               }
               else
               {
-				pList->add( pInfo );
+                pList->add( pInfo );
 
               }
          }
