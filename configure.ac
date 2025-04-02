@@ -1,29 +1,12 @@
-dnl Process this file with autoconf to produce a configure script.
-dnl Created by Anjuta application wizard.
-
-AC_INIT(relb, 0.9.9-beta1-20091229)
-
-AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
+AC_INIT([relb],[0.9.11_beta_3-pre_20150430],[Juan Rey])
+AM_INIT_AUTOMAKE([foreign])
 AC_CONFIG_HEADERS([config.h])
-AM_MAINTAINER_MODE
-
-AC_ISC_POSIX
+AC_SEARCH_LIBS([strerror],[cposix])
 AC_PROG_CXX
-AM_PROG_CC_STDC
-AC_HEADER_STDC
-
-
-
-
-
-
-
-
-
-
-
-AC_OUTPUT([
+AC_CHECK_INCLUDES_DEFAULT
+AC_PROG_EGREP
+AC_CONFIG_FILES([
 Makefile
 src/Makefile
-
 ])
+AC_OUTPUT

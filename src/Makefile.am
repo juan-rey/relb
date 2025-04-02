@@ -1,6 +1,7 @@
 ## Process this file with automake to produce Makefile.in
 
 ## Created by Anjuta
+AUTOMAKE_OPTIONS = foreign
 
 AM_CPPFLAGS = \
 	-DPACKAGE_LOCALE_DIR=\""$(prefix)/$(DATADIRNAME)/locale"\" \
