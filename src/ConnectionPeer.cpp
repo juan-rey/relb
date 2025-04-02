@@ -52,14 +52,14 @@ ConnectionPeer::~ConnectionPeer()
 
 void ConnectionPeer::addToFDSETR( fd_set * set )
 {
-TRACE( TRACE_VERY_VERBOSE )("%s - pClient was %d  and  %d bytes free\n",  curr_local_time(),(int) (void *) pClient, bytes_to_receive_in_bufferforserver );
+TRACE( TRACE_VERY_VERBOSE )("%s - pClient was %p and %d bytes free\n",  curr_local_time(), (void *) pClient, bytes_to_receive_in_bufferforserver );
     
   if( pClient && bytes_to_receive_in_bufferforserver )
   {
       pClient->addToFDSET( set );
   }
 
-TRACE( TRACE_VERY_VERBOSE )("%s - pServer was %d  and  %d bytes free\n",  curr_local_time(),(int) (void *) pServer, bytes_to_receive_in_bufferforclient );
+TRACE( TRACE_VERY_VERBOSE )("%s - pServer was %p and %d bytes free\n",  curr_local_time(), (void *) pServer, bytes_to_receive_in_bufferforclient );
     
   if( pServer && bytes_to_receive_in_bufferforclient )
   {
