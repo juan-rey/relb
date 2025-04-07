@@ -109,8 +109,8 @@ int ServerList::cleanConnections()
        peer_index--;
     }
 
-   peer_index++;
-   pinfo = NULL;
+    peer_index++;
+    pinfo = NULL;
   }
   peer_lock.unlock();
 
@@ -794,15 +794,15 @@ const peer_info * ServerList::getServer( const ipaddress *  ipcliente, unsigned 
          currentserver_notavailable = ( ( servers_list[currentserver]->max_connections  && servers_list[currentserver]->connected >= servers_list[currentserver]->max_connections ) 
                                     || ( servers_list[currentserver]->last_connection_failed &&  (( NOW_UTC - servers_list[currentserver]->last_connection_attempt ) <  server_retry_mseconds )));
          currentserver_weight = servers_list[currentserver]->weight;
-         TRACE( TRACE_ASSIGNATION )("%s - Analizing server %d with index %f weight %d y %d connections, last connection %s %d seconds ago\n", 
+         TRACE( TRACE_ASSIGNATION )("%s - Analizing server %d with index %f weight %d and %d connections, last connection %s %d seconds ago\n", 
            curr_local_time(), currentserver, currentserver_index, servers_list[currentserver]->weight, ( servers_list[currentserver]->finished + servers_list[currentserver]->connected + servers_list[currentserver]->disconnected + servers_list[currentserver]->connecting ), currentserver_notavailable?"failed":"succeeded", int( NOW_UTC - servers_list[currentserver]->last_connection_attempt )/1000 );
 
          //valorar filtros de IPs
          if( isServerAllowed( &(servers_list[currentserver]->ip), ipcliente ) )
          {
 
-         TRACE( TRACE_ASSIGNATION )("%s - Allowed server %d with index %d %d %f %f\n", 
-            curr_local_time(), currentserver, currentserver_index, nextserver_index, currentserver_weight, nextserver_weight );
+         TRACE( TRACE_ASSIGNATION )("%s - Allowed server %d with index %f weight %d, next index %f weight %d\n", 
+            curr_local_time(), currentserver, currentserver_index, currentserver_weight, nextserver_index, nextserver_weight );
             //aqui o en otro lado???
           //assigned_server = true;	
           if( !currentserver_index  && !nextserver_index )
@@ -848,7 +848,7 @@ const peer_info * ServerList::getServer( const ipaddress *  ipcliente, unsigned 
         //Si no he encontrado nada hago un último intento incluyendo no asignables
         if( !assigned_server )
         {
-            TRACE( TRACE_ASSIGNATION )("%s - Ooops, no valid server found. Re-check even non available servers\n" ); 
+            TRACE( TRACE_ASSIGNATION )("%s - Ooops, no valid server found. Re-check even non available servers\n", curr_local_time() );
             while( currentserver != lastAsignedServer )
             {
              //caculo ratio disponibilidad para este servidor
@@ -862,39 +862,39 @@ const peer_info * ServerList::getServer( const ipaddress *  ipcliente, unsigned 
              if( isServerAllowed( &(servers_list[currentserver]->ip), ipcliente ) )
              {
 
-             TRACE( TRACE_ASSIGNATION )("%s - Allowed server %d with index %d %d %f %f\n", 
-                curr_local_time(), currentserver, currentserver_index, nextserver_index, currentserver_weight, nextserver_weight );
+                TRACE(TRACE_ASSIGNATION)("%s - Allowed server %d with index %f weight %d, next index %f weight %d\n",
+                    curr_local_time(), currentserver, currentserver_index, currentserver_weight, nextserver_index, nextserver_weight);
                 //aqui o en otro lado???
-              //assigned_server = true;	
-              if( !currentserver_index  && !nextserver_index )
-              {
-                //no tienen conectados ( index es 0 )          
-                if( (!assigned_server || currentserver_weight > nextserver_weight )
-                     && ( !currentserver_notavailable  || ( currentserver_notavailable &&   nextserver_notavailable ) ) 
-                  )
+                //assigned_server = true;
+                if( !currentserver_index  && !nextserver_index )
                 {
-                  nextserver = currentserver;
-                  nextserver_weight = currentserver_weight;
-                  nextserver_index = currentserver_index;
-                  nextserver_notavailable = currentserver_notavailable; 
-                  assigned_server = true;	
-                }
+                    //no tienen conectados ( index es 0 )          
+                    if( (!assigned_server || currentserver_weight > nextserver_weight )
+                            && ( !currentserver_notavailable  || ( currentserver_notavailable &&   nextserver_notavailable ) ) 
+                        )
+                    {
+                        nextserver = currentserver;
+                        nextserver_weight = currentserver_weight;
+                        nextserver_index = currentserver_index;
+                        nextserver_notavailable = currentserver_notavailable; 
+                        assigned_server = true;	
+                    }
                 
-              }
-              else
-              { 
-                //tienen conectados  ( index es <> 0 )           
-                if( (!assigned_server || currentserver_index  < nextserver_index)  
-                    && ( !currentserver_notavailable  || ( currentserver_notavailable && nextserver_notavailable ) ) 
-                  )
-                {
-                  nextserver = currentserver;
-                  nextserver_weight = currentserver_weight;
-                  nextserver_index = currentserver_index;
-                  nextserver_notavailable = currentserver_notavailable;
-                  assigned_server = true;	
                 }
-              }
+                else
+                { 
+                    //tienen conectados  ( index es <> 0 )           
+                    if( (!assigned_server || currentserver_index  < nextserver_index)  
+                        && ( !currentserver_notavailable  || ( currentserver_notavailable && nextserver_notavailable ) ) 
+                        )
+                    {
+                        nextserver = currentserver;
+                        nextserver_weight = currentserver_weight;
+                        nextserver_index = currentserver_index;
+                        nextserver_notavailable = currentserver_notavailable;
+                        assigned_server = true;	
+                    }
+                }
 
              }
                         
@@ -971,10 +971,12 @@ bool ServerList::isServerAllowed( const ipaddress * server, const ipaddress * cl
 
         while( i < filter_list.get_count() )
         {
-            TRACE(TRACE_FILTERS && TRACE_VERBOSE)("%s - examinig filter: client %s and server %s %s/%s %s/%s %s\n", curr_local_time(), iptostring(*client), iptostring(*server),  iptostring(filter_list[i]->src_ip), iptostring(filter_list[i]->src_mask), iptostring(filter_list[i]->dst_ip), iptostring(filter_list[i]->dst_mask), (filter_list[i]->allow)?"allow":"deny" );
-            TRACE(TRACE_FILTERS && TRACE_VERBOSE)("%s - client %s %s and server %s %s\n", curr_local_time(), iptostring(masked_ip( client, &(filter_list[i]->src_mask) ) ), iptostring(masked_ip( &(filter_list[i]->src_ip), &(filter_list[i]->src_mask) )),  
-                iptostring(masked_ip( server, &(filter_list[i]->dst_mask) )), 
-                iptostring(masked_ip( &(filter_list[i]->dst_ip), &(filter_list[i]->dst_mask) ) ));
+            TRACE(TRACE_FILTERS && TRACE_VERBOSE)("%s - examinig filter: client %s and server %s %s/%s %s/%s %s\n", curr_local_time(), 
+                (const char*)iptostring(*client), (const char*)iptostring(*server), (const char*)iptostring(filter_list[i]->src_ip), (const char*)iptostring(filter_list[i]->src_mask),
+                (const char*)iptostring(filter_list[i]->dst_ip), (const char*)iptostring(filter_list[i]->dst_mask), (filter_list[i]->allow)?"allow":"deny" );
+            TRACE(TRACE_FILTERS && TRACE_VERBOSE)("%s - client %s %s and server %s %s\n", 
+                curr_local_time(), (const char*)iptostring(masked_ip( client, &(filter_list[i]->src_mask) ) ), (const char*)iptostring(masked_ip( &(filter_list[i]->src_ip), &(filter_list[i]->src_mask) )),
+                (const char*)iptostring(masked_ip( server, &(filter_list[i]->dst_mask) )), (const char*)iptostring(masked_ip( &(filter_list[i]->dst_ip), &(filter_list[i]->dst_mask) ) ));
 
             if( masked_ip( client, &(filter_list[i]->src_mask) ) == masked_ip( &(filter_list[i]->src_ip), &(filter_list[i]->src_mask) ) )
                if( masked_ip( server, &(filter_list[i]->dst_mask) ) == masked_ip( &(filter_list[i]->dst_ip), &(filter_list[i]->dst_mask) ) )
