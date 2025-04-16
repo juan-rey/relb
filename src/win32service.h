@@ -1,4 +1,4 @@
-/* 
+/*
    win32service.h: win32service header file.
 
    Copyright 2006, 2007, 2008, 2009 Juan Rey Saura
@@ -28,11 +28,11 @@ Please consult the file "LICENSE.txt" for details.
 */
 #ifdef WIN32
 #define SERVICE_NAME_T "relb"
-#define SERVICE_DESCRIPTION_T "Resolutive Easy Load Balancer"
+#define SERVICE_DESCRIPTION_T "RELB Easy Load Balancer"
 #endif
 
 #ifdef WIN32
-void WINAPI ServiceMain( DWORD argc, LPTSTR *argv );
+void WINAPI ServiceMain( DWORD argc, LPTSTR * argv );
 void WINAPI ServiceHandler( DWORD Opcode );
 bool InstallService();
 bool DeleteService();

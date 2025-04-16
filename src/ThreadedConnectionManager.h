@@ -1,4 +1,4 @@
-/* 
+/*
    ThreadedConnectionManager.h: connection manager header file.
 
    Copyright 2006, 2007, 2008, 2009 Juan Rey Saura
@@ -30,21 +30,21 @@ USING_PTYPES
 class ThreadedConnectionManager: public thread
 {
 protected:
-    virtual void execute();
-    virtual void cleanup();
+  virtual void execute();
+  virtual void cleanup();
 public:
   ThreadedConnectionManager( int connections = DEFAULT_TCM_MAX_CONNECTIONS );
-  virtual ~ThreadedConnectionManager();   
-  virtual int addConectionPeer(ConnectionPeer * peer);
-  void closePInfo(peer_info * pinfo);
+  virtual ~ThreadedConnectionManager();
+  virtual int addConectionPeer( ConnectionPeer * peer );
+  void closePInfo( peer_info * pinfo );
   int getFreeConnections();
   int getActiveConnections();
 private:
-  void checkConnections();	
-     
+  void checkConnections();
+
   tobjlist<ConnectionPeer> peer_list;
   tobjlist<ConnectionPeer> connecting_peer_list;
-  tobjlist<peer_info> to_be_closed; 	
+  tobjlist<peer_info> to_be_closed;
   int max_connections;
   int currentconnections;
   bool finish;

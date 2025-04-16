@@ -1,4 +1,4 @@
-/* 
+/*
    MessaggeQueue.h: MessaggeQueue class header file.
 
    Copyright 2006, 2007, 2008, 2009 Juan Rey Saura
@@ -18,17 +18,17 @@ Please consult the file "LICENSE.txt" for details.
 USING_PTYPES
 
 
-class MessaggeQueue :
-    public jobqueue
+class MessaggeQueue:
+  public jobqueue
 {
 public:
-    MessaggeQueue(void);
-    ~MessaggeQueue(void);
-    bool post( message* msg );
-    bool post( int id, pintptr param = 0 );
-    void setTrigger( timedsem * p);
+  MessaggeQueue( void );
+  ~MessaggeQueue( void );
+  bool post( message * msg );
+  bool post( int id, pintptr param = 0 );
+  void setTrigger( timedsem * p );
 private:
-    timedsem * pts;
+  timedsem * pts;
 
 };
 

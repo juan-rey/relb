@@ -1,4 +1,4 @@
-/* 
+/*
    MessaggeQueue.cpp: MessaggeQueue class source file.
 
    Copyright 2006, 2007, 2008, 2009 Juan Rey Saura
@@ -14,40 +14,40 @@ Please consult the file "LICENSE.txt" for details.
 
 USING_PTYPES
 
-MessaggeQueue::MessaggeQueue(void)
+MessaggeQueue::MessaggeQueue( void )
 {
-    pts = NULL;
+  pts = NULL;
 }
 
-MessaggeQueue::~MessaggeQueue(void)
+MessaggeQueue::~MessaggeQueue( void )
 {
 }
 
-bool MessaggeQueue::post(message* msg)
+bool MessaggeQueue::post( message * msg )
 {
-    TRACE( TRACE_VERBOSE )("%s - sending a message with a post()\n",  curr_local_time() );  
- 
-    bool val = jobqueue::post(msg);
+  TRACE( TRACE_VERBOSE )( "%s - sending a message with a post()\n", curr_local_time() );
 
-    if( pts )
-      pts->post();
- 
-    return val;
+  bool val = jobqueue::post( msg );
+
+  if( pts )
+    pts->post();
+
+  return val;
 }
 
 
-bool MessaggeQueue::post(int id, pintptr param)
+bool MessaggeQueue::post( int id, pintptr param )
 {
-    TRACE( TRACE_VERBOSE )("%s - sending a message with a post()\n",  curr_local_time() );  
-    bool val = jobqueue::post(id, param );
- 
-    if( pts )
-      pts->post();
+  TRACE( TRACE_VERBOSE )( "%s - sending a message with a post()\n", curr_local_time() );
+  bool val = jobqueue::post( id, param );
 
-    return val;
+  if( pts )
+    pts->post();
+
+  return val;
 }
 
-void MessaggeQueue::setTrigger( timedsem * p)
+void MessaggeQueue::setTrigger( timedsem * p )
 {
-    pts = p;
+  pts = p;
 }

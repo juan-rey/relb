@@ -1,4 +1,4 @@
-/* 
+/*
    htmldefs.h: html constanst header file.
 
    Copyright 2006, 2007, 2008, 2009 Juan Rey Saura

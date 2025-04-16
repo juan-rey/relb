@@ -1,4 +1,4 @@
-/* 
+/*
    ConnectionPeerList.h: connection peer list class header file.
 
    Copyright 2006, 2007, 2008, 2009 Juan Rey Saura
@@ -18,10 +18,10 @@ USING_PTYPES
 
 #include "ConnectionPeer.h"
 
-class ConnectionPeerList 
+class ConnectionPeerList
 {
 public:
-    tpodlist<ConnectionPeer> lista;
+  tpodlist<ConnectionPeer> lista;
 };
 #endif
 

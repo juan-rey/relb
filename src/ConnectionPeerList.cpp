@@ -1,4 +1,4 @@
-/* 
+/*
    ConnectionPeerList.cpp: connection peer list class source file.
 
    Copyright 2006, 2007, 2008 Juan Rey Saura

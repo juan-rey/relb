@@ -1,4 +1,4 @@
-/* 
+/*
    Socket.h: socket class header file.
 
    Copyright 2006, 2007, 2008, 2009 Juan Rey Saura
@@ -21,27 +21,27 @@ USING_PTYPES
 class Socket
 {
 protected:
-    virtual void cleanup();
-    
- public:
-    Socket( int sockfd, ipaddress * srcip, unsigned short srcport );
-    Socket( const ipaddress * dstip, unsigned short dstport);
-    Socket( const char * dsthost, int dstport);
-    virtual ~Socket();
+  virtual void cleanup();
 
-    int sendNB( const  char * buffer, int max );
-    int recieveNB( char * buffer,  int max);
-    void close();
+public:
+  Socket( int sockfd, ipaddress * srcip, unsigned short srcport );
+  Socket( const ipaddress * dstip, unsigned short dstport );
+  Socket( const char * dsthost, int dstport );
+  virtual ~Socket();
+
+  int sendNB( const  char * buffer, int max );
+  int recieveNB( char * buffer, int max );
+  void close();
 #ifdef DEBUG
-    void close2();
+  void close2();
 #endif
-    void getSocket();
-    void addToFDSET( fd_set * set );
-    int isInFDSET( fd_set * set );
-    int checkSocket();
- private:
-    int sock;
-    ipaddress ip;
-    unsigned short port;
+  void getSocket();
+  void addToFDSET( fd_set * set );
+  int isInFDSET( fd_set * set );
+  int checkSocket();
+private:
+  int sock;
+  ipaddress ip;
+  unsigned short port;
 };
 #endif

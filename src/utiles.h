@@ -1,4 +1,4 @@
-/* 
+/*
    utiles.h: utiles header file.
 
    Copyright 2006, 2007, 2008, 2009 Juan Rey Saura
@@ -29,22 +29,22 @@ USING_PTYPES
 #define MIN(x,y) (x) < (y) ? (x) : (y)
 #endif
 
-const char * curr_local_time();
+  const char * curr_local_time();
 const char * given_local_time( datetime t );
 const char * statusdesc( int status );
 ipaddress chartoipaddress( const char * ip );
-bool ipmenor( ipaddress * iplt, ipaddress  * ipgt );
+bool ipmenor( ipaddress * iplt, ipaddress * ipgt );
 ipaddress masked_ip( const ipaddress * ip, const ipaddress * mask );
 bool checkIP( const ipaddress * ip );
-bool checkPort( const ipaddress * ip, unsigned short port ); 
+bool checkPort( const ipaddress * ip, unsigned short port );
 
 struct filterinfo
 {
-    ipaddress src_ip;
-    ipaddress src_mask;
-    ipaddress dst_ip;
-    ipaddress dst_mask;
-    bool allow;
+  ipaddress src_ip;
+  ipaddress src_mask;
+  ipaddress dst_ip;
+  ipaddress dst_mask;
+  bool allow;
 };
 
 struct serverinfo
@@ -81,12 +81,12 @@ struct bind_address
 
 struct task_info
 {
-    TASK_TYPE task_type;
-    int run_interval_ms;
-    datetime next_run_time;
-    bool fixed_time;
-    datetime last_ran_time;
-    int last_ran_exitcode;
+  TASK_TYPE task_type;
+  int run_interval_ms;
+  datetime next_run_time;
+  bool fixed_time;
+  datetime last_ran_time;
+  int last_ran_exitcode;
 };
 
 #define NOW_UTC now()

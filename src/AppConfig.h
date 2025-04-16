@@ -1,4 +1,4 @@
-/* 
+/*
    AppConfig.h: config class header file.
 
    Copyright 2006, 2007, 2008, 2009 Juan Rey Saura
@@ -38,86 +38,86 @@ struct dst_conf
 
 struct bind_conf
 {
-  tpodlist<bind_address*> address;
-  tpodlist<dst_conf*> dst;
-  tpodlist<task_info*> tasks;
-  tpodlist<filterinfo*> filter;
+  tpodlist<bind_address *> address;
+  tpodlist<dst_conf *> dst;
+  tpodlist<task_info *> tasks;
+  tpodlist<filterinfo *> filter;
 };
 
 class  AppConfig
 {
 public:
-    AppConfig();
-    AppConfig( string file );
-    virtual ~AppConfig();
-    bool loadConfig();
-      
+  AppConfig();
+  AppConfig( string file );
+  virtual ~AppConfig();
+  bool loadConfig();
+
 private:
-    bool setDefaultValues();
-    bool loadFile();
-    void processConfigLine( const char * line );
-    bool checkConfig();    
-    void cleanBindList();
-    void printErrors();
-    void cleanErrors();
+  bool setDefaultValues();
+  bool loadFile();
+  void processConfigLine( const char * line );
+  bool checkConfig();
+  void cleanBindList();
+  void printErrors();
+  void cleanErrors();
 
 public:
-    //config retrieving functions
-    bool getFirstBind();
-    bool getNextBind();
-/*
-    unsigned short getBindPort();
-    ipaddress getBindIP();
-*/
-    bool getFirstServer();
-    bool getNextServer();
-    unsigned short getServerPort();
-    ipaddress getServerIP();
-    string getServerName();
-    int getServerWeight();
-    int getServerMaxConnections();
-    int getServerRetryTime();
-    int getTasksCount();
-    bool getNextTask();
-    TASK_TYPE getTaskType();
-    int getTaskInterval();
-    datetime getTaskFirstRun();
-    bool  getTaskFixedTime();
-    bool getAdminEnabled();
-    unsigned short getAdminPort();
-    ipaddress getAdminIP();
-    int getConnectionsPerThread();
-    int getFilterCount();
-    bool getNextFilter();
-    ipaddress getFilterSourceIP();
-    ipaddress getFilterSourceMask();
-    ipaddress getFilterDestIP();
-    ipaddress getFilterDestMask();
-    bool getFilterAllow();
-    int getAddressCount();
-    bool getNextAddress();
-    ipaddress getAddressIP();
-    unsigned short getAddressPort();
+  //config retrieving functions
+  bool getFirstBind();
+  bool getNextBind();
+  /*
+      unsigned short getBindPort();
+      ipaddress getBindIP();
+  */
+  bool getFirstServer();
+  bool getNextServer();
+  unsigned short getServerPort();
+  ipaddress getServerIP();
+  string getServerName();
+  int getServerWeight();
+  int getServerMaxConnections();
+  int getServerRetryTime();
+  int getTasksCount();
+  bool getNextTask();
+  TASK_TYPE getTaskType();
+  int getTaskInterval();
+  datetime getTaskFirstRun();
+  bool  getTaskFixedTime();
+  bool getAdminEnabled();
+  unsigned short getAdminPort();
+  ipaddress getAdminIP();
+  int getConnectionsPerThread();
+  int getFilterCount();
+  bool getNextFilter();
+  ipaddress getFilterSourceIP();
+  ipaddress getFilterSourceMask();
+  ipaddress getFilterDestIP();
+  ipaddress getFilterDestMask();
+  bool getFilterAllow();
+  int getAddressCount();
+  bool getNextAddress();
+  ipaddress getAddressIP();
+  unsigned short getAddressPort();
 
 private:
-   //config variables
-    string configfile;    
-    bool connect_to_the_same_server;
-    bool one_connection_per_IP;
-    bool http_admin_enabled;
-    unsigned short http_admin_port;
-    ipaddress http_admin_ip;
-    int connections_per_thread;
-    bool update_server_status;
-    int minimun_server_reconnection_time;   
-    tpodlist<bind_conf*> bind;
-    tpodlist<string*> errores;
+  //config variables
+  string configfile;
+  bool connect_to_the_same_server;
+  bool one_connection_per_IP;
+  bool http_admin_enabled;
+  unsigned short http_admin_port;
+  ipaddress http_admin_ip;
+  int connections_per_thread;
+  bool update_server_status;
+  int minimun_server_reconnection_time;
+  tpodlist<bind_conf *> bind;
+  tpodlist<string *> errores;
 
-    //auxiliar variables set to return servers values
-    int currentBind;
-    int currentServet;
-    int currentTask;
-    int currentFilter;
-    int currentAddress;
+  //auxiliar variables set to return servers values
+  int currentBind;
+  int currentServet;
+  int currentTask;
+  int currentFilter;
+  int currentAddress;
 };
 #endif
