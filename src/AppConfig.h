@@ -1,7 +1,7 @@
 /*
    AppConfig.h: config class header file.
 
-   Copyright 2006, 2007, 2008, 2009 Juan Rey Saura
+   Copyright 2006, 2007, 2008, 2009, 2025 Juan Rey Saura
 
 This file is part of Resolutive Easy Load Balancer.
 
@@ -48,7 +48,6 @@ class  AppConfig
 {
 public:
   AppConfig();
-  AppConfig( string file );
   virtual ~AppConfig();
   bool loadConfig();
 
@@ -62,6 +61,7 @@ private:
   void cleanErrors();
 
 public:
+  void setFilePath( const char * file );
   //config retrieving functions
   bool getFirstBind();
   bool getNextBind();

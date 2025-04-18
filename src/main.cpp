@@ -30,6 +30,7 @@ using namespace std;
 #endif
 
 #define SHOW_LICENSE "license"
+#define SET_CONFIG_FILE_PATH "configfile"
 #define RUN_IN_CONSOLE_TEXT "console"
 #define RUN_AS_SERVICE "service"
 
@@ -37,11 +38,12 @@ int main( int argc, char * argv[] )
 {
   bool terminar = false;
   bool console = false;
+  AppConfig config;
 
   printf( "\n%s - %s %s (%s)\n", APP_SHORT_NAME, APP_FULL_NAME, APP_VERSION, APP_WEB );
   printf( "(C) %s\n", APP_COPYRIGHT );
   printf( "%s uses Hovik Melikyan's C++ Portable Types Library (PTypes) (http://www.melikyan.com/ptypes/)\n", APP_SHORT_NAME );
-  printf( "Usage: %s [%s] [%s] [%s] [(%s)|%s]\n\n", APP_FILE, UNINSTALL_SERVICE_TEXT, INSTALL_SERVICE_TEXT, SHOW_LICENSE, RUN_AS_SERVICE, RUN_IN_CONSOLE_TEXT );
+  printf( "Usage: %s [%s|%s|%s]\n       %s [%s path] [(%s)|%s]\n\n", APP_FILE, UNINSTALL_SERVICE_TEXT, INSTALL_SERVICE_TEXT, SHOW_LICENSE, APP_FILE, SET_CONFIG_FILE_PATH, RUN_AS_SERVICE, RUN_IN_CONSOLE_TEXT );
 
 #ifdef DEBUG     
   console = true;
@@ -50,8 +52,9 @@ int main( int argc, char * argv[] )
 
   if( argc > 1 )
   {
+    int curr_arg = 1;
 
-    if( strcmp( argv[1], UNINSTALL_SERVICE_TEXT ) == 0 )
+    if( strcmp( argv[curr_arg], UNINSTALL_SERVICE_TEXT ) == 0 )
     {
 #ifdef WIN32
       if( DeleteService() )
@@ -60,11 +63,15 @@ int main( int argc, char * argv[] )
         printf( "\n\nError UnInstalling Service\n" );
 #else
       printf( "\n\nNot implemented yet\n" );
-#endif	
+#endif
+      if( curr_arg + 1 < argc )
+      {
+        curr_arg++;
+      }
       terminar = true;
     }
 
-    if( strcmp( argv[1], INSTALL_SERVICE_TEXT ) == 0 )
+    if( strcmp( argv[curr_arg], INSTALL_SERVICE_TEXT ) == 0 )
     {
 #ifdef WIN32
       if( InstallService() )
@@ -73,30 +80,54 @@ int main( int argc, char * argv[] )
         printf( "\n\nError Installing Service\n" );
 #else
       printf( "\n\nNot implemented yet\n" );
-#endif	
+#endif
+      if( curr_arg + 1 < argc )
+      {
+        curr_arg++;
+      }
       terminar = true;
     }
 
-    if( strcmp( argv[1], RUN_IN_CONSOLE_TEXT ) == 0 )
+    if( strcmp( argv[curr_arg], RUN_IN_CONSOLE_TEXT ) == 0 )
     {
       printf( "\n\nRunning in console\n" );
+      if( curr_arg + 1 < argc )
+      {
+        curr_arg++;
+      }
       console = true;
     }
 
-    if( strcmp( argv[1], SHOW_LICENSE ) == 0 )
+    if( strcmp( argv[curr_arg], SHOW_LICENSE ) == 0 )
     {
       printf( "%s", LICENSE_TEXT );
+      if( curr_arg + 1 < argc )
+      {
+        curr_arg++;
+      }
       terminar = true;
     }
 
+    if( strcmp( argv[curr_arg], SET_CONFIG_FILE_PATH ) == 0 )
+    {
+      if( curr_arg + 1 < argc )
+      {
+        curr_arg++;
+        printf( "\n\nConfig file: %s\n", argv[curr_arg] );
+        config.setFilePath( argv[curr_arg] );
+        if( curr_arg + 1 < argc )
+        {
+          curr_arg++;
+        }
+      }
+    }
   }
 
   if( !terminar )
   {
     int err;
     char salir = ' ';
-    AppConfig config;
-
+    
 #ifdef WIN32
     WORD wVersionRequested;
     WSADATA wsaData;

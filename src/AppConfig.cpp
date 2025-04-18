@@ -1,7 +1,7 @@
 /*
    AppConfig.cpp: config class source file.
 
-   Copyright 2006, 2007, 2008, 2009 Juan Rey Saura
+   Copyright 2006, 2007, 2008, 2009, 2025 Juan Rey Saura
 
 This file is part of Resolutive Easy Load Balancer.
 
@@ -45,12 +45,23 @@ USING_PTYPES
 
 AppConfig::AppConfig()
 {
-
   currentBind = 0;
   currentServet = 0;
   currentFilter = 0;
   currentAddress = 0;
   currentTask = -1;
+}
+
+void AppConfig::setFilePath( const char * file )
+{
+  configfile = file;
+  AppConfig();
+}
+
+AppConfig::~AppConfig()
+{
+  cleanErrors();
+  cleanBindList();
 }
 
 bool AppConfig::getFirstBind()
@@ -428,17 +439,6 @@ unsigned short AppConfig::getAdminPort()
 ipaddress AppConfig::getAdminIP()
 {
   return http_admin_ip;
-}
-AppConfig::AppConfig( string file )
-{
-  configfile = file;
-  AppConfig();
-}
-
-AppConfig::~AppConfig()
-{
-  cleanErrors();
-  cleanBindList();
 }
 
 void AppConfig::printErrors()
