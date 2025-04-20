@@ -49,6 +49,7 @@ class  AppConfig
 public:
   AppConfig();
   virtual ~AppConfig();
+  void setFilePath( const char * file );
   bool loadConfig();
 
 private:
@@ -61,7 +62,6 @@ private:
   void cleanErrors();
 
 public:
-  void setFilePath( const char * file );
   //config retrieving functions
   bool getFirstBind();
   bool getNextBind();
@@ -115,7 +115,7 @@ private:
 
   //auxiliar variables set to return servers values
   int currentBind;
-  int currentServet;
+  int currentServer;
   int currentTask;
   int currentFilter;
   int currentAddress;

@@ -29,7 +29,7 @@ USING_PTYPES
 #define MIN(x,y) (x) < (y) ? (x) : (y)
 #endif
 
-  const char * curr_local_time();
+const char * curr_local_time();
 const char * given_local_time( datetime t );
 const char * statusdesc( int status );
 ipaddress chartoipaddress( const char * ip );
@@ -120,18 +120,14 @@ struct task_info
 #define TRACE_IOSOCKET      0
 #define TRACE_IOSOCKETERROR 0
 #define TRACE_CONNECTIONS   0
-#define TRACE_BIND			0
+#define TRACE_BIND			    0
 #define TRACE_ASSIGNATION   1
-#define TRACE_CONFIG        0
+#define TRACE_CONFIG        1
 #define TRACE_TASKS         0
 #define TRACE_FILTERS       0
 
 #define TRACE_VERBOSE       1
 #define TRACE_VERY_VERBOSE  0
-
-#ifndef TRACE_CONNECTIONS
-#define TRACE_CONNECTIONS    1
-#endif
 
 
 #ifdef WIN32

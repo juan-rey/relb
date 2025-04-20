@@ -46,22 +46,21 @@ USING_PTYPES
 AppConfig::AppConfig()
 {
   currentBind = 0;
-  currentServet = 0;
+  currentServer = 0;
   currentFilter = 0;
   currentAddress = 0;
   currentTask = -1;
-}
-
-void AppConfig::setFilePath( const char * file )
-{
-  configfile = file;
-  AppConfig();
 }
 
 AppConfig::~AppConfig()
 {
   cleanErrors();
   cleanBindList();
+}
+
+void AppConfig::setFilePath( const char * file )
+{
+  configfile = file;
 }
 
 bool AppConfig::getFirstBind()
@@ -103,11 +102,11 @@ ipaddress AppConfig::getBindIP()
 bool AppConfig::getFirstServer()
 {
   bool val = false;
-  currentServet = 0;
+  currentServer = 0;
 
   if( currentBind < bind.get_count() )
   {
-    val = ( currentServet < bind[currentBind]->dst.get_count() );
+    val = ( currentServer < bind[currentBind]->dst.get_count() );
   }
 
   return val;
@@ -117,11 +116,11 @@ bool AppConfig::getNextServer()
 {
   bool val = false;
 
-  currentServet++;
+  currentServer++;
 
   if( currentBind < bind.get_count() )
   {
-    val = ( currentServet < bind[currentBind]->dst.get_count() );
+    val = ( currentServer < bind[currentBind]->dst.get_count() );
   }
 
   return val;
@@ -133,8 +132,8 @@ unsigned short AppConfig::getServerPort()
 
   if( currentBind < bind.get_count() )
   {
-    if( currentServet < bind[currentBind]->dst.get_count() )
-      val = bind[currentBind]->dst[currentServet]->dst_port;
+    if( currentServer < bind[currentBind]->dst.get_count() )
+      val = bind[currentBind]->dst[currentServer]->dst_port;
   }
 
   return val;
@@ -146,8 +145,8 @@ ipaddress AppConfig::getServerIP()
 
   if( currentBind < bind.get_count() )
   {
-    if( currentServet < bind[currentBind]->dst.get_count() )
-      val = bind[currentBind]->dst[currentServet]->dst_ip;
+    if( currentServer < bind[currentBind]->dst.get_count() )
+      val = bind[currentBind]->dst[currentServer]->dst_ip;
   }
 
   return val;
@@ -159,8 +158,8 @@ string AppConfig::getServerName()
 
   if( currentBind < bind.get_count() )
   {
-    if( currentServet < bind[currentBind]->dst.get_count() )
-      val = bind[currentBind]->dst[currentServet]->servername;
+    if( currentServer < bind[currentBind]->dst.get_count() )
+      val = bind[currentBind]->dst[currentServer]->servername;
   }
 
   return val;
@@ -172,8 +171,8 @@ int AppConfig::getServerMaxConnections()
 
   if( currentBind < bind.get_count() )
   {
-    if( currentServet < bind[currentBind]->dst.get_count() )
-      val = bind[currentBind]->dst[currentServet]->max_connections;
+    if( currentServer < bind[currentBind]->dst.get_count() )
+      val = bind[currentBind]->dst[currentServer]->max_connections;
   }
 
   return val;
@@ -414,8 +413,8 @@ int AppConfig::getServerWeight()
 
   if( currentBind < bind.get_count() )
   {
-    if( currentServet < bind[currentBind]->dst.get_count() )
-      val = bind[currentBind]->dst[currentServet]->weight;
+    if( currentServer < bind[currentBind]->dst.get_count() )
+      val = bind[currentBind]->dst[currentServer]->weight;
   }
 
   return val;
@@ -522,25 +521,27 @@ bool AppConfig::loadConfig()
     TRACE( TRACE_CONFIG )( "%s - trying the set file\n", curr_local_time() );
     loaded = loadFile();
   }
-
-  if( !loaded )
+  else
   {
-    TRACE( TRACE_CONFIG )( "%s - trying with the working path\n", curr_local_time() );
-    configfile = DEFAULT_CONFIG_FILENAME;
-    loaded = loadFile();
-  }
+    if( !loaded )
+    {
+      TRACE( TRACE_CONFIG )( "%s - trying with the working path\n", curr_local_time() );
+      configfile = DEFAULT_CONFIG_FILENAME;
+      loaded = loadFile();
+    }
 
-  if( !loaded )
-  {
-    TRACE( TRACE_CONFIG )( "%s - trying the default path\n", curr_local_time() );
+    if( !loaded )
+    {
+      TRACE( TRACE_CONFIG )( "%s - trying the default path\n", curr_local_time() );
 #ifdef WIN32
-    CHAR windir[MAX_WINDIR_PATH];
-    GetWindowsDirectoryA( windir, MAX_WINDIR_PATH );
-    configfile = string( windir ) + "\\" + DEFAULT_CONFIG_FILE_PATH + string( DEFAULT_CONFIG_FILENAME );
+      CHAR windir[MAX_WINDIR_PATH];
+      GetWindowsDirectoryA( windir, MAX_WINDIR_PATH );
+      configfile = string( windir ) + "\\" + DEFAULT_CONFIG_FILE_PATH + string( DEFAULT_CONFIG_FILENAME );
 #else
-    configfile = DEFAULT_CONFIG_FILE_PATH + string( DEFAULT_CONFIG_FILENAME );
+      configfile = DEFAULT_CONFIG_FILE_PATH + string( DEFAULT_CONFIG_FILENAME );
 #endif        
-    loaded = loadFile();
+      loaded = loadFile();
+    }
   }
 
   if( loaded )
