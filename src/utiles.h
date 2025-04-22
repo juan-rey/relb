@@ -1,7 +1,7 @@
 /*
    utiles.h: utiles header file.
 
-   Copyright 2006, 2007, 2008, 2009 Juan Rey Saura
+   Copyright 2006, 2007, 2008, 2009, 2025 Juan Rey Saura
 
 This file is part of Resolutive Easy Load Balancer.
 
@@ -30,7 +30,9 @@ USING_PTYPES
 #endif
 
 const char * curr_local_time();
-const char * given_local_time( datetime t );
+const char * curr_utc_time();
+const char * given_local_time( datetime t_utc );
+const char * given_utc_time( datetime t );
 const char * statusdesc( int status );
 ipaddress chartoipaddress( const char * ip );
 bool ipmenor( ipaddress * iplt, ipaddress * ipgt );
@@ -82,7 +84,7 @@ struct bind_address
 struct task_info
 {
   TASK_TYPE task_type;
-  int run_interval_ms;
+  int run_interval_seconds;
   datetime next_run_time;
   bool fixed_time;
   datetime last_ran_time;
@@ -121,12 +123,12 @@ struct task_info
 #define TRACE_IOSOCKETERROR 0
 #define TRACE_CONNECTIONS   0
 #define TRACE_BIND			    0
-#define TRACE_ASSIGNATION   1
+#define TRACE_ASSIGNATION   0
 #define TRACE_CONFIG        1
-#define TRACE_TASKS         0
+#define TRACE_TASKS         1
 #define TRACE_FILTERS       0
 
-#define TRACE_VERBOSE       1
+#define TRACE_VERBOSE       0
 #define TRACE_VERY_VERBOSE  0
 
 

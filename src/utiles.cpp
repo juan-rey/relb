@@ -1,7 +1,7 @@
 /*
    utiles.cpp: utiles source file.
 
-   Copyright 2006, 2007, 2008, 2009 Juan Rey Saura
+   Copyright 2006, 2007, 2008, 2009, 2025 Juan Rey Saura
 
 This file is part of Resolutive Easy Load Balancer.
 
@@ -34,6 +34,19 @@ Please consult the file "LICENSE.txt" for details.
 
 USING_PTYPES
 
+char currutctimestring[50] = "";
+
+const char * curr_utc_time()
+{
+#ifdef DEBUG    
+  int hours, mins, secs, msecs;
+  int year, month, day;
+  decodedate( NOW_UTC, year, month, day );
+  decodetime( NOW_UTC, hours, mins, secs, msecs );
+  sprintf( currutctimestring, "%d-%02d-%02d %02d:%02d:%02d,%03d", year, month, day, hours, mins, secs, msecs );
+#endif    
+  return currutctimestring;
+}
 
 
 char currlocaltimestring[50] = "";
@@ -53,16 +66,32 @@ const char * curr_local_time()
 
 char givenlocaltimestring[50] = "";
 
-const char * given_local_time( datetime t )
+const char * given_local_time( datetime t_utc )
+{
+#ifdef DEBUG    
+  int hours, mins, secs, msecs;
+  int year, month, day;
+  t_utc = t_utc + ( NOW_LOCALTIME - NOW_UTC );
+  decodedate( t_utc, year, month, day );
+  decodetime( t_utc, hours, mins, secs, msecs );
+  sprintf( givenlocaltimestring, "%d-%02d-%02d %02d:%02d:%02d,%03d", year, month, day, hours, mins, secs, msecs );
+#endif    
+  return givenlocaltimestring;
+}
+
+
+char givenutctimestring[50] = "";
+
+const char * given_utc_time( datetime t )
 {
 #ifdef DEBUG    
   int hours, mins, secs, msecs;
   int year, month, day;
   decodedate( t, year, month, day );
   decodetime( t, hours, mins, secs, msecs );
-  sprintf( givenlocaltimestring, "%d-%02d-%02d %02d:%02d:%02d,%03d", year, month, day, hours, mins, secs, msecs );
+  sprintf( givenutctimestring, "%d-%02d-%02d %02d:%02d:%02d,%03d", year, month, day, hours, mins, secs, msecs );
 #endif    
-  return givenlocaltimestring;
+  return givenutctimestring;
 }
 
 const char * statusdesc( int status )

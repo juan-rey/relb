@@ -1,7 +1,7 @@
 /*
    ServerList.cpp: server list source file.
 
-   Copyright 2006, 2007, 2008, 2009 Juan Rey Saura
+   Copyright 2006, 2007, 2008, 2009, 2025 Juan Rey Saura
 
 This file is part of Resolutive Easy Load Balancer.
 
@@ -235,16 +235,16 @@ bool ServerList::addFilter( const ipaddress source_ip, const ipaddress source_ma
 }
 
 
-bool ServerList::addTask( TASK_TYPE type, int run_interval_ms )
+bool ServerList::addTask( TASK_TYPE task_type, int run_interval_seconds )
 {
   bool val = false;
 
   if( !get_running() )
   {
     task_info * ptask = new task_info;
-    ptask->task_type = type;
-    ptask->run_interval_ms = run_interval_ms;
-    ptask->next_run_time = NOW_UTC + ptask->run_interval_ms;
+    ptask->task_type = task_type;
+    ptask->run_interval_seconds = run_interval_seconds;
+    ptask->next_run_time = NOW_UTC + ( 1000 * ptask->run_interval_seconds );
     if( next_task_run_time > ptask->next_run_time || !next_task_run_time )
       next_task_run_time = ptask->next_run_time;
     ptask->last_ran_time = 0;
@@ -252,25 +252,20 @@ bool ServerList::addTask( TASK_TYPE type, int run_interval_ms )
     ptask->fixed_time = false;
     TRACE( TRACE_TASKS )( "%s - new task at %s \n", curr_local_time(), given_local_time( ptask->next_run_time ) );
     tasks_list.add( ptask );
-
-    //  if( !update && tasks_list.get_count())
-    //    update = true;
   }
-
-
 
   return val;
 }
 
-bool ServerList::addTask( TASK_TYPE type, datetime firstrun, int run_interval_ms )
+bool ServerList::addTask( TASK_TYPE task_type, datetime firstrun, int run_interval_seconds )
 {
   bool val = false;
 
   if( !get_running() )
   {
     task_info * ptask = new task_info;
-    ptask->task_type = type;
-    ptask->run_interval_ms = run_interval_ms;
+    ptask->task_type = task_type;
+    ptask->run_interval_seconds = run_interval_seconds;
     ptask->next_run_time = firstrun;
     if( next_task_run_time > ptask->next_run_time || !next_task_run_time )
       next_task_run_time = ptask->next_run_time;
@@ -505,16 +500,20 @@ void ServerList::execute()
               if( ptask->task_type == TASK_PURGE_CONNECTIONS )
                 ptask->last_ran_exitcode = purgeConnections();
 
-              if( ptask->run_interval_ms > 0 )
+              if( ptask->run_interval_seconds > 0 )
               {
                 if( ptask->fixed_time )
                 {
-                  while( NOW_UTC >= ptask->next_run_time )
-                    ptask->next_run_time = ptask->next_run_time + ptask->run_interval_ms;
+                  if( NOW_UTC >= ptask->next_run_time )
+                  {
+                    ptask->next_run_time = ptask->next_run_time + ( ( ( ( NOW_UTC - ptask->next_run_time ) / ( 1000 * ptask->run_interval_seconds ) ) + 1 ) * ( 1000 * ptask->run_interval_seconds ) );
+                    TRACE( TRACE_TASKS )( "%s - next run %s\n", curr_local_time(), given_local_time( ptask->next_run_time ) );
+                  }
                 }
                 else
                 {
-                  ptask->next_run_time = NOW_UTC + ptask->run_interval_ms;
+                  ptask->next_run_time = NOW_UTC + ( 1000 * ptask->run_interval_seconds );
+                  TRACE( TRACE_TASKS )( "%s - the next run %s\n", curr_local_time(), given_local_time( ptask->next_run_time ) );
                 }
               }
               else
@@ -537,7 +536,7 @@ void ServerList::execute()
           }
           task_index++;
         }
-        TRACE( TRACE_TASKS )( "%s - finished processing tasks %s \n", curr_local_time(), given_local_time( next_task_run_time ) );
+        TRACE( TRACE_TASKS )( "%s - finished processing tasks, next on %s \n", curr_local_time(), given_local_time( next_task_run_time ) );
       }
 
       wait_ms = MIN( int( next_task_run_time - NOW_UTC + TIME_SLICE_MARGIN_MS ), MAXIMUN_UPDATE_INTERVAL_MS );

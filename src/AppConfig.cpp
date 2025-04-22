@@ -370,7 +370,7 @@ int AppConfig::getTaskInterval()
   if( currentBind < bind.get_count() )
   {
     if( currentTask < bind[currentBind]->tasks.get_count() )
-      val = bind[currentBind]->tasks[currentTask]->run_interval_ms;
+      val = bind[currentBind]->tasks[currentTask]->run_interval_seconds;
   }
 
   return val;
@@ -949,9 +949,12 @@ void AppConfig::processConfigLine( const char * line )
         valid = false;
       }
 
-
       while( line[h] != char( NULL ) && line[h] != ' ' )
         h++;
+
+      if( line[h] == ' ' )
+        while( line[h] == ' ' )
+          h++;
 
       if( line[h] != char( NULL ) )// Existe primera hora ejecución
       {
@@ -961,9 +964,6 @@ void AppConfig::processConfigLine( const char * line )
         int year = 1;
         int month = 1;
         int day = 1;
-
-        while( line[h] == ' ' )
-          h++;
 
         if( atoi( &( line[h] ) ) < 24 )// si solo se especifica hora
         {
@@ -983,11 +983,8 @@ void AppConfig::processConfigLine( const char * line )
           day = 1;
 
           decodedate( NOW_UTC, year, month, day );
-          first_run = encodedate( year, month, day ) + encodetime( hour, min, sec );
-          if( first_run < NOW_UTC )
-            first_run = encodedate( year, month, day + 1 ) + encodetime( hour, min, sec );
+          first_run = encodedate( year, month, day ) + encodetime( hour, min, sec ) - ( NOW_LOCALTIME - NOW_UTC );
           fixed_time = true;
-
         }
         else
         {
@@ -997,7 +994,7 @@ void AppConfig::processConfigLine( const char * line )
             month = ( atoi( &( line[h] ) ) - ( year * 10000 ) ) / 100;
             day = atoi( &( line[h] ) ) - ( year * 10000 ) - ( month * 100 );
 
-            first_run = encodedate( year, month, day );
+            first_run = encodedate( year, month, day ) - ( NOW_LOCALTIME - NOW_UTC );
             fixed_time = true;
           }
           else//YYYY/MM/DD
@@ -1014,7 +1011,7 @@ void AppConfig::processConfigLine( const char * line )
               h++;
             day = atoi( &( line[h] ) );
 
-            first_run = encodedate( year, month, day );
+            first_run = encodedate( year, month, day ) - ( NOW_LOCALTIME - NOW_UTC );
             fixed_time = true;
           }
 
@@ -1039,10 +1036,20 @@ void AppConfig::processConfigLine( const char * line )
           sec = atoi( &( line[h] ) );
 
           first_run += encodetime( hour, min, sec );
+
         }
 
         valid = isvalid( first_run );
-        TRACE( TRACE_CONFIG )( "%s - First run (UTC) %s\n", curr_local_time(), (const char *) dttostring( first_run, "%Y%m%d %H:%M:%S" ) );
+
+        if( valid && ( first_run < NOW_UTC ) && ( interval > 0 ) )
+          first_run += ( ( ( ( NOW_UTC - first_run ) / ( 1000 * interval ) ) + 1 ) * ( 1000 * interval ) );
+
+        TRACE( TRACE_CONFIG )( "%s - First run %s\n", curr_local_time(), given_local_time( first_run ) );
+      }
+      else
+      {
+        TRACE( TRACE_CONFIG )( "%s - No first run set\n", curr_local_time() );
+        first_run = NOW_UTC + interval;
       }
 
       if( valid )
@@ -1053,7 +1060,7 @@ void AppConfig::processConfigLine( const char * line )
           task_info * tmp = new task_info;
           tmp->task_type = task_type;
           tmp->fixed_time = fixed_time;
-          tmp->run_interval_ms = interval;
+          tmp->run_interval_seconds = interval;
           tmp->next_run_time = first_run;
           //TODO 1.1 UTC???
 

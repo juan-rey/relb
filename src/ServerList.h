@@ -1,7 +1,7 @@
 /*
    ServerList.h: server list class header file.
 
-   Copyright 2006, 2007, 2008, 2009 Juan Rey Saura
+   Copyright 2006, 2007, 2008, 2009, 2025 Juan Rey Saura
 
 This file is part of Resolutive Easy Load Balancer.
 
@@ -56,8 +56,8 @@ public:
   ServerList();
   bool addServer( const char * nombre, const ipaddress * ip, unsigned short puerto, int weight = 0, int max_connections = 0 );
   bool addServer( const char * nombre, const char * hostname, unsigned short puerto, int weight = 0, int max_connections = 0 );
-  bool addTask( TASK_TYPE type, int run_interval_ms );
-  bool addTask( TASK_TYPE type, datetime firstrun, int run_interval_ms );
+  bool addTask( TASK_TYPE task_type, int run_interval_seconds );
+  bool addTask( TASK_TYPE task_type, datetime firstrun, int run_interval_seconds );
   bool addFilter( const ipaddress source_ip, const ipaddress source_mask, const ipaddress dest_ip, const ipaddress dest_mask, bool allow );
   const MessaggeQueue * getQueue();
   const peer_info * getServer( const ipaddress * ipcliente, unsigned short puertocliente, ThreadedConnectionManager * pcm );

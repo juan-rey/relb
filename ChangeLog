@@ -1,5 +1,7 @@
 2025-04-30 0.9.12 (rc)
-   - ?
+   - Command-line option for a configuration file
+   - Fixed a performance issue when handling very old tasks
+   - Tasks using local time
 
 2015-04-30 0.9.11 (beta 3-pre)
     - Try other servers when the assigned server fails
