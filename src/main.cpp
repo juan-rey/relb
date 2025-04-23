@@ -43,7 +43,7 @@ int main( int argc, char * argv[] )
   printf( "\n%s - %s %s (%s)\n", APP_SHORT_NAME, APP_FULL_NAME, APP_VERSION, APP_WEB );
   printf( "(C) %s\n", APP_COPYRIGHT );
   printf( "%s uses Hovik Melikyan's C++ Portable Types Library (PTypes) (http://www.melikyan.com/ptypes/)\n", APP_SHORT_NAME );
-  printf( "Usage: %s [%s|%s|%s]\n       %s [%s path] [(%s)|%s]\n\n", APP_FILE, UNINSTALL_SERVICE_TEXT, INSTALL_SERVICE_TEXT, SHOW_LICENSE, APP_FILE, SET_CONFIG_FILE_PATH, RUN_AS_SERVICE, RUN_IN_CONSOLE_TEXT );
+  printf( "Usage: %s [%s path] [(%s)|%s]\n       %s [%s|%s|%s]\n\n", APP_FILE, SET_CONFIG_FILE_PATH, RUN_AS_SERVICE, RUN_IN_CONSOLE_TEXT, APP_FILE, SHOW_LICENSE, INSTALL_SERVICE_TEXT, UNINSTALL_SERVICE_TEXT );
 
 #ifdef DEBUG     
   console = true;

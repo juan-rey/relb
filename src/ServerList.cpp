@@ -518,6 +518,7 @@ void ServerList::execute()
               }
               else
               {
+                TRACE( TRACE_TASKS )( "%s - Single time execution task, deleting\n", curr_local_time() );
                 delete_task = true;
               }
             }
