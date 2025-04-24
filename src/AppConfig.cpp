@@ -1041,8 +1041,13 @@ void AppConfig::processConfigLine( const char * line )
 
         valid = isvalid( first_run );
 
-        if( valid && ( first_run < NOW_UTC ) && ( interval > 0 ) )
-          first_run += ( ( ( ( NOW_UTC - first_run ) / ( 1000 * interval ) ) + 1 ) * ( 1000 * interval ) );
+        if( valid && ( first_run < NOW_UTC ) )
+        {
+          if( interval > 0 )
+            first_run += ( ( ( ( NOW_UTC - first_run ) / ( 1000 * interval ) ) + 1 ) * ( 1000 * interval ) );
+          else
+            valid = false;
+        }
 
         TRACE( TRACE_CONFIG )( "%s - First run %s\n", curr_local_time(), given_local_time( first_run ) );
       }
