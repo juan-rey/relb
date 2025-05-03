@@ -702,7 +702,7 @@ void AppConfig::processConfigLine( const char * line )
       {
         char * servername = new char[g - h + 1];
         strncpy( servername, &( line[h] ), g - h );
-        servername[g - h] = NULL;
+        servername[g - h] = char( NULL );
         dst_ip = phostbyname( servername );
 
         if( dst_ip == ipnone )
@@ -783,7 +783,7 @@ void AppConfig::processConfigLine( const char * line )
       {
         char * servername = new char[g - h + 1];
         strncpy( servername, &( line[h] ), g - h );
-        servername[g - h] = NULL;
+        servername[g - h] = char( NULL );
         dst_ip = phostbyname( servername );
 
         if( dst_ip == ipnone )
@@ -852,7 +852,7 @@ void AppConfig::processConfigLine( const char * line )
       char * servername = new char[i + 1];
 
       strncpy( servername, &( line[h] ), i );
-      servername[i] = NULL;
+      servername[i] = char( NULL );
       dst_ip = phostbyname( servername );
       delete servername;
       TRACE( TRACE_CONFIG )( "%s - destination server ip address %s\n", curr_local_time(), (const char *) iptostring( dst_ip ) );
@@ -1102,7 +1102,7 @@ void AppConfig::processConfigLine( const char * line )
       //(char*)line)[h+i] = NULL;   
       char * servername = new char[i + 1];
       strncpy( servername, &( line[h] ), i );
-      servername[i] = NULL;
+      servername[i] = char( NULL );
       filter->src_ip = phostbyname( servername );
       TRACE( TRACE_CONFIG )( "%s - filter ip server address %s\n", curr_local_time(), servername );
       delete servername;
@@ -1126,7 +1126,7 @@ void AppConfig::processConfigLine( const char * line )
       {
         servername = new char[i + 1];
         strncpy( servername, &( line[h] ), i );
-        servername[i] = NULL;
+        servername[i] = char( NULL );
         filter->src_mask = phostbyname( servername );
         delete servername;
       }
@@ -1155,7 +1155,7 @@ void AppConfig::processConfigLine( const char * line )
 
       servername = new char[i + 1];
       strncpy( servername, &( line[h] ), i );
-      servername[i] = NULL;
+      servername[i] = char( NULL );
       filter->dst_ip = phostbyname( servername );
       delete servername;
 
@@ -1179,7 +1179,7 @@ void AppConfig::processConfigLine( const char * line )
       {
         servername = new char[i + 1];
         strncpy( servername, &( line[h] ), i );
-        servername[i] = NULL;
+        servername[i] = char( NULL );
         filter->dst_mask = phostbyname( servername );
         delete servername;
       }
