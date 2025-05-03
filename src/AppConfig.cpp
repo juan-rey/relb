@@ -3,7 +3,7 @@
 
    Copyright 2006, 2007, 2008, 2009, 2025 Juan Rey Saura
 
-This file is part of Resolutive Easy Load Balancer.
+This file is part of RELB Easy Load Balancer..
 
 This software is a copyrighted work licensed under the Open Software License version 3.0
 Please consult the file "LICENSE.txt" for details.
