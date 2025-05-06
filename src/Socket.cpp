@@ -113,7 +113,7 @@ void Socket::addToFDSET( fd_set * set )
   if( sock < 0 )
     TRACE( TRACE_IOSOCKET )( "%s - SOCKET ALREADY CORRUPT IN FDSET %d\n", curr_local_time(), sock );
   else
-    TRACE( TRACE_VERY_VERBOSE )( "%s - SOCKET IN FDSET %d\n", curr_local_time(), sock );
+    TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - SOCKET IN FDSET %d\n", curr_local_time(), sock );
 #endif
 
 }
@@ -130,7 +130,7 @@ int Socket::sendNB( const char * buffer, int max )
   if( sock > 0 )
   {
     ret = send( sock, buffer, max, NONBLOCKINGFLAGS );
-    TRACE( ( TRACE_VERY_VERBOSE && TRACE_IOSOCKET ) )( "%s - could wrote %d\n", curr_local_time(), ret );
+    TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - could wrote %d\n", curr_local_time(), ret );
     if( ret < 0 )
     {
       if( ( socket_errno == EAGAIN ) || ( socket_errno == EWOULDBLOCK ) )
@@ -168,7 +168,7 @@ int Socket::recieveNB( char * buffer, int max )
   if( sock > 0 )
   {
     ret = recv( sock, buffer, max, NONBLOCKINGFLAGS );
-    TRACE( ( TRACE_VERY_VERBOSE && TRACE_IOSOCKET ) )( "%s - could read %d\n", curr_local_time(), ret );
+    TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - could read %d\n", curr_local_time(), ret );
     if( ret < 0 )
     {
       if( ( socket_errno == EAGAIN ) || ( socket_errno == EWOULDBLOCK ) )
@@ -230,7 +230,7 @@ int Socket::checkSocket()
 {
   int ret = -1;
 
-  TRACE( TRACE_VERY_VERBOSE )( "%s - I am going to check the socket %d\n", curr_local_time(), sock );
+  TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - I am going to check the socket %d\n", curr_local_time(), sock );
 
   if( sock > 0 )
   {
@@ -241,7 +241,7 @@ int Socket::checkSocket()
     FD_ZERO( &setr );
     FD_SET( sock, &setr );
     ret = ::select( FD_SETSIZE, &setr, nil, nil, &to );
-    TRACE( TRACE_VERY_VERBOSE )( "%s - Really checking the socket, ret was %d but not %d\n", curr_local_time(), ret, int( -1 ) );
+    TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - Really checking the socket, ret was %d but not %d\n", curr_local_time(), ret, int( -1 ) );
   }
 
   return ret;

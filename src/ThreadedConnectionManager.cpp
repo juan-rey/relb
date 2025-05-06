@@ -24,7 +24,7 @@ USING_PTYPES
 
 ThreadedConnectionManager::ThreadedConnectionManager( int connections ): thread( false )
 {
-  TRACE( TRACE_VERY_VERBOSE )( "%s - new connection manager to handle up to %d connections\n", curr_local_time(), connections );
+  TRACE( TRACE_UNCATEGORIZED && TRACE_VERY_VERBOSE )( "%s - new connection manager to handle up to %d connections\n", curr_local_time(), connections );
   max_connections = MIN( connections, MAX_SOCKETS_PER_FDSET );
   currentconnections = 0;
   finish = false;
@@ -148,15 +148,15 @@ void ThreadedConnectionManager::execute()
       control_socket.addToFDSET( &setr );
       if( connected_peers || connecting_peers )
       {
-        TRACE( TRACE_VERY_VERBOSE && TRACE_IOSOCKET )( "%s - Checking socket changes - with SOME connections\n", curr_local_time() );
+        TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - Checking socket changes - with SOME connections\n", curr_local_time() );
         res = ::select( FD_SETSIZE, &setr, &setw, nil, nil );//&t );
-        TRACE( TRACE_VERY_VERBOSE && TRACE_IOSOCKET )( "%s - Exit - Checking socket changes - with SOME connections\n", curr_local_time() );
+        TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - Exit - Checking socket changes - with SOME connections\n", curr_local_time() );
       }
       else
       {
-        TRACE( TRACE_VERY_VERBOSE && TRACE_IOSOCKET )( "%s - Checking socket changes - with no connections\n", curr_local_time() );
+        TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - Checking socket changes - with no connections\n", curr_local_time() );
         res = ::select( FD_SETSIZE, &setr, nil, nil, nil );// &t );
-        TRACE( TRACE_VERY_VERBOSE && TRACE_IOSOCKET )( "%s - Exit - Checking socket changes - with no connections\n", curr_local_time() );
+        TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - Exit - Checking socket changes - with no connections\n", curr_local_time() );
 
 
       }
@@ -170,7 +170,7 @@ void ThreadedConnectionManager::execute()
         if( !( connected_peers || connecting_peers ) )
           TRACE( TRACE_IOSOCKET )( "%s - Checking socket changes with res %d\n", curr_local_time(), res );
 #endif					
-        TRACE( TRACE_VERY_VERBOSE && TRACE_IOSOCKET )( "%s - Checking socket changes\n", curr_local_time() );
+        TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - Checking socket changes\n", curr_local_time() );
         while( i < peer_list.get_count() )
         {
           cpeer = peer_list[i];
@@ -231,7 +231,7 @@ void ThreadedConnectionManager::execute()
         }
         else
         {
-          TRACE( TRACE_VERY_VERBOSE )( "%s - select function finished with timeout\n", curr_local_time() );
+          TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - select function finished with timeout\n", curr_local_time() );
         }
 
       }

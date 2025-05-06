@@ -343,7 +343,7 @@ void ServerList::execute()
 
     while( msg != NULL && !finish )
     {
-      TRACE( TRACE_VERBOSE )( "%s - processing message in ServerList\n", curr_local_time() );
+      TRACE( TRACE_UNCATEGORIZED && TRACE_VERBOSE )( "%s - processing message in ServerList\n", curr_local_time() );
       current_item_index = 0;
       pinfo = NULL;
 

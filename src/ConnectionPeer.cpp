@@ -52,14 +52,14 @@ ConnectionPeer::~ConnectionPeer()
 
 void ConnectionPeer::addToFDSETR( fd_set * set )
 {
-  TRACE( TRACE_VERY_VERBOSE )( "%s - pClient was %p and %d bytes free\n", curr_local_time(), (void *) pClient, bytes_to_receive_in_bufferforserver );
+  TRACE( TRACE_CONNECTIONS && TRACE_VERY_VERBOSE )( "%s - pClient was %p and %d bytes free\n", curr_local_time(), (void *) pClient, bytes_to_receive_in_bufferforserver );
 
   if( pClient && bytes_to_receive_in_bufferforserver )
   {
     pClient->addToFDSET( set );
   }
 
-  TRACE( TRACE_VERY_VERBOSE )( "%s - pServer was %p and %d bytes free\n", curr_local_time(), (void *) pServer, bytes_to_receive_in_bufferforclient );
+  TRACE( TRACE_CONNECTIONS && TRACE_VERY_VERBOSE )( "%s - pServer was %p and %d bytes free\n", curr_local_time(), (void *) pServer, bytes_to_receive_in_bufferforclient );
 
   if( pServer && bytes_to_receive_in_bufferforclient )
   {
@@ -140,7 +140,7 @@ void ConnectionPeer::closeClient()
 
   if( !isActive() )
   {
-    TRACE( TRACE_VERBOSE )( "%s - Client and server are already closed C\n", curr_local_time() );
+    TRACE( TRACE_CONNECTIONS && TRACE_VERBOSE )( "%s - Client and server are already closed C\n", curr_local_time() );
   }
 }
 
@@ -190,7 +190,7 @@ void ConnectionPeer::closeServer()
 
   if( !isActive() )
   {
-    TRACE( TRACE_VERBOSE )( "%s - Client and server are already closed S\n", curr_local_time() );
+    TRACE( TRACE_CONNECTIONS && TRACE_VERBOSE )( "%s - Client and server are already closed S\n", curr_local_time() );
   }
 }
 
@@ -273,7 +273,7 @@ void ConnectionPeer::manageConnections( fd_set * setr, fd_set * setw )
 
   if( pClient && pServer )
   {
-    TRACE( TRACE_VERY_VERBOSE )( "%s - Entro en manageConnections \n", curr_local_time() );
+    TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - Entro en manageConnections \n", curr_local_time() );
     if( pClient->isInFDSET( setr ) )
     {
       TRACE( TRACE_IOSOCKET )( "%s - reading from the client\n", curr_local_time() );

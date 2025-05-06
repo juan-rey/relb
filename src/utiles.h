@@ -127,6 +127,7 @@ struct task_info
 #define TRACE_CONFIG        1
 #define TRACE_TASKS         1
 #define TRACE_FILTERS       0
+#define TRACE_UNCATEGORIZED 0
 
 #define TRACE_VERBOSE       0
 #define TRACE_VERY_VERBOSE  0

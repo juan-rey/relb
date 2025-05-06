@@ -84,7 +84,7 @@ void ControlSocket::post()
   }
 #else
   int ret = write( fd[1], buffer, 1 );//, NONBLOCKINGFLAGS );
-  TRACE( TRACE_VERY_VERBOSE )( "%s - to control socket %d wrote %d\n", curr_local_time(), fd[0], ret );
+  TRACE( TRACE_CONNECTIONS && TRACE_VERY_VERBOSE )( "%s - to control socket %d wrote %d\n", curr_local_time(), fd[0], ret );
 #endif		
 }
 
@@ -93,13 +93,13 @@ void ControlSocket::addToFDSET( fd_set * set )
 #ifdef WIN32		
   if( sock > 0 )
   {
-    TRACE( TRACE_VERY_VERBOSE )( "%s - i am adding to FDSET control socket %d\n", curr_local_time(), sock );
+    TRACE( TRACE_CONNECTIONS && TRACE_VERY_VERBOSE )( "%s - i am adding to FDSET control socket %d\n", curr_local_time(), sock );
     FD_SET( sock, set );
   }
 #else
   if( fd[0] > 0 )
   {
-    TRACE( TRACE_VERY_VERBOSE )( "%s - i am adding to FDSET control socket %d\n", curr_local_time(), fd[0] );
+    TRACE( TRACE_CONNECTIONS && TRACE_VERY_VERBOSE )( "%s - i am adding to FDSET control socket %d\n", curr_local_time(), fd[0] );
     FD_SET( fd[0], set );
   }
 #endif
@@ -115,7 +115,7 @@ int ControlSocket::checkSocket( fd_set * set )
 #ifdef WIN32		
   int tmpsock = sock;
 
-  TRACE( TRACE_VERY_VERBOSE )( "%s - i am checking control socket %d\n", curr_local_time(), tmpsock );
+  TRACE( TRACE_CONNECTIONS && TRACE_VERY_VERBOSE )( "%s - i am checking control socket %d\n", curr_local_time(), tmpsock );
 
   if( tmpsock > 0 )
   {
@@ -126,7 +126,7 @@ int ControlSocket::checkSocket( fd_set * set )
     FD_ZERO( &setr );
     FD_SET( tmpsock, &setr );
     ret = ::select( FD_SETSIZE, &setr, nil, nil, &to );
-    TRACE( TRACE_VERY_VERBOSE )( "%s - select control socket %d returned %d\n", curr_local_time(), tmpsock, ret );
+    TRACE( TRACE_CONNECTIONS && TRACE_VERY_VERBOSE )( "%s - select control socket %d returned %d\n", curr_local_time(), tmpsock, ret );
   }
 
   if( ret < 0 )
@@ -138,7 +138,7 @@ int ControlSocket::checkSocket( fd_set * set )
   if( FD_ISSET( fd[0], set ) )
   {
     ret = read( fd[0], buffer, 1 );//, NONBLOCKINGFLAGS )) > 0 )
-    TRACE( TRACE_VERY_VERBOSE )( "%s - control socket %d read %d\n", curr_local_time(), fd[0], ret );
+    TRACE( TRACE_CONNECTIONS && TRACE_VERY_VERBOSE )( "%s - control socket %d read %d\n", curr_local_time(), fd[0], ret );
   }
 #endif	
 

@@ -202,7 +202,7 @@ bool checkIP( const ipaddress * ip )
 
   if( sockfd < 0 )
   {
-    TRACE( TRACE_VERY_VERBOSE )( "%s - could not create socket on that ip\n", curr_local_time() );
+    TRACE( TRACE_BIND && TRACE_VERY_VERBOSE )( "%s - could not create socket on that ip\n", curr_local_time() );
     val = false;
   }
 
@@ -213,21 +213,21 @@ bool checkIP( const ipaddress * ip )
   int reuse = 1;
   if( ::setsockopt( sockfd, SOL_SOCKET, SO_REUSEADDR, (const void *) &reuse, sizeof( reuse ) ) != 0 )
   {
-    TRACE( TRACE_VERY_VERBOSE )( "%s - socket address was not reusable\n", curr_local_time() );
+    TRACE( TRACE_BIND && TRACE_VERY_VERBOSE )( "%s - socket address was not reusable\n", curr_local_time() );
     val = false;
   }
 #endif
 
   if( bind( sockfd, (sockaddr *) &sa, sizeof( sa ) ) != 0 )
   {
-    TRACE( TRACE_VERY_VERBOSE )( "%s - socket could not be binded\n", curr_local_time() );
+    TRACE( TRACE_BIND && TRACE_VERY_VERBOSE )( "%s - socket could not be binded\n", curr_local_time() );
     val = false;
   }
 
   //¿ Puedo borrar el listen ?
   if( listen( sockfd, 10 ) != 0 )
   {
-    TRACE( TRACE_VERY_VERBOSE )( "%s - could not start listening\n", curr_local_time() );
+    TRACE( TRACE_BIND && TRACE_VERY_VERBOSE )( "%s - could not start listening\n", curr_local_time() );
     val = false;
   }
 
@@ -261,20 +261,20 @@ bool checkPort( const ipaddress * ip, unsigned short port )
   int reuse = 1;
   if( ::setsockopt( sockfd, SOL_SOCKET, SO_REUSEADDR, (const void *) &reuse, sizeof( reuse ) ) != 0 )
   {
-    TRACE( TRACE_VERY_VERBOSE && TRACE_CONNECTIONS )( "%s - socket address was not reusable\n", curr_local_time() );
+    TRACE( TRACE_BIND && TRACE_VERY_VERBOSE )( "%s - socket address was not reusable\n", curr_local_time() );
     val = false;
   }
 #endif
 
   if( bind( sockfd, (sockaddr *) &sa, sizeof( sa ) ) != 0 )
   {
-    TRACE( TRACE_VERY_VERBOSE )( "%s - socket could not be binded\n", curr_local_time() );
+    TRACE( TRACE_BIND && TRACE_VERY_VERBOSE )( "%s - socket could not be binded\n", curr_local_time() );
     val = false;
   }
 
   if( listen( sockfd, 10 ) != 0 )
   {
-    TRACE( TRACE_VERY_VERBOSE )( "%s - could not start listening\n", curr_local_time() );
+    TRACE( TRACE_BIND && TRACE_VERY_VERBOSE )( "%s - could not start listening\n", curr_local_time() );
     val = false;
   }
 
