@@ -17,6 +17,7 @@ Please consult the file "LICENSE.txt" for details.
 
 USING_PTYPES
 
+#define TIMEDSEM_PROPER_PRECISION_MS 1000
 #define MINIMUN_UPDATE_INTERVAL_MS  3000
 #define MAXIMUN_UPDATE_INTERVAL_MS  (MINIMUN_UPDATE_INTERVAL_MS * 5)
 #define TIME_SLICE_MARGIN_MS	16
@@ -119,8 +120,8 @@ int ServerList::cleanConnections()
 
 int ServerList::purgeConnections()
 {
-
   peer_info * pinfo = NULL;
+  TRACE( TRACE_TASKS && TRACE_VERBOSE )( "%s - i am purging connections\n", curr_local_time() );
 
   peer_lock.wrlock();
   int i = 0;
@@ -210,6 +211,7 @@ int ServerList::startUpdating()
 
 int ServerList::stopUpdating()
 {
+  TRACE( TRACE_UNCATEGORIZED && TRACE_VERBOSE )( "%s - entering stopUpdating in ServerList\n", curr_local_time() );
   update = false;
 
   return 0;
@@ -339,7 +341,9 @@ void ServerList::execute()
 
   while( !finish )
   {
+    //TRACE( TRACE_UNCATEGORIZED && TRACE_VERBOSE )( "%s - checking message in ServerList\n", curr_local_time() );
     msg = jq.getmessage( 0 );
+    //TRACE( TRACE_UNCATEGORIZED && TRACE_VERBOSE )( "%s - found message %p in ServerList\n", curr_local_time(), msg );
 
     while( msg != NULL && !finish )
     {
@@ -468,12 +472,12 @@ void ServerList::execute()
 
       delete msg;
       msg = NULL;
-      msg = jq.getmessage( 0 );
+      msg = jq.getmessage( 0 );//TODO ???
     }
 
     if( update )
     {
-
+      TRACE( TRACE_TASKS )( "%s - preprocessing tasks %s \n", curr_local_time(), given_local_time( next_task_run_time ) );
       if( next_task_run_time && ( NOW_UTC >= next_task_run_time ) )
       {
         TRACE( TRACE_TASKS )( "%s - processing tasks %s \n", curr_local_time(), given_local_time( next_task_run_time ) );
@@ -483,6 +487,7 @@ void ServerList::execute()
 
         while( task_index < tasks_list.get_count() )
         {
+          TRACE( TRACE_TASKS && TRACE_VERY_VERBOSE )( "%s - checking tasks - index %d \n", curr_local_time(), task_index );
           ptask = tasks_list[task_index];
 
           if( ptask != NULL )
@@ -493,6 +498,10 @@ void ServerList::execute()
             {
               TRACE( TRACE_TASKS )( "%s - found a task to run\n", curr_local_time() );
               ptask->last_ran_time = NOW_UTC;
+
+              //TODO TASK_UPDATE_SERVER_INFO
+              //if( ptask->task_type == TASK_UPDATE_SERVER_INFO )
+              //  ptask->last_ran_exitcode = updateServerInfo();
 
               if( ptask->task_type == TASK_CLEAN_CONNECTIONS )
                 ptask->last_ran_exitcode = cleanConnections();
@@ -540,13 +549,18 @@ void ServerList::execute()
         TRACE( TRACE_TASKS )( "%s - finished processing tasks, next on %s \n", curr_local_time(), given_local_time( next_task_run_time ) );
       }
 
-      wait_ms = MIN( int( next_task_run_time - NOW_UTC + TIME_SLICE_MARGIN_MS ), MAXIMUN_UPDATE_INTERVAL_MS );
+      //wait_ms = MIN( int( next_task_run_time - NOW_UTC + TIME_SLICE_MARGIN_MS ), MAXIMUN_UPDATE_INTERVAL_MS );
+      wait_ms = ( ( ( MIN( int( next_task_run_time - NOW_UTC + TIME_SLICE_MARGIN_MS ), MAXIMUN_UPDATE_INTERVAL_MS - TIMEDSEM_PROPER_PRECISION_MS ) ) / TIMEDSEM_PROPER_PRECISION_MS ) * TIMEDSEM_PROPER_PRECISION_MS ) + TIMEDSEM_PROPER_PRECISION_MS;
       TRACE( TRACE_TASKS )( "%s - waiting next tasks %d \n", curr_local_time(), wait_ms );
 
     }
 
+    //TRACE( TRACE_UNCATEGORIZED && TRACE_VERY_VERBOSE )( "%s - entering wait for %d ms\n", curr_local_time(), wait_ms );
+    // IMPORTANT - WORKAROUND
+    // Found a performance issue in Ptypes timedsem.wait() on non Win32 platforms 
+    // The wait time should be a multiple of a whole second to avoid any performance penalty 
     status.wait( wait_ms );
-
+    //TRACE( TRACE_UNCATEGORIZED && TRACE_VERY_VERBOSE )( "%s - exiting wait for %d ms\n", curr_local_time(), wait_ms );
   }
 }
 
