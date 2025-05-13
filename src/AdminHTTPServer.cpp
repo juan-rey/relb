@@ -35,6 +35,7 @@ Please consult the file "LICENSE.txt" for details.
 
 USING_PTYPES
 
+#define HTTP_SERVE_INTERVAL_MS 1000
 
 #define SORT_BY_SRC_IP 1
 #define SORT_BY_DST_IP 2
@@ -173,10 +174,11 @@ void AdminHTTPServer::execute()
   int  l = 0;
   bool default_redirection;
 
-  int gg = server.bind( bind_ip, bind_port );
+  int bindnum = server.bind( bind_ip, bind_port );
   int current_item_index = 0;
   while( !finish )
   {
+    TRACE( TRACE_UNCATEGORIZED && TRACE_VERY_VERBOSE )( "%s - checking admin web server\n", curr_local_time() );
     while( ( msg = jq.getmessage( 0 ) ) != NULL )
     {
       pinfo = NULL;
@@ -345,8 +347,7 @@ void AdminHTTPServer::execute()
       msg = NULL;
     }
 
-    //server.poll();
-    if( server.serve( client, gg, 1000 ) )
+    if( server.serve( client, bindnum, HTTP_SERVE_INTERVAL_MS ) )
     {
       int i = 0;
       default_redirection = true;
