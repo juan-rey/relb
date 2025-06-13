@@ -28,13 +28,14 @@ ServerList::ServerList(): thread( false ), status( 0 )
   next_task_run_time = 0;
   finish = false;
   update = false;
+  parallelList = NULL;
   reconnectlostsessions = true;
-  lastAsignedServer = 9999;
+  last_server_assigned = 9999;
   server_retry_mseconds = MAX_TIME_SERVER_UNVAILABLE_MS;
   jq.setTrigger( &status );
   finished_weight = 1;
   disconnected_weight = 1;
-  ultima_limpieza_conexiones = NOW_UTC;
+  last_connections_cleanup = NOW_UTC;
   //  start();
 }
 
@@ -98,8 +99,9 @@ int ServerList::cleanConnections()
       }
       servers_lock.unlock();
 
-      if( parallelList && pinfo->parallel )
-        parallelList->post( STATUS_PEER_CONNECTION_DELETED, pintptr( pinfo->parallel ) );
+      if( parallelList && pinfo != NULL )
+        if( pinfo->parallel )
+          parallelList->post( STATUS_PEER_CONNECTION_DELETED, pintptr( pinfo->parallel ) );
 
       if( pinfo != NULL )
       {
@@ -134,7 +136,7 @@ int ServerList::purgeConnections()
 
     i++;
   }
-  ultima_limpieza_conexiones = NOW_UTC;
+  last_connections_cleanup = NOW_UTC;
   peer_lock.unlock();
 
   return -1;
@@ -326,6 +328,13 @@ bool ServerList::addServer( const char * nombre, const ipaddress * ip, unsigned 
   return true;
 }
 
+/// <summary>
+/// Process the messages in the queue and update the server list. 
+/// Also, it executes the tasks in the task list.
+/// </summary>
+/// <remarks> it runs in a separate thread. 
+/// messages are dispatched from execute in AdminHTTPServver and ThreadedConnectionManager (using ConnectionPeer) to this class.
+/// </remarks>
 void ServerList::execute()
 {
   message * msg = NULL;
@@ -356,7 +365,7 @@ void ServerList::execute()
       {
         if( peer_list[current_item_index] == (peer_info *) msg->param )
         {
-          //si no estaba desconectado? <- aqui no?
+          // if it wasn't disconnected? <- not here?
           pinfo = peer_list[current_item_index];
           //current_item_index++;
         }
@@ -388,7 +397,7 @@ void ServerList::execute()
 
         switch( msg->id & STATUS_CLIENT_SERVER_MASK )
         {
-          //A partir de aqui se reenvía pero tambien se hace mas
+          // Here the message is forwarded and more processing is performed
           case STATUS_CONNECTION_LOST:
           case STATUS_DISCONNECTED_OK:
           case STATUS_CONNECTION_FAILED:
@@ -424,7 +433,7 @@ void ServerList::execute()
                 else
                   servers_list[i]->connected = MAX( servers_list[i]->connected - 1, 0 );
 
-                if( ( hay_mas_conectados || ( pinfo->created < ultima_limpieza_conexiones ) ) && current_item_index > -1 && current_item_index < peer_list.get_count() )
+                if( ( hay_mas_conectados || ( pinfo->created < last_connections_cleanup ) ) && current_item_index > -1 && current_item_index < peer_list.get_count() )
                 {
                   pinfo = NULL;
                   peer_list.del( current_item_index );
@@ -542,6 +551,10 @@ void ServerList::execute()
               delete ptask;
               tasks_list.del( task_index );
               task_index--;
+              if( tasks_list.get_count() == 0 )
+              {
+                next_task_run_time = NOW_UTC + MINIMUN_UPDATE_INTERVAL_MS;
+              }
             }
           }
           task_index++;
@@ -568,6 +581,13 @@ void ServerList::cleanup()
 {
 }
 
+/// <summary>
+/// Determines the server to be used for the connection. 
+/// It checks if there is a previous connection to the same server and if it is still valid. 
+/// If not, it assigns the most available server from the list of servers.
+/// </summary>
+/// 
+/// <returns> pointer to the peer_info structure that contains the information of the server to be used and the client, only when a server is available </returns>
 const peer_info * ServerList::getServer( const ipaddress * ipcliente, unsigned short puertocliente, ThreadedConnectionManager * pcm )
 {
 
@@ -575,13 +595,10 @@ const peer_info * ServerList::getServer( const ipaddress * ipcliente, unsigned s
   peer_info * pinfoparallel = NULL;
 
   servers_lock.rdlock();
-  //Solo si hay servidores  
+  // Only if there are servers  
   if( servers_list.get_count() )
   {
-
-#ifdef DEBUG        
-    //   reconnectlostsessions = false;    
-#endif    
+   
 
     if( reconnectlostsessions )
     {
@@ -593,17 +610,17 @@ const peer_info * ServerList::getServer( const ipaddress * ipcliente, unsigned s
       TRACE( TRACE_ASSIGNATION )( "%s - checking desconnections\n", curr_local_time() );
 
       peer_lock.rdlock();
-      //rastreo anteriores mientras no encuentre una coincidencia exacta
+      // Track previous ones while no exact match is found
       while( !pinfo && peer_index < peer_list.get_count() )
       {
         server_index = -1;
-        //Si hay una posible
+        // If there is a possible one
         if( peer_list[peer_index]->src_ip == *ipcliente )
         {
-          //Si la conexion es valida              
+          // If the connection is valid              
           if( peer_list[peer_index]->status != STATUS_CONNECTION_FAILED )
           {
-            server_index = servers_list.get_count(); // si siempre es > 0 ya hemos comprobado que -> if( servers_list.get_count() )
+            server_index = servers_list.get_count(); // if always > 0 we have already checked -> if( servers_list.get_count() )
             server_index--;
 
             while( server_index > 0 && servers_list[server_index]->ip != peer_list[peer_index]->dst_ip )
@@ -612,10 +629,10 @@ const peer_info * ServerList::getServer( const ipaddress * ipcliente, unsigned s
             if( server_index == 0 && servers_list[server_index]->ip != peer_list[peer_index]->dst_ip )
               server_index--;
 
-            //Habia un server que coincidia
+            // There was a matching server
             if( server_index >= 0 )
             {
-              //descarto si no se supera el timepo de reconexión tras un fallo
+              // Discard if the reconnection time after a failure has not passed
               if( servers_list[server_index]->last_connection_failed && ( ( NOW_UTC - servers_list[server_index]->last_connection_attempt ) < server_retry_mseconds ) )
               {
                 server_index = -1;
@@ -623,17 +640,17 @@ const peer_info * ServerList::getServer( const ipaddress * ipcliente, unsigned s
             }
           }
 
-          //Habia una seson valida anterior                
+          // There was a previous valid session                
           if( server_index >= 0 )
           {
             if( peer_list[peer_index]->src_port == puertocliente )
             {
-              //Por si acaso desconectamos
+              // Just in case, disconnect
               if( peer_list[peer_index]->manager != NULL )
                 ( (ThreadedConnectionManager *) peer_list[peer_index]->manager )->closePInfo( pinfo );
 
               servers_list[server_index]->connecting++;
-              //DUDA disminuyo desconectados ?
+              // DOUBT: Should I decrease disconnected?
 
               pinfo = peer_list[peer_index];
               pinfo->src_port = puertocliente;
@@ -646,19 +663,19 @@ const peer_info * ServerList::getServer( const ipaddress * ipcliente, unsigned s
             }
             else
             {
-              //Encuentro pero ya existía una preasignada
+              // Found but there was already a preassigned one
               if( lostsessionindex >= 0 )
               {
                 TRACE( TRACE_ASSIGNATION )( "%s - found another disconnection %d to server with ip address %s\n", curr_local_time(), peer_index, (const char *) iptostring( peer_list[peer_index]->dst_ip ) );
 
-                //La conexion es posterior a la que estaba preasignada
+                // The connection is after the one that was preassigned
                 if( ( peer_list[peer_index]->modified > peer_list[lostsessionindex]->modified ) && ( peer_list[lostsessionindex]->status != STATUS_CONNECTION_FAILED ) )
                 {
                   lostsessionindex = peer_index;
                 }
                 else
                 {
-                  //La conexion que estaba preasignada antes fallo
+                  // The previously preassigned connection failed
                   if( peer_list[lostsessionindex]->status == STATUS_CONNECTION_FAILED )
                   {
                     lostsessionindex = peer_index;
@@ -669,11 +686,11 @@ const peer_info * ServerList::getServer( const ipaddress * ipcliente, unsigned s
               {
                 TRACE( TRACE_ASSIGNATION )( "%s - found a disconnection %d to server with ip %s\n", curr_local_time(), peer_index, (const char *) iptostring( peer_list[peer_index]->dst_ip ) );
 
-                //Si no habia ninguna preasignada la doy por buena
+                // If there was no preassigned one, accept this one
                 lostsessionindex = peer_index;
               }
 
-              //si me vale el peer tambien el servidor
+              // If the peer is valid, so is the server
               if( lostsessionindex == peer_index )
               {
                 lostsessionserver = server_index;
@@ -685,7 +702,7 @@ const peer_info * ServerList::getServer( const ipaddress * ipcliente, unsigned s
       }
       peer_lock.unlock();
 
-      //Si he encontrado algo y tengo que volver a crear
+      // If something was found and needs to be recreated
       if( lostsessionindex >= 0 && !pinfo )
       {
         peer_lock.wrlock();
@@ -715,13 +732,13 @@ const peer_info * ServerList::getServer( const ipaddress * ipcliente, unsigned s
             pinfo->parallel = NULL;
             pinfo->manager = (void *) pcm;
 
-            //Eliminamos las de desconexiones
+            // Remove disconnected connections from the list
             peer_index = 0;
             while( peer_index < peer_list.get_count() )
             {
               if( ( peer_list[peer_index]->src_ip == *ipcliente ) && ( peer_list[peer_index]->status & STATUS_PEER_NOT_CONNECTED ) )
               {
-                TRACE( TRACE_ASSIGNATION )( "%s - Deleting los connection %d\n", curr_local_time(), peer_index );
+                TRACE( TRACE_ASSIGNATION )( "%s - Deleting lost connection %d\n", curr_local_time(), peer_index );
 
                 if( lostsessionserver >= 0 && lostsessionserver < servers_list.get_count() )
                 {
@@ -759,7 +776,7 @@ const peer_info * ServerList::getServer( const ipaddress * ipcliente, unsigned s
     }
 
 
-    //No hay que preasignado por reconexion, asigno un servidor                     
+    // If not preassigned by reconnection, assign a server                     
     if( !pinfo )
     {
       int nextserver, currentserver;
@@ -768,16 +785,16 @@ const peer_info * ServerList::getServer( const ipaddress * ipcliente, unsigned s
       bool nextserver_notavailable, currentserver_notavailable;
       bool assigned_server = false;
 
-      //Asigno(nextserver) el siguiente al ultimo asignado calculo ratio y disponibilidad y avanzo al siguiente    
-      lastAsignedServer++;
+      // Assign (nextserver) the next to the last assigned, calculate ratio and availability, and move to the next one    
+      last_server_assigned++;
 
-      if( lastAsignedServer >= servers_list.get_count() )
+      if( last_server_assigned >= servers_list.get_count() )
       {
-        lastAsignedServer = 0;
+        last_server_assigned = 0;
       }
 
-      TRACE( TRACE_ASSIGNATION )( "%s - Evaluating servers from %d\n", curr_local_time(), lastAsignedServer );
-      currentserver = lastAsignedServer;
+      TRACE( TRACE_ASSIGNATION )( "%s - Evaluating servers from %d\n", curr_local_time(), last_server_assigned );
+      currentserver = last_server_assigned;
       currentserver_index = ( servers_list[currentserver]->connecting + servers_list[currentserver]->connected + ( servers_list[currentserver]->finished * finished_weight ) + ( servers_list[currentserver]->disconnected * disconnected_weight ) ) / float( MAX( 1, servers_list[currentserver]->weight ) );
       currentserver_notavailable = ( ( servers_list[currentserver]->max_connections && servers_list[currentserver]->connected >= servers_list[currentserver]->max_connections )
         || ( servers_list[currentserver]->last_connection_failed && ( ( NOW_UTC - servers_list[currentserver]->last_connection_attempt ) < server_retry_mseconds ) ) );
@@ -785,7 +802,7 @@ const peer_info * ServerList::getServer( const ipaddress * ipcliente, unsigned s
       nextserver_index = currentserver_index;
       nextserver_notavailable = currentserver_notavailable;
       nextserver = currentserver;
-      TRACE( TRACE_ASSIGNATION )( "%s - Setting default server %d with index %f  weight %d y %d connections, last connection was %s %d seconds ago\n",
+      TRACE( TRACE_ASSIGNATION )( "%s - Setting default server %d with index %f  weight %d and %d connections, last connection was %s %d seconds ago\n",
         curr_local_time(), currentserver, currentserver_index, servers_list[currentserver]->weight, servers_list[currentserver]->connecting + servers_list[currentserver]->connected + servers_list[currentserver]->finished + servers_list[currentserver]->disconnected, currentserver_notavailable ? "failed" : "succeeded", int( NOW_UTC - servers_list[currentserver]->last_connection_attempt ) / 1000 );
 
       if( isServerAllowed( &( servers_list[nextserver]->ip ), ipcliente ) )
@@ -799,29 +816,29 @@ const peer_info * ServerList::getServer( const ipaddress * ipcliente, unsigned s
       }
 
 
-      //Revisar por que si lastAsignedServer es 0 se revisa 2 veces
-      //Reviso todos y asigno(nextserver) aquellos mejores
-      while( currentserver != lastAsignedServer )
+      // Review why if last_server_assigned is 0 it is checked twice
+      // I check all and assign (nextserver) the best one
+      while( currentserver != last_server_assigned )
       {
-        //caculo ratio disponibilidad para este servidor
+        // Calculate availability ratio for this server
         currentserver_index = ( servers_list[currentserver]->finished + servers_list[currentserver]->connected + ( servers_list[currentserver]->finished * finished_weight ) + ( servers_list[currentserver]->disconnected * disconnected_weight ) ) / float( MAX( 1, servers_list[currentserver]->weight ) );
         currentserver_notavailable = ( ( servers_list[currentserver]->max_connections && servers_list[currentserver]->connected >= servers_list[currentserver]->max_connections )
           || ( servers_list[currentserver]->last_connection_failed && ( ( NOW_UTC - servers_list[currentserver]->last_connection_attempt ) < server_retry_mseconds ) ) );
         currentserver_weight = servers_list[currentserver]->weight;
-        TRACE( TRACE_ASSIGNATION )( "%s - Analizing server %d with index %f weight %d and %d connections, last connection %s %d seconds ago\n",
+        TRACE( TRACE_ASSIGNATION )( "%s - Analysing server %d with index %f weight %d and %d connections, last connection %s %d seconds ago\n",
           curr_local_time(), currentserver, currentserver_index, servers_list[currentserver]->weight, ( servers_list[currentserver]->finished + servers_list[currentserver]->connected + servers_list[currentserver]->disconnected + servers_list[currentserver]->connecting ), currentserver_notavailable ? "failed" : "succeeded", int( NOW_UTC - servers_list[currentserver]->last_connection_attempt ) / 1000 );
 
-        //valorar filtros de IPs
+        // Evaluate IP filters
         if( isServerAllowed( &( servers_list[currentserver]->ip ), ipcliente ) )
         {
 
           TRACE( TRACE_ASSIGNATION )( "%s - Allowed server %d with index %f weight %d, next index %f weight %d\n",
             curr_local_time(), currentserver, currentserver_index, currentserver_weight, nextserver_index, nextserver_weight );
-          //aqui o en otro lado???
-        //assigned_server = true;	
+          // here or elsewhere???
+          //assigned_server = true;	
           if( !currentserver_index && !nextserver_index )
           {
-            //no tienen conectados ( index es 0 )          
+            // They have no connections (index is 0)          
             if( ( !assigned_server || currentserver_weight > nextserver_weight )
               && ( !currentserver_notavailable || ( currentserver_notavailable && nextserver_notavailable ) )
               )
@@ -836,7 +853,7 @@ const peer_info * ServerList::getServer( const ipaddress * ipcliente, unsigned s
           }
           else
           {
-            //tienen conectados  ( index es <> 0 )           
+            // They have connections (index is not 0)           
             if( ( !assigned_server || currentserver_index < nextserver_index )
               && ( !currentserver_notavailable || ( currentserver_notavailable && nextserver_notavailable ) )
               )
@@ -859,30 +876,31 @@ const peer_info * ServerList::getServer( const ipaddress * ipcliente, unsigned s
         }
       }
 
-      //Si no he encontrado nada hago un último intento incluyendo no asignables
+
+      // If nothing was found, make one last attempt including non-assignable servers
       if( !assigned_server )
       {
         TRACE( TRACE_ASSIGNATION )( "%s - Ooops, no valid server found. Re-check even non available servers\n", curr_local_time() );
-        while( currentserver != lastAsignedServer )
+        while( currentserver != last_server_assigned )
         {
-          //caculo ratio disponibilidad para este servidor
+          // Calculate availability ratio for this server
           currentserver_index = ( servers_list[currentserver]->finished + servers_list[currentserver]->connected + ( servers_list[currentserver]->finished * finished_weight ) + ( servers_list[currentserver]->disconnected * disconnected_weight ) ) / float( MAX( 1, servers_list[currentserver]->weight ) );
           currentserver_notavailable = false;
           currentserver_weight = servers_list[currentserver]->weight;
           TRACE( TRACE_ASSIGNATION )( "%s - Analizing server %d with index %f weight %d y %d connections, last connection %s %d seconds ago\n",
             curr_local_time(), currentserver, currentserver_index, servers_list[currentserver]->weight, ( servers_list[currentserver]->finished + servers_list[currentserver]->connected + servers_list[currentserver]->disconnected + servers_list[currentserver]->connecting ), currentserver_notavailable ? "failed" : "succeeded", int( NOW_UTC - servers_list[currentserver]->last_connection_attempt ) / 1000 );
 
-          //valorar filtros de IPs
+          // Evaluate IP filters
           if( isServerAllowed( &( servers_list[currentserver]->ip ), ipcliente ) )
           {
 
             TRACE( TRACE_ASSIGNATION )( "%s - Allowed server %d with index %f weight %d, next index %f weight %d\n",
               curr_local_time(), currentserver, currentserver_index, currentserver_weight, nextserver_index, nextserver_weight );
-            //aqui o en otro lado???
+            // here or elsewhere???
             //assigned_server = true;
             if( !currentserver_index && !nextserver_index )
             {
-              //no tienen conectados ( index es 0 )          
+              // They have no connections (index is 0)       
               if( ( !assigned_server || currentserver_weight > nextserver_weight )
                 && ( !currentserver_notavailable || ( currentserver_notavailable && nextserver_notavailable ) )
                 )
@@ -897,7 +915,7 @@ const peer_info * ServerList::getServer( const ipaddress * ipcliente, unsigned s
             }
             else
             {
-              //tienen conectados  ( index es <> 0 )           
+              // They have connections (index is not 0)           
               if( ( !assigned_server || currentserver_index < nextserver_index )
                 && ( !currentserver_notavailable || ( currentserver_notavailable && nextserver_notavailable ) )
                 )
@@ -924,20 +942,20 @@ const peer_info * ServerList::getServer( const ipaddress * ipcliente, unsigned s
 
       if( assigned_server )
       {
-        //ya lo tengo
-        lastAsignedServer = nextserver;
-        if( lastAsignedServer < 0 || lastAsignedServer >= servers_list.get_count() )
+        // got the server to be used
+        last_server_assigned = nextserver;
+        if( last_server_assigned < 0 || last_server_assigned >= servers_list.get_count() )
         {
-          lastAsignedServer = 0;
+          last_server_assigned = 0;
         }
-        servers_list[lastAsignedServer]->connecting++;
-        TRACE( TRACE_CONNECTIONS )( "%s - ServerList - server %d, connecting %d, connected %d, finished %d, disconnected %d, total %d connections\n", curr_local_time(), lastAsignedServer, servers_list[lastAsignedServer]->connecting, servers_list[lastAsignedServer]->connected, servers_list[lastAsignedServer]->finished, servers_list[lastAsignedServer]->disconnected, servers_list[lastAsignedServer]->connecting + servers_list[lastAsignedServer]->connected + servers_list[lastAsignedServer]->finished + servers_list[lastAsignedServer]->disconnected );
+        servers_list[last_server_assigned]->connecting++;
+        TRACE( TRACE_CONNECTIONS )( "%s - ServerList - server %d, connecting %d, connected %d, finished %d, disconnected %d, total %d connections\n", curr_local_time(), last_server_assigned, servers_list[last_server_assigned]->connecting, servers_list[last_server_assigned]->connected, servers_list[last_server_assigned]->finished, servers_list[last_server_assigned]->disconnected, servers_list[last_server_assigned]->connecting + servers_list[last_server_assigned]->connected + servers_list[last_server_assigned]->finished + servers_list[last_server_assigned]->disconnected );
 
         pinfo = new peer_info;
         pinfo->src_ip = *ipcliente;
         pinfo->src_port = puertocliente;
-        pinfo->dst_ip = servers_list[lastAsignedServer]->ip;
-        pinfo->dst_port = servers_list[lastAsignedServer]->port;
+        pinfo->dst_ip = servers_list[last_server_assigned]->ip;
+        pinfo->dst_port = servers_list[last_server_assigned]->port;
         pinfo->status = STATUS_CONNECTING_SERVER;
         pinfo->created = NOW_UTC;
         pinfo->modified = pinfo->created;
@@ -945,7 +963,7 @@ const peer_info * ServerList::getServer( const ipaddress * ipcliente, unsigned s
         pinfo->ban_this = false;
         pinfo->parallel = NULL;
         pinfo->manager = (void *) pcm;
-        TRACE( TRACE_ASSIGNATION )( "%s - Assigning server %d with IP %s\n", curr_local_time(), lastAsignedServer, (const char *) iptostring( pinfo->dst_ip ) );
+        TRACE( TRACE_ASSIGNATION )( "%s - Assigning server %d with IP %s\n", curr_local_time(), last_server_assigned, (const char *) iptostring( pinfo->dst_ip ) );
 
         if( parallelList )
         {
@@ -1016,7 +1034,7 @@ void ServerList::setServer( int client_socket, sockaddr_in * sac )
 {
   ipaddress temp( sac->sin_addr.s_addr );
   ThreadedConnectionManager * pcm = cmlist.getFreeThreadedConnectionManager();
-  Socket * pCliente = new Socket( client_socket, &temp /*(ipaddress *) &(ipaddress (sac->sin_addr.s_addr))*/, ntohs( sac->sin_port ) );
+  Socket * pCliente = new Socket( client_socket, &temp, ntohs( sac->sin_port ) );
   Socket * pServidor = NULL;
   peer_info * pinfo = NULL;
 

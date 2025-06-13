@@ -25,7 +25,6 @@ class ServerList: public thread
 protected:
   virtual void execute();
   virtual void cleanup();
-  timedsem status;
   // No description
   bool update;
   bool finish;
@@ -40,16 +39,17 @@ protected:
   datetime next_task_run_time;
   MessaggeQueue * parallelList;
   MessaggeQueue jq;
+  timedsem status;
   int cleanConnections();
   int purgeConnections();
   void cleanList();
   void cleanPeerList();
   void cleanTaskList();
-  int lastAsignedServer;
+  int last_server_assigned;
   int server_retry_mseconds;
   int finished_weight;
   int disconnected_weight;
-  datetime ultima_limpieza_conexiones;
+  datetime last_connections_cleanup;
 public:
   void setPeersPerThread( int ppt );
   void setServerRetry( int seconds );
