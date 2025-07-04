@@ -67,6 +67,22 @@ const MessaggeQueue * ServerList::getQueue()
   return &jq;
 }
 
+// is not implemented in this code snippet, but it would typically update the server information based on the current state of the servers and connections.
+int ServerList::updateServerInfo()
+{
+  TRACE( TRACE_TASKS )( "%s - updating server info\n", curr_local_time() );
+  servers_lock.rdlock();
+  int i = 0;
+  while( i < servers_list.get_count() )
+  {
+    // TODO: Update server information logic here. dns resolution, connection status, etc.
+    i++;
+  }
+  servers_lock.unlock();
+  return 0;
+}
+
+// Removes all connections that are not connected, and updates the server list accordingly.
 int ServerList::cleanConnections()
 {
   const peer_info * pinfo = NULL;
@@ -120,6 +136,7 @@ int ServerList::cleanConnections()
   return 0;
 }
 
+// Purges all connections, closing them and removing them from the list.
 int ServerList::purgeConnections()
 {
   peer_info * pinfo = NULL;
@@ -139,7 +156,7 @@ int ServerList::purgeConnections()
   last_connections_cleanup = NOW_UTC;
   peer_lock.unlock();
 
-  return -1;
+  return 0;
 }
 
 void ServerList::cleanList()
@@ -338,150 +355,19 @@ bool ServerList::addServer( const char * nombre, const ipaddress * ip, unsigned 
 void ServerList::execute()
 {
   message * msg = NULL;
-  peer_info * pinfo = NULL;
-  //int i = 0;
-  int current_item_index = 0;
   int wait_ms = MINIMUN_UPDATE_INTERVAL_MS;
-
 
   if( !update && tasks_list.get_count() )
     update = true;
 
-
   while( !finish )
   {
-    //TRACE( TRACE_UNCATEGORIZED && TRACE_VERBOSE )( "%s - checking message in ServerList\n", curr_local_time() );
-    msg = jq.getmessage( 0 );
-    //TRACE( TRACE_UNCATEGORIZED && TRACE_VERBOSE )( "%s - found message %p in ServerList\n", curr_local_time(), msg );
 
-    while( msg != NULL && !finish )
+    while( !finish && ( msg = jq.getmessage( 0 ) ) != NULL )
     {
-      TRACE( TRACE_UNCATEGORIZED && TRACE_VERBOSE )( "%s - processing message in ServerList\n", curr_local_time() );
-      current_item_index = 0;
-      pinfo = NULL;
-
-      peer_lock.rdlock();
-      while( !pinfo && current_item_index < peer_list.get_count() )
-      {
-        if( peer_list[current_item_index] == (peer_info *) msg->param )
-        {
-          // if it wasn't disconnected? <- not here?
-          pinfo = peer_list[current_item_index];
-          //current_item_index++;
-        }
-        else
-        {
-          current_item_index++;
-        }
-      }
-
-      if( pinfo != NULL )
-      {
-        switch( msg->id )
-        {
-          case STATUS_PEER_CONNECTION_CANCELLED:
-            break;
-          case STATUS_PEER_CONNECTION_KICKED:
-            TRACE( TRACE_CONNECTIONS )( "%s - kick request\n", curr_local_time() );
-            if( pinfo->manager != NULL )
-              ( (ThreadedConnectionManager *) pinfo->manager )->closePInfo( pinfo );
-            break;
-          default:
-          {
-            pinfo->status = msg->id;
-            pinfo->modified = NOW_UTC;
-            if( parallelList && pinfo->parallel )
-              parallelList->post( pinfo->status, pintptr( pinfo->parallel ) );
-          }
-        }
-
-        switch( msg->id & STATUS_CLIENT_SERVER_MASK )
-        {
-          // Here the message is forwarded and more processing is performed
-          case STATUS_CONNECTION_LOST:
-          case STATUS_DISCONNECTED_OK:
-          case STATUS_CONNECTION_FAILED:
-          {
-            int i = 0;
-            int peer_index = 0;
-            bool hay_mas_conectados = false;
-            while( peer_index < peer_list.get_count() && !hay_mas_conectados )
-            {
-              if( ( peer_index != current_item_index ) && !( peer_list[peer_index]->status & STATUS_PEER_NOT_CONNECTED ) && ( peer_list[peer_index]->src_ip == pinfo->src_ip ) )
-              {
-                hay_mas_conectados = true;
-              }
-              else
-              {
-                peer_index++;
-              }
-            }
-
-            servers_lock.rdlock();
-            while( i < servers_list.get_count() )
-            {
-              if( ( servers_list[i]->ip == pinfo->dst_ip ) && ( servers_list[i]->port == pinfo->dst_port ) )
-              {
-                if( msg->id == STATUS_CONNECTION_FAILED )
-                {
-                  servers_list[i]->last_connection_failed = true;
-                  servers_list[i]->last_connection_attempt = NOW_UTC;
-                }
-
-                if( msg->id & STATUS_CONNECTION_FAILED )
-                  servers_list[i]->connecting = MAX( servers_list[i]->connecting - 1, 0 );
-                else
-                  servers_list[i]->connected = MAX( servers_list[i]->connected - 1, 0 );
-
-                if( ( hay_mas_conectados || ( pinfo->created < last_connections_cleanup ) ) && current_item_index > -1 && current_item_index < peer_list.get_count() )
-                {
-                  pinfo = NULL;
-                  peer_list.del( current_item_index );
-                }
-                else
-                {
-                  if( msg->id & STATUS_PEER_DISCONNECTED )
-                    servers_list[i]->disconnected++;
-                  else
-                    servers_list[i]->finished++;
-                }
-
-                TRACE( TRACE_CONNECTIONS )( "%s - ServerList - server %d, connecting %d, connected %d, finished %d, disconnected %d, total %d connections\n", curr_local_time(), i, servers_list[i]->connecting, servers_list[i]->connected, servers_list[i]->finished, servers_list[i]->disconnected, servers_list[i]->connecting + servers_list[i]->connected + servers_list[i]->finished + servers_list[i]->disconnected );
-                i = servers_list.get_count();
-              }
-              i++;
-            }
-            servers_lock.unlock();
-          }
-          break;
-          case STATUS_CONNECTION_ESTABLISHED:
-          {
-            int i = 0;
-            servers_lock.rdlock();
-            while( i < servers_list.get_count() )
-            {
-              if( ( servers_list[i]->ip == pinfo->dst_ip ) && ( servers_list[i]->port == pinfo->dst_port ) )
-              {
-                servers_list[i]->connected++;
-                servers_list[i]->connecting = MAX( servers_list[i]->connecting - 1, 0 );
-                servers_list[i]->last_connection_failed = false;
-                servers_list[i]->last_connection_attempt = NOW_UTC;
-                TRACE( TRACE_CONNECTIONS )( "%s - ServerList - server %d, connecting %d, connected %d, finished %d, disconnected %d, total %d connections\n", curr_local_time(), i, servers_list[i]->connecting, servers_list[i]->connected, servers_list[i]->finished, servers_list[i]->disconnected, servers_list[i]->connecting + servers_list[i]->connected + servers_list[i]->finished + servers_list[i]->disconnected );
-                i = servers_list.get_count();
-              }
-              i++;
-            }
-            servers_lock.unlock();
-          }
-          break;
-        }
-
-      }
-      peer_lock.unlock();
-
+      processMessage( msg );
       delete msg;
       msg = NULL;
-      msg = jq.getmessage( 0 );//TODO ???
     }
 
     if( update )
@@ -575,6 +461,139 @@ void ServerList::execute()
     status.wait( wait_ms );
     //TRACE( TRACE_UNCATEGORIZED && TRACE_VERY_VERBOSE )( "%s - exiting wait for %d ms\n", curr_local_time(), wait_ms );
   }
+
+  if( msg != NULL )
+  {
+    delete msg;
+    msg = NULL;
+  }
+}
+
+void ServerList::processMessage( message * msg )
+{
+  peer_info * pinfo = NULL;
+  int current_item_index = 0;
+
+  TRACE( TRACE_UNCATEGORIZED && TRACE_VERBOSE )( "%s - processing message in ServerList\n", curr_local_time() );
+
+  peer_lock.rdlock();
+  while( !pinfo && current_item_index < peer_list.get_count() )
+  {
+    if( peer_list[current_item_index] == (peer_info *) msg->param )
+    {
+      // if it wasn't disconnected? <- not here?
+      pinfo = peer_list[current_item_index];
+      //current_item_index++;
+    }
+    else
+    {
+      current_item_index++;
+    }
+  }
+
+  if( pinfo != NULL )
+  {
+    switch( msg->id )
+    {
+      case STATUS_PEER_CONNECTION_CANCELLED:
+        break;
+      case STATUS_PEER_CONNECTION_KICKED:
+        TRACE( TRACE_CONNECTIONS )( "%s - kick request\n", curr_local_time() );
+        if( pinfo->manager != NULL )
+          ( (ThreadedConnectionManager *) pinfo->manager )->closePInfo( pinfo );
+        break;
+      default:
+      {
+        pinfo->status = msg->id;
+        pinfo->modified = NOW_UTC;
+        if( parallelList && pinfo->parallel )
+          parallelList->post( pinfo->status, pintptr( pinfo->parallel ) );
+      }
+    }
+
+    switch( msg->id & STATUS_CLIENT_SERVER_MASK )
+    {
+      // Here the message is forwarded and more processing is performed
+      case STATUS_CONNECTION_LOST:
+      case STATUS_DISCONNECTED_OK:
+      case STATUS_CONNECTION_FAILED:
+      {
+        int i = 0;
+        int peer_index = 0;
+        bool hay_mas_conectados = false;
+        while( peer_index < peer_list.get_count() && !hay_mas_conectados )
+        {
+          if( ( peer_index != current_item_index ) && !( peer_list[peer_index]->status & STATUS_PEER_NOT_CONNECTED ) && ( peer_list[peer_index]->src_ip == pinfo->src_ip ) )
+          {
+            hay_mas_conectados = true;
+          }
+          else
+          {
+            peer_index++;
+          }
+        }
+
+        servers_lock.rdlock();
+        while( i < servers_list.get_count() )
+        {
+          if( ( servers_list[i]->ip == pinfo->dst_ip ) && ( servers_list[i]->port == pinfo->dst_port ) )
+          {
+            if( msg->id == STATUS_CONNECTION_FAILED )
+            {
+              servers_list[i]->last_connection_failed = true;
+              servers_list[i]->last_connection_attempt = NOW_UTC;
+            }
+
+            if( msg->id & STATUS_CONNECTION_FAILED )
+              servers_list[i]->connecting = MAX( servers_list[i]->connecting - 1, 0 );
+            else
+              servers_list[i]->connected = MAX( servers_list[i]->connected - 1, 0 );
+
+            if( ( hay_mas_conectados || ( pinfo->created < last_connections_cleanup ) ) && current_item_index > -1 && current_item_index < peer_list.get_count() )
+            {
+              pinfo = NULL;
+              peer_list.del( current_item_index );
+            }
+            else
+            {
+              if( msg->id & STATUS_PEER_DISCONNECTED )
+                servers_list[i]->disconnected++;
+              else
+                servers_list[i]->finished++;
+            }
+
+            TRACE( TRACE_CONNECTIONS )( "%s - ServerList - server %d, connecting %d, connected %d, finished %d, disconnected %d, total %d connections\n", curr_local_time(), i, servers_list[i]->connecting, servers_list[i]->connected, servers_list[i]->finished, servers_list[i]->disconnected, servers_list[i]->connecting + servers_list[i]->connected + servers_list[i]->finished + servers_list[i]->disconnected );
+            i = servers_list.get_count();
+          }
+          i++;
+        }
+        servers_lock.unlock();
+      }
+      break;
+      case STATUS_CONNECTION_ESTABLISHED:
+      {
+        int i = 0;
+        servers_lock.rdlock();
+        while( i < servers_list.get_count() )
+        {
+          if( ( servers_list[i]->ip == pinfo->dst_ip ) && ( servers_list[i]->port == pinfo->dst_port ) )
+          {
+            servers_list[i]->connected++;
+            servers_list[i]->connecting = MAX( servers_list[i]->connecting - 1, 0 );
+            servers_list[i]->last_connection_failed = false;
+            servers_list[i]->last_connection_attempt = NOW_UTC;
+            TRACE( TRACE_CONNECTIONS )( "%s - ServerList - server %d, connecting %d, connected %d, finished %d, disconnected %d, total %d connections\n", curr_local_time(), i, servers_list[i]->connecting, servers_list[i]->connected, servers_list[i]->finished, servers_list[i]->disconnected, servers_list[i]->connecting + servers_list[i]->connected + servers_list[i]->finished + servers_list[i]->disconnected );
+            i = servers_list.get_count();
+          }
+          i++;
+        }
+        servers_lock.unlock();
+      }
+      break;
+    }
+
+  }
+  peer_lock.unlock();
 }
 
 void ServerList::cleanup()

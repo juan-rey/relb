@@ -25,6 +25,7 @@ class ServerList: public thread
 protected:
   virtual void execute();
   virtual void cleanup();
+  void processMessage( message * msg );
   // No description
   bool update;
   bool finish;
@@ -40,6 +41,7 @@ protected:
   MessaggeQueue * parallelList;
   MessaggeQueue jq;
   timedsem status;
+  int updateServerInfo();
   int cleanConnections();
   int purgeConnections();
   void cleanList();
