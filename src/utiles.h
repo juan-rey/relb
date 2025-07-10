@@ -51,7 +51,7 @@ struct filterinfo
 
 struct serverinfo
 {
-  char * nombre;
+  char * host_name;
   ipaddress ip;
   int port;
   int disconnected;

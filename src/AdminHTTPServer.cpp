@@ -116,26 +116,28 @@ void AdminHTTPServer::stopHTTPAdmin()
   finish = true;
 }
 
+/*
 bool AdminHTTPServer::addServer( const char * nombre, const char * hostname, unsigned short puerto, int weight, int max_connections )
 {
   ipaddress ip = phostbyname( hostname );
 
   return addServer( nombre, &ip, puerto, weight );
 }
+*/
 
-bool AdminHTTPServer::addServer( const char * nombre, const ipaddress * ip, unsigned short puerto, int weight, int max_connections )
+bool AdminHTTPServer::addServer( const char * host_name, const ipaddress * ip, unsigned short puerto, int weight, int max_connections )
 {
   serverinfo * info = new serverinfo;
 
-  if( nombre )
+  if( host_name )
   {
-    info->nombre = new char[strlen( nombre ) + 1];
-    strcpy( info->nombre, nombre );
+    info->host_name = new char[strlen( host_name ) + 1];
+    strcpy( info->host_name, host_name );
   }
   else
   {
-    info->nombre = new char[1];
-    info->nombre[0] = 0;
+    info->host_name = new char[1];
+    info->host_name[0] = 0;
   }
 
   info->ip = *ip;
@@ -539,8 +541,8 @@ void AdminHTTPServer::cleanServersList()
 
     if( pinfo != NULL )
     {
-      if( pinfo->nombre )
-        delete pinfo->nombre;
+      if( pinfo->host_name )
+        delete pinfo->host_name;
       delete pinfo;
     }
     server_list.del( 0 );

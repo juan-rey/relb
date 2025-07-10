@@ -27,8 +27,8 @@ public:
   virtual ~AdminHTTPServer();
   void startHTTPAdmin( unsigned short port, const ipaddress ip );
   void stopHTTPAdmin();
-  bool addServer( const char * nombre, const ipaddress * ip, unsigned short puerto, int weight = 0, int max_connections = 0 );
-  bool addServer( const char * nombre, const char * hostname, unsigned short puerto, int weight = 0, int max_connections = 0 );
+  bool addServer( const char * host_name, const ipaddress * ip, unsigned short puerto, int weight = 0, int max_connections = 0 );
+  //bool addServer( const char * nombre, const char * hostname, unsigned short puerto, int weight = 0, int max_connections = 0 );
   void setPararllelList( const MessaggeQueue * jq );
   const MessaggeQueue * getJQ();
 

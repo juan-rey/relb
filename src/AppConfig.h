@@ -29,7 +29,7 @@ USING_PTYPES
 
 struct dst_conf
 {
-  string servername;
+  string host_name;
   ipaddress dst_ip;
   unsigned short dst_port;
   int weight;

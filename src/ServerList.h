@@ -41,7 +41,8 @@ protected:
   MessaggeQueue * parallelList;
   MessaggeQueue jq;
   timedsem status;
-  int updateServerInfo();
+  //TODO
+  //int updateServerInfo();
   int cleanConnections();
   int purgeConnections();
   void cleanList();
@@ -56,8 +57,8 @@ public:
   void setPeersPerThread( int ppt );
   void setServerRetry( int seconds );
   ServerList();
-  bool addServer( const char * nombre, const ipaddress * ip, unsigned short puerto, int weight = 0, int max_connections = 0 );
-  bool addServer( const char * nombre, const char * hostname, unsigned short puerto, int weight = 0, int max_connections = 0 );
+  bool addServer( const char * host_name, const ipaddress * ip, unsigned short puerto, int weight = 0, int max_connections = 0 );
+  //bool addServer( const char * nombre, const char * hostname, unsigned short puerto, int weight = 0, int max_connections = 0 );
   bool addTask( TASK_TYPE task_type, int run_interval_seconds );
   bool addTask( TASK_TYPE task_type, datetime firstrun, int run_interval_seconds );
   bool addFilter( const ipaddress source_ip, const ipaddress source_mask, const ipaddress dest_ip, const ipaddress dest_mask, bool allow );

@@ -159,7 +159,7 @@ string AppConfig::getServerName()
   if( currentBind < bind.get_count() )
   {
     if( currentServer < bind[currentBind]->dst.get_count() )
-      val = bind[currentBind]->dst[currentServer]->servername;
+      val = bind[currentBind]->dst[currentServer]->host_name;
   }
 
   return val;
@@ -831,6 +831,7 @@ void AppConfig::processConfigLine( const char * line )
     {
       int h, i = 0;
       ipaddress dst_ip;
+      string host_name;
       unsigned short dst_port = 0;
       int weight = 0;
       int max_connections = 0;
@@ -850,13 +851,24 @@ void AppConfig::processConfigLine( const char * line )
       while( line[h + i] != char( NULL ) && line[h + i] != ',' && line[h + i] != ':' )
         i++;
       char * servername = new char[i + 1];
-
       strncpy( servername, &( line[h] ), i );
       servername[i] = char( NULL );
       dst_ip = phostbyname( servername );
-      delete servername;
-      TRACE( TRACE_CONFIG )( "%s - destination server ip address %s\n", curr_local_time(), (const char *) iptostring( dst_ip ) );
-      if( dst_ip == ipnone )
+      host_name = iptostring( dst_ip );
+      if( strcmp( servername, (const char *) host_name ) )
+      {
+        host_name = servername;
+        TRACE( TRACE_CONFIG )( "%s - destination server name %s ip address %s\n", curr_local_time(), (const char *) host_name, (const char *) (const char *) iptostring( dst_ip ) );
+      }
+      else // text was an ip address
+      {
+        host_name = "";
+        TRACE( TRACE_CONFIG )( "%s - destination server ip address %s\n", curr_local_time(), (const char *) iptostring( dst_ip ) );
+      }
+
+     delete servername;
+
+     if( dst_ip == ipnone )
       {
         valid = false;
       }
@@ -897,6 +909,7 @@ void AppConfig::processConfigLine( const char * line )
         if( bind.get_count() > 0 )
         {
           dst_conf * tmp = new dst_conf;
+          tmp->host_name = host_name;
           tmp->dst_ip = dst_ip;
           tmp->dst_port = dst_port;
           tmp->weight = weight;

@@ -67,6 +67,7 @@ const MessaggeQueue * ServerList::getQueue()
   return &jq;
 }
 
+/*
 // is not implemented in this code snippet, but it would typically update the server information based on the current state of the servers and connections.
 int ServerList::updateServerInfo()
 {
@@ -80,7 +81,7 @@ int ServerList::updateServerInfo()
   }
   servers_lock.unlock();
   return 0;
-}
+}*/
 
 // Removes all connections that are not connected, and updates the server list accordingly.
 int ServerList::cleanConnections()
@@ -170,8 +171,8 @@ void ServerList::cleanList()
 
     if( pinfo != NULL )
     {
-      if( pinfo->nombre )
-        delete pinfo->nombre;
+      if( pinfo->host_name )
+        delete pinfo->host_name;
       delete pinfo;
     }
     servers_list.del( 0 );
@@ -305,27 +306,30 @@ bool ServerList::addTask( TASK_TYPE task_type, datetime firstrun, int run_interv
   return val;
 }
 
-
+/*
 bool ServerList::addServer( const char * nombre, const char * hostname, unsigned short puerto, int weight, int max_connections )
 {
   ipaddress ip = phostbyname( hostname );
 
   return addServer( nombre, &ip, puerto, weight );
 }
+*/
 
-bool ServerList::addServer( const char * nombre, const ipaddress * ip, unsigned short puerto, int weight, int max_connections )
+bool ServerList::addServer( const char * host_name, const ipaddress * ip, unsigned short puerto, int weight, int max_connections )
 {
   serverinfo * info = new serverinfo;
 
-  if( nombre )
+  TRACE( TRACE_CONFIG )( "%s - adding server %s at %s:%d with weight %d and max connections %d\n", curr_local_time(), host_name?host_name:"", (const char *) iptostring(*ip), puerto, weight, max_connections );
+
+  if( host_name )
   {
-    info->nombre = new char[strlen( nombre ) + 1];
-    strcpy( info->nombre, nombre );
+    info->host_name = new char[strlen( host_name ) + 1];
+    strcpy( info->host_name, host_name );
   }
   else
   {
-    info->nombre = new char[1];
-    info->nombre[0] = 0;
+    info->host_name = new char[1];
+    info->host_name[0] = 0;
   }
 
   info->ip = *ip;
@@ -338,6 +342,7 @@ bool ServerList::addServer( const char * nombre, const ipaddress * ip, unsigned 
   info->max_connections = max_connections;
   info->last_connection_failed = false;
   info->last_connection_attempt = NOW_UTC;
+
   servers_lock.wrlock();
   servers_list.add( info );
   servers_lock.unlock();
