@@ -111,7 +111,7 @@ private:
   bool update_server_status;
   int minimun_server_reconnection_time;
   tpodlist<bind_conf *> bind;
-  tpodlist<string *> errores;
+  tpodlist<string *> error_list;
 
   //auxiliar variables set to return servers values
   int currentBind;

@@ -444,9 +444,9 @@ void AppConfig::printErrors()
 {
   int i = 0;
 
-  while( i < errores.get_count() )
+  while( i < error_list.get_count() )
   {
-    TRACE( TRACE_CONFIG )( "%s - %s\n", curr_local_time(), (char *) errores[1] );
+    TRACE( TRACE_CONFIG )( "%s - %s\n", curr_local_time(), (char *) error_list[1] );
     i++;
   }
 
@@ -454,9 +454,9 @@ void AppConfig::printErrors()
 
 void AppConfig::cleanErrors()
 {
-  while( errores.get_count() )
+  while( error_list.get_count() )
   {
-    errores.del( 0 );
+    error_list.del( 0 );
   }
 }
 
@@ -645,7 +645,7 @@ bool AppConfig::checkConfig()
     i++;
   }
 
-  //Check if aditional needed variables are set
+  //Check if additional needed variables are set
 
   TRACE( TRACE_CONFIG )( "%s - %s configuration\n", curr_local_time(), val ? "valid" : "invalid" );
 
@@ -841,7 +841,7 @@ void AppConfig::processConfigLine( const char * line )
 
       h = strlen( CONFIG_SERVER_TAG );
 
-      //obviamos espacios
+      // Skip spaces
       while( line[h] == ' ' || line[h] == '\t' )
       {
         h++;
@@ -934,7 +934,7 @@ void AppConfig::processConfigLine( const char * line )
 
       h = strlen( CONFIG_TASK_TAG );
 
-      //obviamos espacios
+      // Skip spaces
       while( line[h] == ' ' || line[h] == '\t' )
       {
         h++;
@@ -969,7 +969,7 @@ void AppConfig::processConfigLine( const char * line )
         while( line[h] == ' ' )
           h++;
 
-      if( line[h] != char( NULL ) )// Existe primera hora ejecución
+      if( line[h] != char( NULL ) )// First execution time exists
       {
         int hour = 0;
         int min = 0;
@@ -978,7 +978,7 @@ void AppConfig::processConfigLine( const char * line )
         int month = 1;
         int day = 1;
 
-        if( atoi( &( line[h] ) ) < 24 )// si solo se especifica hora
+        if( atoi( &( line[h] ) ) < 24 )// If only hour is specified
         {
           hour = atoi( &( line[h] ) );
           while( line[h] != char( NULL ) && line[h] != ':' )
@@ -1028,8 +1028,7 @@ void AppConfig::processConfigLine( const char * line )
             fixed_time = true;
           }
 
-          //si luego hay hora
-
+          // If there is time afterwards
           while( line[h] != char( NULL ) && line[h] != ' ' )
             h++;
 
@@ -1102,7 +1101,7 @@ void AppConfig::processConfigLine( const char * line )
       TRACE( TRACE_CONFIG )( "%s - filter tag\n", curr_local_time() );
 
       h = strlen( CONFIG_FILTER_TAG );
-      //obviamos espacios
+      // Skip spaces
       while( line[h] == ' ' || line[h] == '\t' )
       {
         h++;
