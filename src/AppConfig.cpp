@@ -26,6 +26,7 @@ USING_PTYPES
 
 #define MAX_CONFIG_LINES 4000
 #define DEFAULT_HTTP_ADMIN_PORT 8182
+#define DEFAULT_HTTP_ADMIN_IPADDRESS ipaddress(127, 0, 0, 1) // ipany
 #define DEFAULT_CONNECT_TO_THE_SAME_SERVER true
 #define DEFAULT_ONE_CONNECTION_PER_IP false
 #define DEFAULT_CONNECTIONS_PER_THREAD 16
@@ -680,7 +681,7 @@ void AppConfig::processConfigLine( const char * line )
     {
       TRACE( TRACE_CONFIG )( "%s - web admin tag\n", curr_local_time() );
       int h, g;
-      ipaddress dst_ip = ipany;
+      ipaddress dst_ip = DEFAULT_HTTP_ADMIN_IPADDRESS;
       unsigned short dst_port = 0;
       int weight = 0;
       int max_connections = 0;
