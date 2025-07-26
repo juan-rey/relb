@@ -7,8 +7,8 @@ RELB (RELB Easy Load Balancer) is a high-performance, cross-platform TCP load ba
 - Efficiently handles hundreds of simultaneous connections with minimal system resource usage.
 - Transparent operation for both clients and servers.
 - Simple and flexible configuration via a plain-text file.
-- Smart server assignment with support for round-robin and custom routing algorithms.
 - Persistent connections using an IP address-based "Session Directory"; clients reconnect to the same server after disconnection.
+- Smart server assignment with support for multiple variables and round-robin.
 - Powerful filtering system to allow or deny client-server assignments based on IP rules.
 - Built-in web administration interface for real-time management and monitoring.
 - Automated tasks, such as purging inactive connections or disconnecting all clients.
