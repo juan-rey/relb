@@ -1,33 +1,48 @@
-# relb
-RELB (RELB Easy Load Balancer)
-=======================================
+# RELB Easy Load Balancer
 
-1. Introduction
+RELB (RELB Easy Load Balancer) is a high-performance, cross-platform TCP load balancer designed for reliability, flexibility, and ease of use. It is suitable for most TCP services and applications, and can also function as a port redirector.
 
-RELB is a generic TCP load balancer. Its main features are: 
+## Features
 
-- Handles several hundred connections while using minimal system resources.
-- Transparent to both clients and servers.
-- Easy to configure.
-- Flexible server assignment with smart routing or simple round-robin.
-- Persistent connections with an IP address-based "Session Directory", ensuring that if a client loses connection, it is reassigned to the same server upon reconnection.
-- Filters to allow or deny a client from being assigned to a server.
-- Manageable via a built-in web admin page.
-- Basic tasks, such as purging dead connections or disconnecting all connections.
-- Multi-operating system and cross-platform support (Linux/Windows, etc.).
+- Efficiently handles hundreds of simultaneous connections with minimal system resource usage.
+- Transparent operation for both clients and servers.
+- Simple and flexible configuration via a plain-text file.
+- Smart server assignment with support for round-robin and custom routing algorithms.
+- Persistent connections using an IP address-based "Session Directory"; clients reconnect to the same server after disconnection.
+- Powerful filtering system to allow or deny client-server assignments based on IP rules.
+- Built-in web administration interface for real-time management and monitoring.
+- Automated tasks, such as purging inactive connections or disconnecting all clients.
+- Multi-platform support: runs on Linux, Windows, and other operating systems.
 
-It is suitable for most TCP services/applications and can also be used as a port redirector.
+## Getting Started
 
-2. Configuration
+1. **Installation**
+   - See the `INSTALL` file for platform-specific instructions.
 
-You must set up a proper configuration file in order for it to work. See relb.conf.sample for more information about the available options you can use.
+2. **Configuration**
+   - Create or edit your configuration file (see `relb.conf.sample` for all available options and examples).
+   - Place the configuration file in the default location or specify it using the command-line option.
 
-3. Management
+3. **Running RELB**
+   - Start RELB from the command line. You can specify the configuration file path if needed.
+   - Example: `relb -c /etc/relb.conf`
 
-Use the web administration at [http://localhost:8182](http://localhost:8182) by default for basic management.
+4. **Management**
+   - Access the web administration interface at [http://localhost:8182](http://localhost:8182) (default).
+   - Note: The admin interface is unencrypted and unauthenticated. Use with caution and restrict access as needed.
 
-4. Acknowledgment
+## Configuration
 
-RELB uses Hovik Melikyan's C++ Portable Types Library (PTypes) (http://www.melikyan.com/ptypes/)
+RELB uses a plain-text configuration file to define bind addresses, backend servers, filters, tasks, and more. See `relb.conf.sample` for detailed documentation and examples of each option.
 
-5. Support RELB
+## Acknowledgments
+
+RELB uses Hovik Melikyan's C++ Portable Types Library (PTypes): [http://www.melikyan.com/ptypes/](http://www.melikyan.com/ptypes/)
+
+## License
+
+RELB is licensed under the Open Software License version 3.0. See `LICENSE.txt` for details.
+
+## Support
+
+For questions, issues, or contributions, please refer to the project repository or contact the maintainer.
