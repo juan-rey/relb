@@ -1,6 +1,23 @@
-aclocal
-autoconf
-autoheader
-automake --add-missing
-./configure
-make
+# Installation Instructions
+
+To build and install RELB from source, follow these steps:
+
+1. Generate the build system files:
+   aclocal
+   autoconf
+   autoheader
+   automake --add-missing
+
+2. Configure the build for your system:
+   ./configure
+
+3. Compile the source code:
+   make
+
+4. (Optional) Install the binaries (may require root privileges):
+   make install
+
+For additional configuration options, run:
+   ./configure --help
+
+See the README.md for more information about configuration and usage.
