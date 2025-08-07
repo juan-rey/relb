@@ -1,62 +1,94 @@
-2025-04-30 0.9.12 (rc)
-   - Added command-line option for specifying a configuration file.
-   - Fixed a performance issue when handling very old tasks.
-   - Tasks now use local time.
-   - Warning: Default admin IP address changed to 127.0.0.1. Check your configuration file!
+RELB (RELB Easy Load Balancer) - ChangeLog
+=========================================
 
-2015-04-30 0.9.11 (beta 3-pre)
-   - Try other servers when the assigned server fails.
-   - Bugfixes.
+Release Candidate
+----------------
+2025-08-?? Version 0.9.12 (rc)
+   - Features:
+     * Added command-line option for specifying a configuration file.
+     * Tasks now use local time instead of UTC.
+   - Performance:
+     * Fixed issue with task handling degradation over time.
+   - Security:
+     * IMPORTANT: Default admin interface IP changed to 127.0.0.1.
+       Please review your configuration file!
 
-2010-04-06 0.9.10 (beta 2)
-   - Support for multiple bind addresses.
-   - Bugfix: Minor configuration issues.
+Beta Releases
+------------
+2015-04-30 Version 0.9.11 (beta 3-pre)
+   - Features:
+     * Improved failover: automatically tries other servers when assigned server fails.
+   - Fixes:
+     * Various bugfixes and stability improvements.
 
-2009-12-22 0.9.9 (beta 1)
-   - Added IP filter rules.
-   - Compiles on Linux (some issues fixed).
-   - Code reformatting.
+2010-04-06 Version 0.9.10 (beta 2)
+   - Features:
+     * Added support for multiple bind addresses.
+   - Fixes:
+     * Resolved minor configuration file parsing issues.
 
-2008-12-31 0.9.8
-   - Added basic tasks (purge connections, etc.).
+2009-12-22 Version 0.9.9 (beta 1)
+   - Features:
+     * Implemented IP filter rules for access control.
+   - Platform:
+     * Improved Linux compatibility.
+   - Code Quality:
+     * Major code reformatting for better maintainability.
 
-2008-08-22 0.9.7
-   - Hard release; significant work done (skipped 0.9.6).
-   - Stable in production with more than 200 connections.
-   - Bugfix: Limit FDSET_SIZE to the maximum number of sockets managed in a single thread.
-   - Bugfix: Session coherence count.
-   - Bugfix: Complex out-of-buffer issue.
-   - Added test cases.
-   - Bugfix: Proper handling of errno for sockets under WIN32.
-   - Bugfix: Win32 service description.
-   - Performance: Handle connections in ThreadedConnectionManager instead of spawning a new thread while connecting.
-   - Bugfix: Fixed unstable behavior.
+Development Releases
+------------------
+2008-12-31 Version 0.9.8
+   - Features:
+     * Added basic task system (connection purging and maintenance).
 
-2008-05-08 0.9.5
-   - Bugfix: Lost session assignment.
-   - Enhancement: Lost session cleanup.
-   - Enhanced disconnection count.
+2008-08-22 Version 0.9.7
+   - Major Release (skipped 0.9.6)
+   - Stability:
+     * Production-tested with 200+ concurrent connections.
+     * Fixed unstable behavior issues.
+   - Performance:
+     * Connection handling moved to ThreadedConnectionManager.
+     * Limited FDSET_SIZE to prevent thread overload.
+   - Fixes:
+     * Session coherence counting.
+     * Complex out-of-buffer scenarios.
+     * WIN32 socket errno handling.
+     * Win32 service description.
+   - Testing:
+     * Added comprehensive test suite.
 
-2008-04-29 0.9.4
-   - Bugfix: Assignment failure.
-   - ServerList::getServer: server_index was defined out of scope.
-   - Tended to assign the first server in the list.
-   - Bugfix: Service description.
+2008-05-08 Version 0.9.5
+   - Features:
+     * Enhanced disconnection tracking.
+   - Fixes:
+     * Lost session assignment and cleanup.
 
-2008-04-16 0.9.3
-   - Connection time enhancements.
+2008-04-29 Version 0.9.4
+   - Fixes:
+     * Server assignment failures.
+     * ServerList::getServer scope issue.
+     * Default server selection bias.
+     * Service description errors.
 
-2008-04-07 0.9.2
-   - (Almost) stable for production.
+2008-04-16 Version 0.9.3
+   - Features:
+     * Connection timing improvements.
 
-2008-03-24 0.9.1
-   - Code cleanup.
+2008-04-07 Version 0.9.2
+   - Status:
+     * Nearly stable for production use.
 
-2008-02-10 0.9
-   - Test release.
+2008-03-24 Version 0.9.1
+   - Code Quality:
+     * Major code cleanup and organization.
 
-2008-01-02 0.8
+Initial Releases
+--------------
+2008-02-10 Version 0.9
+   - First test release.
+
+2008-01-02 Version 0.8
    - First functional release.
 
-2006-12-11
-   - Initial code.
+2006-12-11 
+   - Project initialization.
