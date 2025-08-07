@@ -1080,7 +1080,6 @@ void AppConfig::processConfigLine( const char * line )
           tmp->fixed_time = fixed_time;
           tmp->run_interval_seconds = interval;
           tmp->next_run_time = first_run;
-          //TODO 1.1 UTC???
 
           bind[bind.get_count() - 1]->tasks.add( tmp );
         }
