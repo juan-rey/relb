@@ -20,10 +20,12 @@ USING_PTYPES
 #include <math.h>
 
 
+// Windows-specific path length definition
 #ifdef WIN32
 #define MAX_WINDIR_PATH MAX_PATH
 #endif
 
+// Configuration constants and default settings
 #define MAX_CONFIG_LINES 4000
 #define DEFAULT_HTTP_ADMIN_PORT 8182
 #define DEFAULT_HTTP_ADMIN_IPADDRESS ipaddress(127, 0, 0, 1) // ipany
@@ -35,15 +37,17 @@ USING_PTYPES
 #define DEFAULT_HTTP_IPADDRESS ipany
 #define MINIMUN_SEVER_RECONNECTION_TIME 30
 
+// Configuration file tags
 #define CONFIG_SERVER_TAG "server:"
 #define CONFIG_BIND_TAG "bind:"
 #define CONFIG_ALSOBIND_TAG "alsobind:"
 #define CONFIG_ADMIN_TAG "admin:"
 #define CONFIG_RETRY_TAG "retryserver:"
 #define CONFIG_CONNECTIONS_PER_THREAD_TAG "conperthread:"
-#define CONFIG_TASK_TAG "task:"  
-#define CONFIG_FILTER_TAG "filter:"  
+#define CONFIG_TASK_TAG "task:"
+#define CONFIG_FILTER_TAG "filter:"
 
+// Constructor: Initializes current indices for config iteration
 AppConfig::AppConfig()
 {
   currentBind = 0;
@@ -53,53 +57,34 @@ AppConfig::AppConfig()
   currentTask = -1;
 }
 
+// Destructor: Cleans up error and bind lists
 AppConfig::~AppConfig()
 {
   cleanErrors();
   cleanBindList();
 }
 
+// Set the path to the configuration file
 void AppConfig::setFilePath( const char * file )
 {
   configfile = file;
 }
 
+// Begin iterating over bind addresses
 bool AppConfig::getFirstBind()
 {
   currentBind = 0;
   return  ( currentBind < bind.get_count() );
 }
 
+// Move to the next bind address
 bool AppConfig::getNextBind()
 {
   currentBind++;
   return  ( currentBind < bind.get_count() );
 }
-/*
-unsigned short AppConfig::getBindPort()
-{
-    unsigned short val = 0;
 
-    if( currentBind < bind.get_count() )
-    {
-        val = bind[currentBind]->src_port;
-    }
-
-    return val;
-}
-
-ipaddress AppConfig::getBindIP()
-{
-    ipaddress val = ipnone;
-
-    if( currentBind < bind.get_count() )
-    {
-        val = bind[currentBind]->src_ip;
-    }
-
-    return val;
-}
-*/
+// Begin iterating over servers for the current bind
 bool AppConfig::getFirstServer()
 {
   bool val = false;
@@ -113,6 +98,7 @@ bool AppConfig::getFirstServer()
   return val;
 }
 
+// Move to the next server for the current bind
 bool AppConfig::getNextServer()
 {
   bool val = false;
@@ -127,6 +113,7 @@ bool AppConfig::getNextServer()
   return val;
 }
 
+// Get the port of the current server
 unsigned short AppConfig::getServerPort()
 {
   unsigned short val = 0;
@@ -140,6 +127,7 @@ unsigned short AppConfig::getServerPort()
   return val;
 }
 
+// Get the IP address of the current server
 ipaddress AppConfig::getServerIP()
 {
   ipaddress  val = ipnone;
@@ -153,6 +141,7 @@ ipaddress AppConfig::getServerIP()
   return val;
 }
 
+// Get the hostname of the current server
 string AppConfig::getServerName()
 {
   string val = "void";
@@ -166,6 +155,7 @@ string AppConfig::getServerName()
   return val;
 }
 
+// Get the max connections allowed for the current server
 int AppConfig::getServerMaxConnections()
 {
   int val = 0;
@@ -178,6 +168,8 @@ int AppConfig::getServerMaxConnections()
 
   return val;
 }
+
+// Get the number of tasks for the current bind
 int AppConfig::getTasksCount()
 {
   int val = 0;
@@ -191,6 +183,7 @@ int AppConfig::getTasksCount()
   return val;
 }
 
+// Move to the next task for the current bind
 bool AppConfig::getNextTask()
 {
   bool val = false;
@@ -204,20 +197,8 @@ bool AppConfig::getNextTask()
 
   return val;
 }
-/*
-int AppConfig::getAddressCount()
-{
-    int val = 0;
-    currentAddress = -1;
 
-    if( currentBind < bind.get_count() )
-    {
-        val = bind[currentBind]->address.get_count();
-    }
-
-    return val;
-}
-*/
+// Move to the next address for the current bind
 bool AppConfig::getNextAddress()
 {
   bool val = false;
@@ -232,6 +213,7 @@ bool AppConfig::getNextAddress()
   return val;
 }
 
+// Get the IP address of the current address
 ipaddress AppConfig::getAddressIP()
 {
   ipaddress val = ipany;
@@ -245,6 +227,7 @@ ipaddress AppConfig::getAddressIP()
   return val;
 }
 
+// Get the port of the current address
 unsigned short AppConfig::getAddressPort()
 {
   unsigned short val = 0;
@@ -258,7 +241,7 @@ unsigned short AppConfig::getAddressPort()
   return val;
 }
 
-
+// Get the number of filters for the current bind
 int AppConfig::getFilterCount()
 {
   int val = 0;
@@ -272,6 +255,7 @@ int AppConfig::getFilterCount()
   return val;
 }
 
+// Move to the next filter for the current bind
 bool AppConfig::getNextFilter()
 {
   bool val = false;
@@ -286,6 +270,7 @@ bool AppConfig::getNextFilter()
   return val;
 }
 
+// Get the source IP of the current filter
 ipaddress AppConfig::getFilterSourceIP()
 {
   ipaddress val = ipany;
@@ -299,6 +284,7 @@ ipaddress AppConfig::getFilterSourceIP()
   return val;
 }
 
+// Get the source mask of the current filter
 ipaddress AppConfig::getFilterSourceMask()
 {
   ipaddress val = ipany;
@@ -312,6 +298,7 @@ ipaddress AppConfig::getFilterSourceMask()
   return val;
 }
 
+// Get the destination IP of the current filter
 ipaddress AppConfig::getFilterDestIP()
 {
   ipaddress val = ipany;
@@ -325,6 +312,7 @@ ipaddress AppConfig::getFilterDestIP()
   return val;
 }
 
+// Get the destination mask of the current filter
 ipaddress AppConfig::getFilterDestMask()
 {
   ipaddress val = ipany;
@@ -338,6 +326,7 @@ ipaddress AppConfig::getFilterDestMask()
   return val;
 }
 
+// Return true if the current filter allows traffic, false if it denies
 bool AppConfig::getFilterAllow()
 {
   bool val = true;
@@ -351,6 +340,7 @@ bool AppConfig::getFilterAllow()
   return val;
 }
 
+// Get the type of the current task
 TASK_TYPE AppConfig::getTaskType()
 {
   TASK_TYPE val = INVALID_TASK;
@@ -364,6 +354,7 @@ TASK_TYPE AppConfig::getTaskType()
   return val;
 }
 
+// Get the interval (in seconds) for the current task
 int AppConfig::getTaskInterval()
 {
   int val = 0;
@@ -377,6 +368,7 @@ int AppConfig::getTaskInterval()
   return val;
 }
 
+// Return true if the current task is scheduled at a fixed time
 bool AppConfig::getTaskFixedTime()
 {
   bool val = false;
@@ -390,6 +382,8 @@ bool AppConfig::getTaskFixedTime()
   return val;
 }
 
+// Get the first run time for the current task
+// Returns a datetime value
 datetime AppConfig::getTaskFirstRun()
 {
   datetime val = 0;
@@ -403,11 +397,13 @@ datetime AppConfig::getTaskFirstRun()
   return val;
 }
 
+// Get the configured number of connections per thread
 int AppConfig::getConnectionsPerThread()
 {
   return connections_per_thread;
 }
 
+// Get the weight for the current server (for load balancing)
 int AppConfig::getServerWeight()
 {
   int val = 0;
@@ -421,26 +417,31 @@ int AppConfig::getServerWeight()
   return val;
 }
 
+// Get the minimum server reconnection time (retry interval)
 int AppConfig::getServerRetryTime()
 {
   return minimun_server_reconnection_time;
 }
 
+// Return true if the web admin interface is enabled
 bool AppConfig::getAdminEnabled()
 {
   return http_admin_enabled;
 }
 
+// Get the port for the web admin interface
 unsigned short AppConfig::getAdminPort()
 {
   return http_admin_port;
 }
 
+// Get the IP address for the web admin interface
 ipaddress AppConfig::getAdminIP()
 {
   return http_admin_ip;
 }
 
+// Print all configuration errors to the log
 void AppConfig::printErrors()
 {
   int i = 0;
@@ -453,6 +454,7 @@ void AppConfig::printErrors()
 
 }
 
+// Remove all errors from the error list
 void AppConfig::cleanErrors()
 {
   while( error_list.get_count() )
@@ -461,6 +463,7 @@ void AppConfig::cleanErrors()
   }
 }
 
+// Load the configuration file and parse its contents
 bool AppConfig::loadFile()
 {
   bool val = true;
@@ -513,6 +516,7 @@ bool AppConfig::loadFile()
   return val;
 }
 
+// Load the configuration, trying several fallback locations if needed
 bool AppConfig::loadConfig()
 {
   bool loaded = false;
@@ -562,6 +566,7 @@ bool AppConfig::loadConfig()
   return loaded;
 }
 
+// Set all configuration values to their defaults
 bool AppConfig::setDefaultValues()
 {
   cleanBindList();
@@ -577,12 +582,14 @@ bool AppConfig::setDefaultValues()
   return true;
 }
 
+// Validate the loaded configuration for correctness
 bool AppConfig::checkConfig()
 {
   bool val = true;
   int i = 0;
   int j = 0;
 
+  // Check admin web interface IP and port
   if( http_admin_enabled )
   {
     if( !checkIP( &( http_admin_ip ) ) )
@@ -602,12 +609,14 @@ bool AppConfig::checkConfig()
     }
   }
 
+  // Check that at least one bind is set
   if( bind.get_count() == 0 )
   {
     val = false;
     TRACE( TRACE_CONFIG )( "%s - no binding ports set\n", curr_local_time() );
   }
 
+  // Check each bind for valid addresses and servers
   while( val && i < bind.get_count() )
   {
     if( bind[i]->address.get_count() > 0 )
@@ -653,10 +662,12 @@ bool AppConfig::checkConfig()
   return val;
 }
 
+// Parse a single line from the configuration file
 void AppConfig::processConfigLine( const char * line )
 {
   TRACE( TRACE_CONFIG )( "%s - file line - %s\n", curr_local_time(), (const char *) line );
 
+  // Ignore comment lines
   if( line[0] != '/' && line[0] != ';' && line[0] != '#' )
   {
 
@@ -1239,6 +1250,7 @@ void AppConfig::processConfigLine( const char * line )
   }
 }
 
+// Clean up all bind configurations and their associated lists
 void AppConfig::cleanBindList()
 {
   while( bind.get_count() )
