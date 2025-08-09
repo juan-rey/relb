@@ -13,7 +13,7 @@ Please consult the file "LICENSE.txt" for details.
 #define Win32Service_h
 
 #ifdef WIN32
-#include <winsock2.h>
+#include <windows.h>
 #endif
 /*
 #ifdef UNICODE

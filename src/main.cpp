@@ -20,7 +20,6 @@ Please consult the file "LICENSE.txt" for details.
 using namespace std;
 
 #ifdef WIN32
-#include <winsock2.h>
 #include "win32service.h"
 #define INSTALL_SERVICE_TEXT "installservice"
 #define UNINSTALL_SERVICE_TEXT "uninstallservice"
