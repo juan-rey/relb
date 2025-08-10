@@ -21,7 +21,14 @@ Please consult the file "LICENSE.txt" for details.
 
 
 #ifdef WIN32
-#  include <winsock2.h>
+#  ifndef FD_SETSIZE
+#    error  "FD_SETSIZE must be defined"
+#  else 
+#    if FD_SETSIZE != 256
+#      error "FD_SETSIZE must be 256" // check `pinet.h` in ptypes
+#    endif // FD_SETSIZE != 256
+#  endif // ! FD_SETSIZE
+ //#  include <winsock2.h> // already included in pinet.h once to increase FD_SETSIZE
 #else
 #  include <sys/time.h>
 #  include <sys/types.h>

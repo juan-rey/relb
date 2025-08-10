@@ -26,6 +26,7 @@ ThreadedConnectionManager::ThreadedConnectionManager( int connections ): thread(
 {
   TRACE( TRACE_UNCATEGORIZED && TRACE_VERY_VERBOSE )( "%s - new connection manager to handle up to %d connections\n", curr_local_time(), connections );
   max_connections = MIN( connections, MAX_SOCKETS_PER_FDSET );
+  TRACE( TRACE_UNCATEGORIZED && TRACE_VERY_VERBOSE )( "%s - really, up to %d connections\n", curr_local_time(), max_connections );
   currentconnections = 0;
   finish = false;
   start();

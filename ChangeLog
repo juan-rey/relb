@@ -3,10 +3,11 @@ RELB (RELB Easy Load Balancer) - ChangeLog
 
 Release Candidate
 ----------------
-2025-08-?? Version 0.9.12 (rc)
+2025-0?-?? Version 0.9.12 (rc)
    - Features:
      * Added command-line option for specifying a configuration file.
      * Tasks now use local time instead of UTC.
+     * Windows: Increased default FDSET_SIZE to 256
    - Performance:
      * Fixed issue with task handling degradation over time.
    - Security:

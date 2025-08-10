@@ -7,7 +7,7 @@ High Priority:
    - Add installation/setup scripts
    - Document service management commands
 
-2. Increase FDSET_SIZE in Windows
+2. Increase FDSET_SIZE in Windows (ongoing, needs testing))
    - Research solutions to increase connection limit on Windows
    - Consider implementing connection pooling
 

@@ -20,7 +20,7 @@ USING_PTYPES
 #include "ControlObject.h"
 
 #ifdef FD_SETSIZE
-#define MAX_SOCKETS_PER_FDSET (( FD_SETSIZE - 4 )/ 2 )
+#define MAX_SOCKETS_PER_FDSET (( FD_SETSIZE - 4 )/ 2 ) // 4 for control socket and 2 for each peer
 #else
 #define MAX_SOCKETS_PER_FDSET ( 60 / 2 )
 #endif

@@ -88,7 +88,8 @@ task: purge 86400 2009/09/07
 # Increase for high concurrency, decrease for minimun latency.
 # Format -> conperthread: num_connections
 # Default value: 16 (recommended for most setups)
-# Warning: Current implementation is limited by FD_SETSIZE
+# Warning: Current implementation is limited by FD_SETSIZE (usually 1024, 256 in Windows with some magic)
+# So,510 client connections per thread is the maximum for Linux, and 126 for Windows.
 # Example: conperthread: 32
 #
 
