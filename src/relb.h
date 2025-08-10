@@ -15,7 +15,7 @@ Please consult the file "LICENSE.txt" for details.
 #define APP_FILE "relb"
 #define APP_FULL_NAME "RELB Easy Load Balancer"
 #define APP_SHORT_NAME "RELB"
-#define APP_VERSION "0.9.12 20250430"
+#define APP_VERSION "0.9.12 20250???"
 #define APP_COPYRIGHT "Juan Rey Saura 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2015, 2025"
 #define APP_WEB "http://resolutive.com/relb"
 
