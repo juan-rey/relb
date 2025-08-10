@@ -19,6 +19,22 @@ Please consult the file "LICENSE.txt" for details.
 
 #include <stdio.h>
 
+
+#ifdef WIN32
+#  include <winsock2.h>
+#else
+#  include <sys/time.h>
+#  include <sys/types.h>
+#  include <sys/socket.h>
+#  include <netinet/in.h>
+#  include <arpa/inet.h>
+#  include <netdb.h>
+#  include <unistd.h>
+#  include <signal.h>
+#  include <time.h>
+#endif
+
+
 USING_PTYPES
 
 #ifndef MAX
