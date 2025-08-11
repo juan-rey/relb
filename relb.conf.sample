@@ -2,7 +2,7 @@
 # Sample relb configuration file 
 #
 # Plain text format 
-# Comment lines start with '#' or ';' or '/'
+# Comment lines start with '#', ';', or '/'
 #
 # Default configuration file path 
 # Linux -> /etc/relb.conf
@@ -26,7 +26,7 @@ bind: 4389
 # TAG server (mandatory, multiple)
 # Servers available for incoming connections. Each entry defines a backend server.
 # Format -> server: (server_name | IPv4_address):port[,weight[,max_connections]]
-#   weight: (optional) load balancing weight, higher means more traffic to this server
+#   weight: (optional) load balancing weight; higher means more traffic to this server
 #   max_connections: (optional) maximum simultaneous connections to this server
 # Example: server: myserver:3389,100,20
 #
@@ -85,11 +85,11 @@ task: purge 86400 2009/09/07
 
 # TAG conperthread (optional)
 # Advanced: number of connections per thread for internal load balancing.
-# Increase for high concurrency, decrease for minimun latency.
+# Increase for high concurrency, decrease for minimum latency.
 # Format -> conperthread: num_connections
 # Default value: 16 (recommended for most setups)
 # Warning: Current implementation is limited by FD_SETSIZE (usually 1024, 256 in Windows with some magic)
-# So,510 client connections per thread is the maximum for Linux, and 126 for Windows.
+# So, 510 client connections per thread is the maximum for Linux, and 126 for Windows.
 # Example: conperthread: 32
 #
 

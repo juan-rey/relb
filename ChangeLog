@@ -7,7 +7,7 @@ Release Candidate
    - Features:
      * Added command-line option for specifying a configuration file.
      * Tasks now use local time instead of UTC.
-     * Windows: Increased default FDSET_SIZE to 256
+     * Windows: Increased default FDSET_SIZE to 256.
    - Performance:
      * Fixed issue with task handling degradation over time.
    - Security:
@@ -18,9 +18,9 @@ Beta Releases
 ------------
 2015-04-30 Version 0.9.11 (beta 3-pre)
    - Features:
-     * Improved failover: automatically tries other servers when assigned server fails.
+     * Improved failover: automatically tries other servers when the assigned server fails.
    - Fixes:
-     * Various bugfixes and stability improvements.
+     * Various bug fixes and stability improvements.
 
 2010-04-06 Version 0.9.10 (beta 2)
    - Features:
@@ -45,7 +45,7 @@ Development Releases
 2008-08-22 Version 0.9.7
    - Major Release (skipped 0.9.6)
    - Stability:
-     * Production-tested with 200+ concurrent connections.
+     * Production-tested with over 200 concurrent connections.
      * Fixed unstable behavior issues.
    - Performance:
      * Connection handling moved to ThreadedConnectionManager.
