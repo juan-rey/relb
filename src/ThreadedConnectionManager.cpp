@@ -14,14 +14,6 @@ Please consult the file "LICENSE.txt" for details.
 
 USING_PTYPES
 
-#ifdef DEBUG
-#define SELECT_NORMAL_TIMEOUT_MS  2000
-#else
-#define SELECT_NORMAL_TIMEOUT_MS  2000
-#endif
-
-
-
 ThreadedConnectionManager::ThreadedConnectionManager( int connections ): thread( false )
 {
   TRACE( TRACE_UNCATEGORIZED && TRACE_VERY_VERBOSE )( "%s - new connection manager to handle up to %d connections\n", curr_local_time(), connections );
@@ -48,11 +40,7 @@ void ThreadedConnectionManager::execute()
   int res = 0;
   fd_set setr;
   fd_set setw;
-  // fd_set sete;
-  int timeout = SELECT_NORMAL_TIMEOUT_MS;
-  timeval t, to;
-  to.tv_sec = timeout / 1000;
-  to.tv_usec = ( timeout % 1000 ) * 1000;
+
   ConnectionPeer * cpeer = NULL;
 #ifdef DEBUG
   int times_check = 1;
@@ -82,17 +70,8 @@ void ThreadedConnectionManager::execute()
       to_be_closed.pop();
     }
 
-    t.tv_sec = to.tv_sec;
-    t.tv_usec = to.tv_usec;
-
     FD_ZERO( &setr );
     FD_ZERO( &setw );
-    //FD_ZERO(&sete);
-
-      //control_socket.addToFDSET(&setr);
-    
-    //Rellenamos la lista de socket
-    //Solo los conectados los que estan en conexion darian error en el select
 
     // let's check the peer_list to add the active peers to the fd_set otherwise they will be removed
     connected_peers = 0;
