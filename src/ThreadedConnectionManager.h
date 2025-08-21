@@ -20,12 +20,12 @@ USING_PTYPES
 #include "ControlObject.h"
 
 #ifdef FD_SETSIZE
-#define MAX_SOCKETS_PER_FDSET (( FD_SETSIZE - 4 )/ 2 ) // 4 for control socket and 2 for each peer
+#define MAX_PEERS_PER_FDSET (( FD_SETSIZE - 2 )/ 2 ) // 2 for control socket and 2 for each peer
 #else
-#define MAX_SOCKETS_PER_FDSET ( 60 / 2 )
+#define MAX_PEERS_PER_FDSET ( 60 / 2 )
 #endif
 
-#define DEFAULT_TCM_MAX_CONNECTIONS MAX_SOCKETS_PER_FDSET
+#define DEFAULT_TCM_MAX_CONNECTIONS MAX_PEERS_PER_FDSET
 
 class ThreadedConnectionManager: public thread
 {
