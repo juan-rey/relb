@@ -154,6 +154,9 @@ void ThreadedConnectionManager::execute()
       if( connected_peers || connecting_peers )
       {
         TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - Checking socket changes - with SOME connections\n", curr_local_time() );
+        // very old ugly trick based on old documentation of select which recommended to use FD_SETSIZE as the first parameter
+        // this may lead to problems if the max number of sockets is greater than FD_SETSIZE and it is inefficient (in non-Windows systems)
+        // acording to the documentation, the first parameter is the highest file descriptor plus one
         res = ::select( FD_SETSIZE, &setr, &setw, nil, nil ); // timeout is nil, so it will block until there is a change in the sockets
         TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - Exit - Checking socket changes - with SOME connections\n", curr_local_time() );
       }
@@ -161,6 +164,9 @@ void ThreadedConnectionManager::execute()
       {
         // no connections, so only check the control socket in setr
         TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - Checking socket changes - with no connections\n", curr_local_time() );
+        // very old ugly trick based on old documentation of select which recommended to use FD_SETSIZE as the first parameter
+        // this may lead to problems if the max number of sockets is greater than FD_SETSIZE and it is inefficient (in non-Windows systems)
+        // acording to the documentation, the first parameter is the highest file descriptor plus one
         res = ::select( FD_SETSIZE, &setr, nil, nil, nil ); // timeout is nil, so it will block until there is a change in the control socket
         TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - Exit - Checking socket changes - with no connections\n", curr_local_time() );
       }
