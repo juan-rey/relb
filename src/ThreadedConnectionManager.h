@@ -17,7 +17,7 @@ Please consult the file "LICENSE.txt" for details.
 USING_PTYPES
 
 #include "ConnectionPeerList.h"
-#include "ControlObject.h"
+#include "ControlSocket.h"
 
 #ifdef FD_SETSIZE
 #define MAX_PEERS_PER_FDSET (( FD_SETSIZE - 2 )/ 2 ) // 2 for control socket and 2 for each peer

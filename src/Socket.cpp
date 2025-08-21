@@ -13,7 +13,6 @@ Please consult the file "LICENSE.txt" for details.
 */
 
 #include "Socket.h"
-#include "ControlObject.h"
 
 #include <pinet.h>
 #include <sys/types.h>

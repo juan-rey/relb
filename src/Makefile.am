@@ -43,8 +43,8 @@ relb_SOURCES = \
 	ConnectionPeer.h \
 	ConnectionPeerList.cpp \
 	ConnectionPeerList.h \
-	ControlObject.cpp \
-	ControlObject.h \
+	ControlSocket.cpp \
+	ControlSocket.h \
 	htmldefs.h \
 	license.h
 

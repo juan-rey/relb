@@ -13,7 +13,7 @@ Please consult the file "LICENSE.txt" for details.
 #define Socket_h
 
 #include <pinet.h>
-#include "ControlObject.h"
+#include "ControlSocket.h"
 #include "utiles.h"
 
 USING_PTYPES
