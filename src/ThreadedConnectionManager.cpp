@@ -61,9 +61,10 @@ void ThreadedConnectionManager::execute()
   while( !finish )
   {
 
+    // purge the list of peers to be closed
     while( to_be_closed.get_count() )
     {
-      //let's check if it's connected
+      // let's check if it's connected
       i = 0;
       while( i < peer_list.get_count() )
       {
@@ -71,7 +72,7 @@ void ThreadedConnectionManager::execute()
         i++;
       }
 
-      //let's check if it's connected	  
+      // let's check if it's connected	  
       i = 0;
       while( i < connecting_peer_list.get_count() )
       {
@@ -89,10 +90,12 @@ void ThreadedConnectionManager::execute()
     //FD_ZERO(&sete);
 
       //control_socket.addToFDSET(&setr);
-
-    connected_peers = 0;
+    
     //Rellenamos la lista de socket
     //Solo los conectados los que estan en conexion darian error en el select
+
+    // let's check the peer_list to add the active peers to the fd_set otherwise they will be removed
+    connected_peers = 0;
     while( connected_peers < peer_list.get_count() )
     {
       cpeer = peer_list[connected_peers];
@@ -116,6 +119,7 @@ void ThreadedConnectionManager::execute()
       connected_peers++;
     }
 
+    // let's check the connecting_peer_list to add the active peers to the fd_set otherwise they will be removed
     connecting_peers = 0;
     while( connecting_peers < connecting_peer_list.get_count() )
     {
@@ -142,7 +146,7 @@ void ThreadedConnectionManager::execute()
       connecting_peers++;
     }
 
-    //comprobamos cambios
+    // let's check changes in all active sockets
     if( !finish )
     {
       //TODO ver fd_count de setw, sino nil	
@@ -150,20 +154,20 @@ void ThreadedConnectionManager::execute()
       if( connected_peers || connecting_peers )
       {
         TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - Checking socket changes - with SOME connections\n", curr_local_time() );
-        res = ::select( FD_SETSIZE, &setr, &setw, nil, nil );//&t );
+        res = ::select( FD_SETSIZE, &setr, &setw, nil, nil ); // timeout is nil, so it will block until there is a change in the sockets
         TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - Exit - Checking socket changes - with SOME connections\n", curr_local_time() );
       }
       else
       {
+        // no connections, so only check the control socket in setr
         TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - Checking socket changes - with no connections\n", curr_local_time() );
-        res = ::select( FD_SETSIZE, &setr, nil, nil, nil );// &t );
+        res = ::select( FD_SETSIZE, &setr, nil, nil, nil ); // timeout is nil, so it will block until there is a change in the control socket
         TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - Exit - Checking socket changes - with no connections\n", curr_local_time() );
-
-
       }
+
       if( res > 0 )
       {
-        i = 0;
+
 #ifndef WIN32					
         control_socket.checkSocket( &setr );
 #endif
@@ -171,6 +175,8 @@ void ThreadedConnectionManager::execute()
         if( !( connected_peers || connecting_peers ) )
           TRACE( TRACE_IOSOCKET )( "%s - Checking socket changes with res %d\n", curr_local_time(), res );
 #endif					
+        // let's use manageConnections to check the changes in the sockets and do the necessary actions
+        i = 0;
         TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - Checking socket changes\n", curr_local_time() );
         while( i < peer_list.get_count() )
         {
@@ -180,6 +186,7 @@ void ThreadedConnectionManager::execute()
           i++;
         }
 
+        // let's use manageConnectingPeer to check the changes in the connecting sockets and do the necessary actions
         i = 0;
         while( i < connecting_peer_list.get_count() )
         {
@@ -188,12 +195,12 @@ void ThreadedConnectionManager::execute()
           {
             if( cpeer->manageConnectingPeer( &setr, &setw ) )
             {
+              // peer status changed, so we can add it to the peer_list
               TRACE( TRACE_IOSOCKETERROR )( "%s - New peer\n", curr_local_time() );
-              connecting_peer_list.del( i );
+              connecting_peer_list.del( i ); // no risk of concurrent access issue with addConectionPeer, since using an index
               peer_list.add( cpeer );
               i--;
-              //TODO LATER 1.1 añadir notificacion conexion aqui
-
+              //TODO LATER 1.1 añadir notificacion conexion aqui 
             }
           }
           i++;
@@ -204,7 +211,7 @@ void ThreadedConnectionManager::execute()
       {
         if( res < 0 )
         {
-
+          // there was an error in the select function
           TRACE( TRACE_IOSOCKETERROR )( "%s - select retuned with error %d\n", curr_local_time(), socket_errno );
 
           if( socket_errno == EBADF
@@ -213,25 +220,39 @@ void ThreadedConnectionManager::execute()
 #endif
             )
           {
-
+            // there is a bad file descriptor, so we need to check the control socket and create a new one if necessary
 #ifndef WIN32		
             if( control_socket.checkSocket( &setr ) >= 0 )
+            {
+              // there was no error with the control socket, so we must check the connections
               checkConnections();
+            }
 #else
             if( control_socket.checkSocket() >= 0 )
+            {
+              // there was no error with the control socket, so we must check the connections
               checkConnections();
+            }
 #endif							
 
           }
           else
           {
-            //else EINTR EINVAL
+            //TODO EINTR a signal was caught before select returned
+            // EINVAL the timeout was invalid or the number of file descriptors was invalid
 
             TRACE( TRACE_IOSOCKETERROR )( "%s - select retuned with error EINTR  or EINVAL\n", curr_local_time() );
+
+            // On some other UNIX systems, select() can fail with the error
+            // EAGAIN if the system fails to allocate kernel - internal resources,
+            // rather than ENOMEM as Linux does.POSIX specifies this error for
+            // poll( 2 ), but not for select().Portable programs may wish to
+            // check for EAGAIN and loop, just as with EINTR.
           }
         }
         else
         {
+          // res == 0 means that there was a timeout in the select function
           TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - select function finished with timeout\n", curr_local_time() );
         }
 
@@ -242,6 +263,7 @@ void ThreadedConnectionManager::execute()
   cleanup();
 }
 
+// checkConnections checks all the connections in the peer_list and connecting_peer_list
 void ThreadedConnectionManager::checkConnections()
 {
   int i = 0;

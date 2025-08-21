@@ -17,7 +17,9 @@ Please consult the file "LICENSE.txt" for details.
 
 USING_PTYPES
 
-
+/// <summary>
+///   ControlObject class
+/// </summary>
 class ControlObject
 {
 public:
@@ -26,6 +28,12 @@ public:
   virtual void post() = 0;
 };
 
+/// <summary>
+///  ControlSocket class, used to control the ThreadedConnectionManager.
+///  It is a socket that can be used to wake up the ThreadedConnectionManager
+///  when it is waiting for connections.
+/// </summary>
+/// if WIN32 uses a socket, otherwise uses a pipe.
 class ControlSocket: public ControlObject
 {
 public:
