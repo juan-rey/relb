@@ -1,0 +1,80 @@
+.TH RELB 1 "2025-04-30" "RELB 0.9.12" "User Commands"
+.SH NAME
+relb \- RELB Easy Load Balancer, a high-performance TCP load balancer
+.SH SYNOPSIS
+.B relb
+[\fIOPTION\fR]...
+.SH DESCRIPTION
+RELB (RELB Easy Load Balancer) is a high-performance, cross-platform TCP load balancer designed for reliability, flexibility, and ease of use. It is suitable for most TCP services and applications, and can also function as a port redirector.
+
+.SH OPTIONS
+.TP
+.B configfile \fIPATH\fR
+Specify the configuration file to use. If not provided, the default is /etc/relb.conf (Linux) or %system32%\drivers\etc\relb.conf (Windows).
+.TP
+.B console
+Run RELB in the foreground (console mode).
+.TP
+.B service
+Run RELB as a background service.
+.TP
+.B installservice
+Install RELB as a Windows service.
+.TP
+.B uninstallservice
+Uninstall RELB from Windows services.
+.TP
+.B installdaemon
+Install RELB as a system daemon (Linux, not yet implemented).
+.TP
+.B uninstalldaemon
+Uninstall RELB system daemon (Linux, not yet implemented).
+.TP
+.B license
+Display license information and exit.
+
+.SH CONFIGURATION
+RELB uses a plain-text configuration file to define bind addresses, backend servers, filters, tasks, and more. See relb.conf.sample for detailed documentation and examples.
+
+.SH FEATURES
+.IP \[bu] 2
+Efficiently handles hundreds of simultaneous connections with minimal system resource usage.
+.IP \[bu] 2
+Transparent operation for both clients and servers.
+.IP \[bu] 2
+Simple and flexible configuration via a plain-text file.
+.IP \[bu] 2
+Persistent connections using an IP address-based "Session Directory".
+.IP \[bu] 2
+Smart server assignment with support for multiple variables and round-robin.
+.IP \[bu] 2
+Powerful filtering system to allow or deny client-server assignments based on IP rules.
+.IP \[bu] 2
+Built-in web administration interface for real-time management and monitoring.
+.IP \[bu] 2
+Automated tasks, such as purging inactive connections or disconnecting all clients.
+.IP \[bu] 2
+Multi-platform support: runs on Linux, Windows, and other operating systems.
+
+.SH FILES
+.TP
+/etc/relb.conf
+Default configuration file (Linux)
+.TP
+%system32%\drivers\etc\relb.conf
+Default configuration file (Windows)
+.TP
+relb.conf.sample
+Sample configuration file
+
+.SH SEE ALSO
+.BR relb.conf.sample (5)
+
+.SH AUTHOR
+Juan Rey Saura
+
+.SH LICENSE
+RELB is licensed under the Open Software License version 3.0. See LICENSE.txt for details.
+
+.SH SUPPORT
+For questions, issues, or contributions, please refer to the project repository or contact the maintainer.
