@@ -137,4 +137,4 @@ Memory usage is influenced by the number of concurrent connections. Each `Connec
 
 ### 4.3. Threads
 
-RELB uses a multi-threaded model to handle connections. A main thread is responsible for accepting new connections, and a pool of worker threads, managed by `ThreadedConnectionManager`, handles the data transfer for established connections. The number of worker threads is configurable, allowing for tuning based on the expected load and available system resources.
+RELB uses a multi-threaded model to handle connections. A main thread is responsible for accepting new connections, and a pool of worker threads, managed by `ThreadedConnectionManager`, handles the data transfer for established connections, also `ServerList` and `AdminHTTPServer` run as separate threads. The number of worker threads is configurable, allowing for tuning based on the expected load and available system resources.
