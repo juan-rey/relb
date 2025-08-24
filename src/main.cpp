@@ -24,14 +24,19 @@ using namespace std;
 #define INSTALL_SERVICE_TEXT "installservice"
 #define UNINSTALL_SERVICE_TEXT "uninstallservice"
 #else
-#define INSTALL_SERVICE_TEXT "installdaemon"
-#define UNINSTALL_SERVICE_TEXT "uninstalldaemon"
+#define INSTALL_SERVICE_TEXT "installservice"
+#define UNINSTALL_SERVICE_TEXT "uninstallservice"
 #endif
 
 #define SHOW_LICENSE "license"
 #define SET_CONFIG_FILE_PATH "configfile"
 #define RUN_IN_CONSOLE_TEXT "console"
+
+#ifdef WIN32
 #define RUN_AS_SERVICE "service"
+#else
+#define RUN_AS_SERVICE "daemon"
+#endif
 
 int main( int argc, char * argv[] )
 {

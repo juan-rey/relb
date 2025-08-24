@@ -10,25 +10,19 @@ RELB (RELB Easy Load Balancer) is a high-performance, cross-platform TCP load ba
 .SH OPTIONS
 .TP
 .B configfile \fIPATH\fR
-Specify the configuration file to use. If not provided, the default is /etc/relb.conf (Linux) or %system32%\drivers\etc\relb.conf (Windows).
+Specify the configuration file to use. If not provided, the default is /etc/relb.conf.
 .TP
 .B console
 Run RELB in the foreground (console mode).
 .TP
-.B service
+.B daemon
 Run RELB as a background service.
 .TP
 .B installservice
-Install RELB as a Windows service.
+Install RELB as a service.
 .TP
 .B uninstallservice
-Uninstall RELB from Windows services.
-.TP
-.B installdaemon
-Install RELB as a system daemon (Linux, not yet implemented).
-.TP
-.B uninstalldaemon
-Uninstall RELB system daemon (Linux, not yet implemented).
+Uninstall RELB service.
 .TP
 .B license
 Display license information and exit.
@@ -61,9 +55,6 @@ Multi-platform support: runs on Linux, Windows, and other operating systems.
 /etc/relb.conf
 Default configuration file (Linux)
 .TP
-%system32%\drivers\etc\relb.conf
-Default configuration file (Windows)
-.TP
 relb.conf.sample
 Sample configuration file
 
@@ -77,4 +68,4 @@ Juan Rey Saura
 RELB is licensed under the Open Software License version 3.0. See LICENSE.txt for details.
 
 .SH SUPPORT
-For questions, issues, or contributions, please refer to the project repository or contact the maintainer.
+For questions, issues, or contributions, please refer to the project repository (https://github.com/juan-rey/relb) or contact the maintainer.
