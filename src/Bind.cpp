@@ -191,7 +191,7 @@ void Bind::execute()
 
   for( i = 0; i < addresses.get_count(); i++ )
   {
-    closesocket( socket_array[i] );
+    ::closesocket( socket_array[i] );
   }
 
   if( socket_array )

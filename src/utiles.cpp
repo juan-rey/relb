@@ -217,7 +217,7 @@ bool checkIP( const ipaddress * ip )
     val = false;
   }
 
-  closesocket( sockfd );
+  ::closesocket( sockfd );
 
   return val;
 }
@@ -264,7 +264,7 @@ bool checkPort( const ipaddress * ip, unsigned short port )
     val = false;
   }
 
-  closesocket( sockfd );
+  ::closesocket( sockfd );
 
   return val;
 }

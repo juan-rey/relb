@@ -61,10 +61,10 @@ ControlSocket::~ControlSocket( void )
 {
 #ifdef WIN32
   // Close the Windows socket.
-  closesocket( sock );
+  ::closesocket( sock );
 #else
-  closesocket( fd[0] );
-  closesocket( fd[1] );
+  ::closesocket( fd[0] );
+  ::closesocket( fd[1] );
 #endif
 }
 
@@ -92,7 +92,7 @@ void ControlSocket::post()
   if( tmpsock == oldsock )
   {
     tmpsock = socket( AF_INET, SOCK_STREAM, 0 );
-    closesocket( oldsock ); // Close the original socket first
+    ::closesocket( oldsock ); // Close the original socket first
     TRACE( TRACE_CONNECTIONS )( "%s - i have create control socket again, %d, old socked fd was identicall to old one\n", curr_local_time(), tmpsock );
   }
 
@@ -103,7 +103,7 @@ void ControlSocket::post()
   // Now, close the old socket. This action will interrupt any select() call
   // that is monitoring `oldsock`.
   TRACE( TRACE_CONNECTIONS )( "%s - i have closed old control socket %d\n", curr_local_time(), oldsock );
-  if( closesocket( oldsock ) != 0 )
+  if( ::closesocket( oldsock ) != 0 )
   {
     TRACE( TRACE_CONNECTIONS )( "%s - Could NOT old control socket %d\n", curr_local_time(), oldsock );
   }
