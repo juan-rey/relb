@@ -592,7 +592,7 @@ bool AppConfig::checkConfig()
   // Check admin web interface IP and port
   if( http_admin_enabled )
   {
-    if( !checkIP( &( http_admin_ip ) ) )
+    if( !check_ip_bindable( &( http_admin_ip ) ) )
     {
       TRACE( TRACE_CONFIG )( "%s - admin web IP %s was not available\n", curr_local_time(), (const char *) iptostring( http_admin_ip ) );
       printf( "admin web IP %s was not available\n", (const char *) iptostring( http_admin_ip ) );
@@ -600,7 +600,7 @@ bool AppConfig::checkConfig()
     }
     else
     {
-      if( !checkPort( &( http_admin_ip ), http_admin_port ) )
+      if( !check_ip_port_bindable( &( http_admin_ip ), http_admin_port ) )
       {
         TRACE( TRACE_CONFIG )( "%s - admin web: %d port was not available\n", curr_local_time(), http_admin_port );
         printf( "admin web port %d was not available\n", http_admin_port );
@@ -623,7 +623,7 @@ bool AppConfig::checkConfig()
     {
       for( j = 0; j < bind[i]->address.get_count(); j++ )
       {
-        if( !checkIP( &( bind[i]->address[j]->src_ip ) ) )
+        if( !check_ip_bindable( &( bind[i]->address[j]->src_ip ) ) )
         {
           TRACE( TRACE_CONFIG )( "%s - IP %s was not available\n", curr_local_time(), (const char *) iptostring( bind[i]->address[j]->src_ip ) );
           printf( "IP %s was not available\n", (const char *) iptostring( bind[i]->address[j]->src_ip ) );
@@ -631,7 +631,7 @@ bool AppConfig::checkConfig()
         }
         else
         {
-          if( !checkPort( &( bind[i]->address[j]->src_ip ), bind[i]->address[j]->src_port ) )
+          if( !check_ip_port_bindable( &( bind[i]->address[j]->src_ip ), bind[i]->address[j]->src_port ) )
           {
             TRACE( TRACE_CONFIG )( "%s - %d port was not available\n", curr_local_time(), bind[i]->address[j]->src_port );
             printf( "port %d was not available\n", bind[i]->address[j]->src_port );

@@ -93,7 +93,7 @@ Socket::Socket( const ipaddress * dstip, unsigned short dstport )
 // @param dstport: Destination port number
 Socket::Socket( const char * dsthost, int dstport )
 {
-  ip = chartoipaddress( dsthost );
+  ip = char_to_ipaddress( dsthost );
   Socket( &ip, dstport );
 }
 

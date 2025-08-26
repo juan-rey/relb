@@ -80,7 +80,7 @@ const char * given_utc_time( datetime t )
   return givenutctimestring;
 }
 
-const char * statusdesc( int status )
+const char * get_status_description( int status )
 {
   const char * ret = "";
   switch( status & STATUS_CLIENT_SERVER_MASK )
@@ -106,9 +106,9 @@ const char * statusdesc( int status )
 
 #define IPADDRESS_SIZE 4   
 
-bool ipmenor( ipaddress * iplt, ipaddress * ipgt )
+bool ip_less_than( ipaddress * iplt, ipaddress * ipgt )
 {
-  bool menor = false;
+  bool is_less = false;
   for( int i = 0; i < IPADDRESS_SIZE; i++ )
   {
     if( iplt->data[i] > ipgt->data[i] )
@@ -119,17 +119,17 @@ bool ipmenor( ipaddress * iplt, ipaddress * ipgt )
     {
       if( iplt->data[i] < ipgt->data[i] )
       {
-        menor = true;
+        is_less = true;
         i = IPADDRESS_SIZE;
 
       }
     }
   }
 
-  return menor;
+  return is_less;
 }
 
-ipaddress chartoipaddress( const char * ip )
+ipaddress char_to_ipaddress( const char * ip )
 {
   ipaddress ret = ipnone;
   if( ip != NULL )
@@ -171,7 +171,8 @@ ipaddress masked_ip( const ipaddress * ip, const ipaddress * mask )
   return ipaddress( ip->data[0] & mask->data[0], ip->data[1] & mask->data[1], ip->data[2] & mask->data[2], ip->data[3] & mask->data[3] );
 }
 
-bool checkIP( const ipaddress * ip )
+// Check if the given IP address can be binded
+bool check_ip_bindable( const ipaddress * ip )
 {
   bool val = true;
 
@@ -222,7 +223,8 @@ bool checkIP( const ipaddress * ip )
   return val;
 }
 
-bool checkPort( const ipaddress * ip, unsigned short port )
+// Check if the given IP address and port can be binded
+bool check_ip_port_bindable( const ipaddress * ip, unsigned short port )
 {
   bool val = true;
 

@@ -56,12 +56,12 @@ const char * curr_local_time();
 const char * curr_utc_time();
 const char * given_local_time( datetime t_utc );
 const char * given_utc_time( datetime t );
-const char * statusdesc( int status );
-ipaddress chartoipaddress( const char * ip );
-bool ipmenor( ipaddress * iplt, ipaddress * ipgt );
+const char * get_status_description( int status );
+ipaddress char_to_ipaddress( const char * ip );
+bool ip_less_than( ipaddress * iplt, ipaddress * ipgt );
 ipaddress masked_ip( const ipaddress * ip, const ipaddress * mask );
-bool checkIP( const ipaddress * ip );
-bool checkPort( const ipaddress * ip, unsigned short port );
+bool check_ip_bindable( const ipaddress * ip );
+bool check_ip_port_bindable( const ipaddress * ip, unsigned short port );
 
 struct filterinfo
 {

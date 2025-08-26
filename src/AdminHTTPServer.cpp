@@ -103,15 +103,15 @@ void AdminHTTPServer::stopHTTPAdmin()
 }
 
 /*
-bool AdminHTTPServer::addServer( const char * nombre, const char * hostname, unsigned short puerto, int weight, int max_connections )
+bool AdminHTTPServer::addServer( const char * name, const char * hostname, unsigned short port, int weight, int max_connections )
 {
   ipaddress ip = phostbyname( hostname );
 
-  return addServer( nombre, &ip, puerto, weight );
+  return addServer( name, &ip, port, weight );
 }
 */
 
-bool AdminHTTPServer::addServer( const char * host_name, const ipaddress * ip, unsigned short puerto, int weight, int max_connections )
+bool AdminHTTPServer::addServer( const char * host_name, const ipaddress * ip, unsigned short port, int weight, int max_connections )
 {
   serverinfo * info = new serverinfo;
 
@@ -127,7 +127,7 @@ bool AdminHTTPServer::addServer( const char * host_name, const ipaddress * ip, u
   }
 
   info->ip = *ip;
-  info->port = puerto;
+  info->port = port;
   info->disconnected = 0;
   info->finished = 0;
   info->connected = 0;
@@ -240,16 +240,16 @@ void AdminHTTPServer::execute()
           {
             int i = 0;
             int peer_index = 0;
-            bool hay_mas_conectados = false;
+            bool other_connections_active = false; // if there are other active connections from the same source IP, we not delete the peer info
 
             if( msg->id == STATUS_PEER_CONNECTION_DELETED )
-              hay_mas_conectados = true;//borro seguro
+              other_connections_active = true;// no need to check, we are deleting it
 
-            while( peer_index < peer_list.get_count() && !hay_mas_conectados )
+            while( peer_index < peer_list.get_count() && !other_connections_active )
             {
               if( ( peer_index != current_item_index ) && !( peer_list[peer_index]->status & STATUS_PEER_NOT_CONNECTED ) && ( peer_list[peer_index]->src_ip == pinfo->src_ip ) )
               {
-                hay_mas_conectados = true;
+                other_connections_active = true;
               }
               else
               {
@@ -273,7 +273,7 @@ void AdminHTTPServer::execute()
                 else
                   server_list[i]->connected = MAX( server_list[i]->connected - 1, 0 );
 
-                if( hay_mas_conectados && current_item_index > -1 && current_item_index < peer_list.get_count() )
+                if( other_connections_active && current_item_index > -1 && current_item_index < peer_list.get_count() )
                 {
                   pinfo = NULL;
                   peer_list.del( current_item_index );
@@ -372,13 +372,13 @@ void AdminHTTPServer::execute()
               if( buff[i] == 0 )
               {
                 if( strncmp( buff + i + 1, TEXT_SRC_IP_PARAM, strlen( TEXT_SRC_IP_PARAM ) ) == 0 )
-                  src_ip_filter = chartoipaddress( buff + i + strlen( TEXT_SRC_IP_PARAM ) + 1 );
+                  src_ip_filter = char_to_ipaddress( buff + i + strlen( TEXT_SRC_IP_PARAM ) + 1 );
 
                 if( strncmp( buff + i + 1, TEXT_SRC_PORT_PARAM, strlen( TEXT_SRC_PORT_PARAM ) ) == 0 )
                   src_port = atoi( buff + i + strlen( TEXT_SRC_PORT_PARAM ) + 1 );
 
                 if( strncmp( buff + i + 1, TEXT_DST_IP_PARAM, strlen( TEXT_DST_IP_PARAM ) ) == 0 )
-                  dst_ip_filter = chartoipaddress( buff + i + strlen( TEXT_DST_IP_PARAM ) + 1 );
+                  dst_ip_filter = char_to_ipaddress( buff + i + strlen( TEXT_DST_IP_PARAM ) + 1 );
 
                 if( strncmp( buff + i + 1, TEXT_DST_PORT_PARAM, strlen( TEXT_DST_PORT_PARAM ) ) == 0 )
                   dst_port = atoi( buff + i + strlen( TEXT_DST_PORT_PARAM ) + 1 );
@@ -644,7 +644,7 @@ void AdminHTTPServer::list( ipstream & client, ipaddress src_filter, ipaddress d
             {
               case SORT_BY_SRC_IP:
               {
-                if( ipmenor( &( pInfo->src_ip ), &( ( *pList )[j]->src_ip ) ) )
+                if( ip_less_than( &( pInfo->src_ip ), &( ( *pList )[j]->src_ip ) ) )
                   inserthere = true;
                 else
                   if( ( pInfo->src_ip == ( *pList )[j]->src_ip ) && ( pInfo->src_port < ( *pList )[j]->src_port ) )
@@ -653,7 +653,7 @@ void AdminHTTPServer::list( ipstream & client, ipaddress src_filter, ipaddress d
               break;
               case SORT_BY_DST_IP:
               {
-                if( ipmenor( &( pInfo->dst_ip ), &( ( *pList )[j]->dst_ip ) ) )
+                if( ip_less_than( &( pInfo->dst_ip ), &( ( *pList )[j]->dst_ip ) ) )
                   inserthere = true;
                 else
                   if( ( pInfo->dst_ip == ( *pList )[j]->dst_ip ) && ( pInfo->dst_port < ( *pList )[j]->dst_port ) )
@@ -686,7 +686,7 @@ void AdminHTTPServer::list( ipstream & client, ipaddress src_filter, ipaddress d
             {
               case SORT_BY_SRC_IP:
               {
-                if( !ipmenor( &( pInfo->src_ip ), &( ( *pList )[j]->src_ip ) ) && !( pInfo->src_ip == ( *pList )[j]->src_ip ) )
+                if( !ip_less_than( &( pInfo->src_ip ), &( ( *pList )[j]->src_ip ) ) && !( pInfo->src_ip == ( *pList )[j]->src_ip ) )
                   inserthere = true;
                 else
                   if( ( pInfo->src_ip == ( *pList )[j]->src_ip ) && ( pInfo->src_port >= ( *pList )[j]->src_port ) )
@@ -695,7 +695,7 @@ void AdminHTTPServer::list( ipstream & client, ipaddress src_filter, ipaddress d
               break;
               case SORT_BY_DST_IP:
               {
-                if( !ipmenor( &( pInfo->dst_ip ), &( ( *pList )[j]->dst_ip ) ) && !( pInfo->dst_ip == ( *pList )[j]->dst_ip ) )
+                if( !ip_less_than( &( pInfo->dst_ip ), &( ( *pList )[j]->dst_ip ) ) && !( pInfo->dst_ip == ( *pList )[j]->dst_ip ) )
                   inserthere = true;
                 else
                   if( ( pInfo->dst_ip == ( *pList )[j]->dst_ip ) && ( pInfo->dst_port >= ( *pList )[j]->dst_port ) )
@@ -751,7 +751,7 @@ void AdminHTTPServer::list( ipstream & client, ipaddress src_filter, ipaddress d
     client.putline( "<tr class=\"rwaBody\">" );
     client.putline( "<td align=\"center\">" + iptostring( ( *pList )[i]->src_ip ) + ":" + itostring( ( *pList )[i]->src_port ) + "</td>" );
     client.putline( "<td align=\"center\">" + iptostring( ( *pList )[i]->dst_ip ) + ":" + itostring( ( *pList )[i]->dst_port ) + "</td>" );
-    client.putline( "<td align=\"center\">" + string( statusdesc( ( *pList )[i]->status ) ) + "</td>" );
+    client.putline( "<td align=\"center\">" + string( get_status_description( ( *pList )[i]->status ) ) + "</td>" );
     decodetime( NOW_UTC - ( *pList )[i]->modified, hours, mins, secs, msecs );
     client.putf( "<td align=\"center\"> %02d:%02d:%02d ", hours, mins, secs );
     client.putline( "</td align=\"center\">" );
@@ -797,7 +797,7 @@ void AdminHTTPServer::ban( ipstream & client, char * src_ip, char * src_port, bo
   ipaddress ip;
   unsigned short port;
 
-  ip = chartoipaddress( src_ip );
+  ip = char_to_ipaddress( src_ip );
   port = atoi( src_port );
 
   if( parallellist_jq )
@@ -842,7 +842,7 @@ void AdminHTTPServer::ban_all( ipstream & client, char * src_ip, char * src_port
   ipaddress ip;
   unsigned short port;
 
-  ip = chartoipaddress( src_ip );
+  ip = char_to_ipaddress( src_ip );
   port = atoi( src_port );
 
   if( parallellist_jq )
@@ -886,7 +886,7 @@ void AdminHTTPServer::kick( ipstream & client, char * src_ip, char * src_port )
   ipaddress ip;
   unsigned short port;
 
-  ip = chartoipaddress( src_ip );
+  ip = char_to_ipaddress( src_ip );
   port = atoi( src_port );
 
   if( parallellist_jq )
