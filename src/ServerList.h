@@ -19,6 +19,7 @@ USING_PTYPES
 
 #include "utiles.h"
 #include "ThreadedConnectionManagerList.h"
+#include "MessageQueue.h"
 
 class ServerList: public thread
 {
@@ -38,8 +39,8 @@ protected:
   rwlock peer_lock;
   tpodlist<task_info *> tasks_list;
   datetime next_task_run_time;
-  MessaggeQueue * parallelList;
-  MessaggeQueue jq;
+  MessageQueue * parallelList;
+  MessageQueue jq;
   timedsem status;
   //TODO
   //int updateServerInfo();
@@ -62,13 +63,13 @@ public:
   bool addTask( TASK_TYPE task_type, int run_interval_seconds );
   bool addTask( TASK_TYPE task_type, datetime firstrun, int run_interval_seconds );
   bool addFilter( const ipaddress source_ip, const ipaddress source_mask, const ipaddress dest_ip, const ipaddress dest_mask, bool allow );
-  const MessaggeQueue * getQueue();
+  const MessageQueue * getQueue();
   const peer_info * getServer( const ipaddress * ipcliente, unsigned short puertocliente, ThreadedConnectionManager * pcm );
   void setServer( int client_socket, sockaddr_in * sac );
   virtual ~ServerList();
   virtual int startUpdating();
   virtual int stopUpdating();
-  void setPararllelList( const MessaggeQueue * jq );
+  void setPararllelList( const MessageQueue * jq );
   bool isServerAllowed( const ipaddress * server, const ipaddress * client );
 };
 #endif

@@ -141,12 +141,12 @@ bool AdminHTTPServer::addServer( const char * host_name, const ipaddress * ip, u
   return true;
 }
 
-void AdminHTTPServer::setPararllelList( const MessaggeQueue * jq )
+void AdminHTTPServer::setPararllelList( const MessageQueue * jq )
 {
-  parallellist_jq = (MessaggeQueue *) jq;
+  parallellist_jq = (MessageQueue *) jq;
 }
 
-const MessaggeQueue * AdminHTTPServer::getJQ()
+const MessageQueue * AdminHTTPServer::getJQ()
 {
   return &jq;
 }
@@ -585,7 +585,7 @@ void AdminHTTPServer::list( ipstream & client, ipaddress src_filter, ipaddress d
     + "\">a</a>/<a href=\"" + WEB_PAGE_LIST + "?"
     + filters + TEXT_SORT_BY_PARAM + TEXT_SORT_BY_MODIFIED + "&" + TEXT_SORT_ASC_PARAM
     + "\">d</a>)</td>" );
-  client.putline( "<th class=\"rwaTableHeader\">registred at (<a href=\"list?"
+  client.putline( "<th class=\"rwaTableHeader\">registered at (<a href=\"list?"
     + filters + TEXT_SORT_BY_PARAM + TEXT_SORT_BY_CREATION
     + "\">a</a>/<a href=\"" + WEB_PAGE_LIST + "?"
     + filters + TEXT_SORT_BY_PARAM + TEXT_SORT_BY_CREATION + "&" + TEXT_SORT_ASC_PARAM

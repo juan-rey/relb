@@ -19,7 +19,7 @@ Please consult the file "LICENSE.txt" for details.
 //#define OPTIMIZE_PEER_READING 
 
 // Constructor: Initializes a ConnectionPeer with client/server sockets, message queue, and peer info
-ConnectionPeer::ConnectionPeer( Socket * pcli, Socket * psrv, const MessaggeQueue * jq, const peer_info * info )
+ConnectionPeer::ConnectionPeer( Socket * pcli, Socket * psrv, const MessageQueue * jq, const peer_info * info )
 {
   pClient = pcli;
   pServer = psrv;
@@ -31,7 +31,7 @@ ConnectionPeer::ConnectionPeer( Socket * pcli, Socket * psrv, const MessaggeQueu
   r_offset_bufferforclient = 0;
   bytes_to_receive_in_bufferforclient = STAMBUFFERSOCKET;
   bytes_to_send_in_bufferforclient = 0;
-  pjq = (MessaggeQueue *) jq;
+  pjq = (MessageQueue *) jq;
   pinfo = info;
   pServerConnected = false;
   TRACE( TRACE_CONNECTIONS )( "%s - ConnectionPeer created: client=%p, server=%p\n", curr_local_time(), (void *) pClient, (void *) pServer );
@@ -420,7 +420,7 @@ void ConnectionPeer::getMissingDataFromClient()
 
   if( pClient && bytes_to_receive_in_bufferforserver )
   {
-    ret = pClient->recieveNB( &bufferforserver[w_offset_bufferforserver], bytes_to_receive_in_bufferforserver );
+    ret = pClient->receiveNB( &bufferforserver[w_offset_bufferforserver], bytes_to_receive_in_bufferforserver );
     if( ret > 0 )
     {
       TRACE( TRACE_IOSOCKET )( "%s - received %d/%d bytes from client\n", curr_local_time(), ret, bytes_to_receive_in_bufferforserver );
@@ -469,7 +469,7 @@ void ConnectionPeer::getMissingDataFromServer()
 
   if( pServer && bytes_to_receive_in_bufferforclient )
   {
-    ret = pServer->recieveNB( &bufferforclient[w_offset_bufferforclient], bytes_to_receive_in_bufferforclient );
+    ret = pServer->receiveNB( &bufferforclient[w_offset_bufferforclient], bytes_to_receive_in_bufferforclient );
     if( ret > 0 )
     {
       TRACE( TRACE_IOSOCKET )( "%s - read %d/%d bytes from server\n", curr_local_time(), ret, bytes_to_receive_in_bufferforclient );

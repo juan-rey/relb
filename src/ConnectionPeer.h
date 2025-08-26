@@ -15,14 +15,14 @@ Please consult the file "LICENSE.txt" for details.
 #include "Socket.h"
 #include "utiles.h"
 #include "PeerInfo.h"
-#include "MessaggeQueue.h"
+#include "MessageQueue.h"
 
 #define STAMBUFFERSOCKET 16384
 
 class ConnectionPeer {
 
 public:
-  ConnectionPeer( Socket * pcli, Socket * psrv, const MessaggeQueue * jq, const peer_info * info );
+  ConnectionPeer( Socket * pcli, Socket * psrv, const MessageQueue * jq, const peer_info * info );
   ~ConnectionPeer();
 
   void close();
@@ -51,7 +51,7 @@ private:
   int r_offset_bufferforclient;
   int bytes_to_receive_in_bufferforclient;
   int bytes_to_send_in_bufferforclient;
-  MessaggeQueue * pjq;
+  MessageQueue * pjq;
   const peer_info * pinfo;
   bool  pServerConnected;
 #ifdef DEBUG

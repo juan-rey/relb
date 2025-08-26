@@ -62,7 +62,7 @@ void ServerList::setPeersPerThread( int ppt )
     cmlist.setPeersPerThread( ppt );
 }
 
-const MessaggeQueue * ServerList::getQueue()
+const MessageQueue * ServerList::getQueue()
 {
   return &jq;
 }
@@ -1078,13 +1078,13 @@ void ServerList::setServer( int client_socket, sockaddr_in * sac )
   }
 }
 
-void ServerList::setPararllelList( const MessaggeQueue * jq )
+void ServerList::setPararllelList( const MessageQueue * jq )
 {
   const peer_info * pinfo = NULL;
   peer_info * pinfoparallel = NULL;
   peer_lock.rdlock();
   int i = peer_list.get_count();
-  parallelList = (MessaggeQueue *) jq;
+  parallelList = (MessageQueue *) jq;
 
   if( parallelList )
   {

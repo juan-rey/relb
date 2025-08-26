@@ -107,7 +107,7 @@
     <ClCompile Include="src\ConnectionPeerList.cpp" />
     <ClCompile Include="src\ControlSocket.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\MessaggeQueue.cpp" />
+    <ClCompile Include="src\MessageQueue.cpp" />
     <ClCompile Include="src\PeerInfo.cpp" />
     <ClCompile Include="src\ServerList.cpp" />
     <ClCompile Include="src\Socket.cpp" />
@@ -125,7 +125,7 @@
     <ClInclude Include="src\ControlSocket.h" />
     <ClInclude Include="src\htmldefs.h" />
     <ClInclude Include="src\license.h" />
-    <ClInclude Include="src\MessaggeQueue.h" />
+    <ClInclude Include="src\MessageQueue.h" />
     <ClInclude Include="src\PeerInfo.h" />
     <ClInclude Include="src\relb.h" />
     <ClInclude Include="src\ServerList.h" />

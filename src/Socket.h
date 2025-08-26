@@ -30,7 +30,7 @@ public:
   virtual ~Socket();
 
   int sendNB( const  char * buffer, int max );
-  int recieveNB( char * buffer, int max );
+  int receiveNB( char * buffer, int max );
   void close();
 #ifdef DEBUG
   void close2();

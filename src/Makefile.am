@@ -16,8 +16,8 @@ bin_PROGRAMS = relb
 
 relb_SOURCES = \
 	main.cpp\
-	MessaggeQueue.cpp \
-	MessaggeQueue.h \
+	MessageQueue.cpp \
+	MessageQueue.h \
 	PeerInfo.cpp \
 	PeerInfo.h \
 	relb.h \

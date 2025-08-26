@@ -18,7 +18,7 @@ USING_PTYPES
 
 #include "utiles.h"
 #include "PeerInfo.h"
-#include "MessaggeQueue.h"
+#include "MessageQueue.h"
 
 class AdminHTTPServer: public thread
 {
@@ -29,8 +29,8 @@ public:
   void stopHTTPAdmin();
   bool addServer( const char * host_name, const ipaddress * ip, unsigned short port, int weight = 0, int max_connections = 0 );
   //bool addServer( const char * name, const char * hostname, unsigned short port, int weight = 0, int max_connections = 0 );
-  void setPararllelList( const MessaggeQueue * jq );
-  const MessaggeQueue * getJQ();
+  void setPararllelList( const MessageQueue * jq );
+  const MessageQueue * getJQ();
 
 protected:
   virtual void execute();
@@ -48,8 +48,8 @@ protected:
   bool finish;
   tpodlist<peer_info *> peer_list;
   tpodlist<serverinfo *> server_list;
-  MessaggeQueue jq;
-  MessaggeQueue * parallellist_jq;
+  MessageQueue jq;
+  MessageQueue * parallellist_jq;
   unsigned short bind_port;
   ipaddress bind_ip;
 };

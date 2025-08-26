@@ -180,7 +180,7 @@ int Socket::sendNB( const char * buffer, int max )
 // @param buffer: Buffer to receive into
 // @param max: Maximum bytes to receive
 // @return: >0: bytes received, 0: would block, -1: error, -2: peer closed
-int Socket::recieveNB( char * buffer, int max )
+int Socket::receiveNB( char * buffer, int max )
 {
   int ret = -1;
 
