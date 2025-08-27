@@ -62,7 +62,7 @@ private:
   void cleanErrors();
 
 public:
-  //config retrieving functions
+  // config retrieving functions
   bool getFirstBind();
   bool getNextBind();
   /*
@@ -100,7 +100,7 @@ public:
   unsigned short getAddressPort();
 
 private:
-  //config variables
+  // config variables
   string configfile;
   bool connect_to_the_same_server;
   bool one_connection_per_IP;
@@ -109,11 +109,11 @@ private:
   ipaddress http_admin_ip;
   int connections_per_thread;
   bool update_server_status;
-  int minimun_server_reconnection_time;
+  int minimum_server_reconnection_time;
   tpodlist<bind_conf *> bind;
   tpodlist<string *> error_list;
 
-  //auxiliar variables set to return servers values
+  // helper variables set to return servers values
   int currentBind;
   int currentServer;
   int currentTask;

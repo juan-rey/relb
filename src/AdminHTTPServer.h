@@ -29,7 +29,7 @@ public:
   void stopHTTPAdmin();
   bool addServer( const char * host_name, const ipaddress * ip, unsigned short port, int weight = 0, int max_connections = 0 );
   //bool addServer( const char * name, const char * hostname, unsigned short port, int weight = 0, int max_connections = 0 );
-  void setPararllelList( const MessageQueue * jq );
+  void setParallelList( const MessageQueue * jq );
   const MessageQueue * getJQ();
 
 protected:
@@ -49,7 +49,7 @@ protected:
   tpodlist<peer_info *> peer_list;
   tpodlist<serverinfo *> server_list;
   MessageQueue jq;
-  MessageQueue * parallellist_jq;
+  MessageQueue * parallel_list_jq;
   unsigned short bind_port;
   ipaddress bind_ip;
 };

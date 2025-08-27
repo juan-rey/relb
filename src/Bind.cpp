@@ -141,9 +141,9 @@ void Bind::execute()
 
   if( adminEnabled )
   {
-    admin.setPararllelList( slist.getQueue() );
+    admin.setParallelList( slist.getQueue() );
     admin.startHTTPAdmin( adminPort, adminIP );
-    slist.setPararllelList( admin.getJQ() );
+    slist.setParallelList( admin.getJQ() );
   }
 
   while( !finish )
@@ -195,7 +195,7 @@ void Bind::execute()
   }
 
   if( socket_array )
-    delete socket_array;
+    delete [] socket_array;
 }
 
 void Bind::cleanup()

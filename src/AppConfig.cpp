@@ -35,7 +35,7 @@ USING_PTYPES
 #define DEFAULT_UPDATE_SERVER_STATUS false
 #define DEFAULT_HTTP_ADMIN_ENABLED false
 #define DEFAULT_HTTP_IPADDRESS ipany
-#define MINIMUN_SEVER_RECONNECTION_TIME 30
+#define MINIMUM_SERVER_RECONNECTION_TIME 30
 
 // Configuration file tags
 #define CONFIG_SERVER_TAG "server:"
@@ -340,6 +340,22 @@ bool AppConfig::getFilterAllow()
   return val;
 }
 
+/*
+// Return the number of addresses for the current bind and reset iteration
+int AppConfig::getAddressCount()
+{
+  int val = 0;
+  currentAddress = -1;
+
+  if( currentBind < bind.get_count() )
+  {
+    val = bind[currentBind]->address.get_count();
+  }
+
+  return val;
+}
+*/
+
 // Get the type of the current task
 TASK_TYPE AppConfig::getTaskType()
 {
@@ -420,7 +436,7 @@ int AppConfig::getServerWeight()
 // Get the minimum server reconnection time (retry interval)
 int AppConfig::getServerRetryTime()
 {
-  return minimun_server_reconnection_time;
+  return minimum_server_reconnection_time;
 }
 
 // Return true if the web admin interface is enabled
@@ -448,7 +464,7 @@ void AppConfig::printErrors()
 
   while( i < error_list.get_count() )
   {
-    TRACE( TRACE_CONFIG )( "%s - %s\n", curr_local_time(), (char *) error_list[1] );
+    TRACE( TRACE_CONFIG )( "%s - %s\n", curr_local_time(), (const char *)*( error_list[i] ) );
     i++;
   }
 
@@ -577,7 +593,7 @@ bool AppConfig::setDefaultValues()
   update_server_status = DEFAULT_UPDATE_SERVER_STATUS;
   http_admin_enabled = DEFAULT_HTTP_ADMIN_ENABLED;
   http_admin_ip = DEFAULT_HTTP_IPADDRESS;
-  minimun_server_reconnection_time = MINIMUN_SEVER_RECONNECTION_TIME;
+  minimum_server_reconnection_time = MINIMUM_SERVER_RECONNECTION_TIME;
 
   return true;
 }
@@ -683,9 +699,9 @@ void AppConfig::processConfigLine( const char * line )
         h++;
       }
 
-      minimun_server_reconnection_time = atoi( &line[h] );
-      if( minimun_server_reconnection_time == 0 )
-        minimun_server_reconnection_time = MINIMUN_SEVER_RECONNECTION_TIME;
+      minimum_server_reconnection_time = atoi( &line[h] );
+      if( minimum_server_reconnection_time == 0 )
+        minimum_server_reconnection_time = MINIMUM_SERVER_RECONNECTION_TIME;
     }
 
     if( strncmp( (const char *) line, CONFIG_ADMIN_TAG, strlen( CONFIG_ADMIN_TAG ) ) == 0 )
@@ -725,10 +741,11 @@ void AppConfig::processConfigLine( const char * line )
         TRACE( TRACE_CONFIG )( "%s - web admin binding ip address %s\n", curr_local_time(), (const char *) iptostring( dst_ip ) );
 
         h = g + 1;
+        delete [] servername;
       }
 
       dst_port = atoi( &line[h] );
-      TRACE( TRACE_CONFIG )( "%s - web admin bindingn port %d\n", curr_local_time(), dst_port );
+      TRACE( TRACE_CONFIG )( "%s - web admin binding port %d\n", curr_local_time(), dst_port );
 
       if( dst_port == 0 )
       {
@@ -805,6 +822,7 @@ void AppConfig::processConfigLine( const char * line )
         TRACE( TRACE_CONFIG )( "%s - bind ip address %s\n", curr_local_time(), (const char *) iptostring( dst_ip ) );
 
         h = g + 1;
+        delete [] servername;
       }
 
       dst_port = atoi( &line[h] );
@@ -878,7 +896,7 @@ void AppConfig::processConfigLine( const char * line )
         TRACE( TRACE_CONFIG )( "%s - destination server ip address %s\n", curr_local_time(), (const char *) iptostring( dst_ip ) );
       }
 
-     delete servername;
+     delete [] servername;
 
      if( dst_ip == ipnone )
       {
@@ -1128,7 +1146,7 @@ void AppConfig::processConfigLine( const char * line )
       servername[i] = char( NULL );
       filter->src_ip = phostbyname( servername );
       TRACE( TRACE_CONFIG )( "%s - filter ip server address %s\n", curr_local_time(), servername );
-      delete servername;
+      delete [] servername;
 
       TRACE( TRACE_CONFIG )( "%s - filter ip source address %s\n", curr_local_time(), (const char *) iptostring( filter->src_ip ) );
       if( filter->src_ip == ipnone )
@@ -1151,7 +1169,7 @@ void AppConfig::processConfigLine( const char * line )
         strncpy( servername, &( line[h] ), i );
         servername[i] = char( NULL );
         filter->src_mask = phostbyname( servername );
-        delete servername;
+        delete [] servername;
       }
       else
       {
@@ -1180,7 +1198,7 @@ void AppConfig::processConfigLine( const char * line )
       strncpy( servername, &( line[h] ), i );
       servername[i] = char( NULL );
       filter->dst_ip = phostbyname( servername );
-      delete servername;
+      delete [] servername;
 
       TRACE( TRACE_CONFIG )( "%s - filter ip dest address %s\n", curr_local_time(), (const char *) iptostring( filter->dst_ip ) );
       if( filter->dst_ip == ipnone )
@@ -1204,7 +1222,7 @@ void AppConfig::processConfigLine( const char * line )
         strncpy( servername, &( line[h] ), i );
         servername[i] = char( NULL );
         filter->dst_mask = phostbyname( servername );
-        delete servername;
+        delete [] servername;
       }
       else
       {
@@ -1226,8 +1244,8 @@ void AppConfig::processConfigLine( const char * line )
       {
         h++;
 
-        //			while( line[h] != char(NULL) && line[h] != ' '  && line[h] != '/t' )
-        //				h++;
+        //      while( line[h] != char(NULL) && line[h] != ' '  && line[h] != '/t' )
+        //        h++;
 
         if( strncmp( &line[h], "deny", strlen( "deny" ) ) == 0 )
         {

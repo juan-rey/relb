@@ -35,7 +35,7 @@ protected:
 public:
   ThreadedConnectionManager( int connections = DEFAULT_TCM_MAX_CONNECTIONS );
   virtual ~ThreadedConnectionManager();
-  virtual int addConectionPeer( ConnectionPeer * peer );
+  virtual int addConnectionPeer( ConnectionPeer * peer );
   void closePInfo( peer_info * pinfo );
   int getFreeConnections();
   int getActiveConnections();

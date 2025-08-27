@@ -27,10 +27,10 @@ protected:
   virtual void execute();
   virtual void cleanup();
   void processMessage( message * msg );
-  // No description
+  // Internal state
   bool update;
   bool finish;
-  bool reconnectlostsessions;
+  bool reconnect_lost_sessions;
   ThreadedConnectionManagerList cmlist;
   tpodlist<filterinfo *> filter_list;
   tpodlist<serverinfo *> servers_list;
@@ -50,7 +50,7 @@ protected:
   void cleanPeerList();
   void cleanTaskList();
   int last_server_assigned;
-  int server_retry_mseconds;
+  int server_retry_milliseconds;
   int finished_weight;
   int disconnected_weight;
   datetime last_connections_cleanup;
@@ -58,18 +58,18 @@ public:
   void setPeersPerThread( int ppt );
   void setServerRetry( int seconds );
   ServerList();
-  bool addServer( const char * host_name, const ipaddress * ip, unsigned short puerto, int weight = 0, int max_connections = 0 );
-  //bool addServer( const char * nombre, const char * hostname, unsigned short puerto, int weight = 0, int max_connections = 0 );
+  bool addServer( const char * host_name, const ipaddress * ip, unsigned short port, int weight = 0, int max_connections = 0 );
+  //bool addServer( const char * name, const char * host_name, unsigned short port, int weight = 0, int max_connections = 0 );
   bool addTask( TASK_TYPE task_type, int run_interval_seconds );
   bool addTask( TASK_TYPE task_type, datetime firstrun, int run_interval_seconds );
   bool addFilter( const ipaddress source_ip, const ipaddress source_mask, const ipaddress dest_ip, const ipaddress dest_mask, bool allow );
   const MessageQueue * getQueue();
-  const peer_info * getServer( const ipaddress * ipcliente, unsigned short puertocliente, ThreadedConnectionManager * pcm );
+  const peer_info * getServer( const ipaddress * client_ip, unsigned short client_port, ThreadedConnectionManager * pcm );
   void setServer( int client_socket, sockaddr_in * sac );
   virtual ~ServerList();
   virtual int startUpdating();
   virtual int stopUpdating();
-  void setPararllelList( const MessageQueue * jq );
+  void setParallelList( const MessageQueue * jq );
   bool isServerAllowed( const ipaddress * server, const ipaddress * client );
 };
 #endif

@@ -58,7 +58,7 @@ USING_PTYPES
 AdminHTTPServer::AdminHTTPServer(): thread( false )
 {
   finish = false;
-  parallellist_jq = NULL;
+  parallel_list_jq = NULL;
 }
 
 AdminHTTPServer::~AdminHTTPServer()
@@ -141,9 +141,9 @@ bool AdminHTTPServer::addServer( const char * host_name, const ipaddress * ip, u
   return true;
 }
 
-void AdminHTTPServer::setPararllelList( const MessageQueue * jq )
+void AdminHTTPServer::setParallelList( const MessageQueue * jq )
 {
-  parallellist_jq = (MessageQueue *) jq;
+  parallel_list_jq = (MessageQueue *) jq;
 }
 
 const MessageQueue * AdminHTTPServer::getJQ()
@@ -198,7 +198,7 @@ void AdminHTTPServer::execute()
 
         while( peer_index < peer_list.get_count() )
         {
-          //Lets clean disconnected connection from the same IP
+          // Let's clean disconnected connections from the same IP
           if( ( peer_list[peer_index]->src_ip == pinfo->src_ip ) && ( peer_list[peer_index]->status & STATUS_PEER_NOT_CONNECTED ) )
           {
             int server_index = 0;
@@ -240,10 +240,10 @@ void AdminHTTPServer::execute()
           {
             int i = 0;
             int peer_index = 0;
-            bool other_connections_active = false; // if there are other active connections from the same source IP, we not delete the peer info
+            bool other_connections_active = false; // if there are other active connections from the same source IP, we do delete the peer info
 
             if( msg->id == STATUS_PEER_CONNECTION_DELETED )
-              other_connections_active = true;// no need to check, we are deleting it
+              other_connections_active = true; // no need to check, we are deleting it
 
             while( peer_index < peer_list.get_count() && !other_connections_active )
             {
@@ -261,7 +261,6 @@ void AdminHTTPServer::execute()
             {
               if( ( server_list[i]->ip == pinfo->dst_ip ) && ( server_list[i]->port == pinfo->dst_port ) )
               {
-                //server_list[i]->connected = max( server_list[i]->connected - 1, 0);
                 if( msg->id == STATUS_CONNECTION_FAILED )
                 {
                   server_list[i]->last_connection_failed = true;
@@ -422,7 +421,7 @@ void AdminHTTPServer::execute()
               }
               i++;
             }
-            //lista conexiones
+            // list connections
             list( client, src_ip_filter, dst_ip_filter, src_port, dst_port, status_filter, sort_by, sort_ascending );
           }
 
@@ -505,7 +504,7 @@ void AdminHTTPServer::execute()
         }
       }
       client.close();
-      //Content-Length: xxxx
+      // Content-Length: xxxx
     }
   }
 }
@@ -591,13 +590,13 @@ void AdminHTTPServer::list( ipstream & client, ipaddress src_filter, ipaddress d
     + filters + TEXT_SORT_BY_PARAM + TEXT_SORT_BY_CREATION + "&" + TEXT_SORT_ASC_PARAM
     + "\">d</a>)</td>" );
   client.putline( "<th width=\"30px\" class=\"rwaTableHeader\">kick</td>" );
-  client.putline( "<th width=\"90px\" class=\"rwaTableHeader\">ban con. to</td>" );
+  client.putline( "<th width=\"120px\" class=\"rwaTableHeader\">ban connections to</td>" );
   client.putline( "</tr>" );
 
   if( sort_by != 0 )
   {
     peer_info * pInfo = NULL;
-    //copiar lista ordenada
+    // copy sorted list
     pList = new tpodlist<peer_info *>;
     bool inserthere = false;
     pInfo = NULL;
@@ -800,7 +799,7 @@ void AdminHTTPServer::ban( ipstream & client, char * src_ip, char * src_port, bo
   ip = char_to_ipaddress( src_ip );
   port = atoi( src_port );
 
-  if( parallellist_jq )
+  if( parallel_list_jq )
   {
     int i = 0;
     peer_info * pinfo = NULL;
@@ -812,9 +811,9 @@ void AdminHTTPServer::ban( ipstream & client, char * src_ip, char * src_port, bo
       i++;
     }
 
-    if( parallellist_jq && pinfo )
+    if( parallel_list_jq && pinfo )
     {
-      parallellist_jq->post( STATUS_PEER_CONNECTION_BAN_THIS, pintptr( pinfo ) );
+      parallel_list_jq->post( STATUS_PEER_CONNECTION_BAN_THIS, pintptr( pinfo ) );
       success = true;
     }
   }
@@ -845,7 +844,7 @@ void AdminHTTPServer::ban_all( ipstream & client, char * src_ip, char * src_port
   ip = char_to_ipaddress( src_ip );
   port = atoi( src_port );
 
-  if( parallellist_jq )
+  if( parallel_list_jq )
   {
     int i = 0;
     peer_info * pinfo = NULL;
@@ -857,9 +856,9 @@ void AdminHTTPServer::ban_all( ipstream & client, char * src_ip, char * src_port
       i++;
     }
 
-    if( parallellist_jq && pinfo )
+    if( parallel_list_jq && pinfo )
     {
-      parallellist_jq->post( STATUS_PEER_CONNECTION_BAN_ALL, pintptr( pinfo ) );
+      parallel_list_jq->post( STATUS_PEER_CONNECTION_BAN_ALL, pintptr( pinfo ) );
       success = true;
     }
   }
@@ -889,7 +888,7 @@ void AdminHTTPServer::kick( ipstream & client, char * src_ip, char * src_port )
   ip = char_to_ipaddress( src_ip );
   port = atoi( src_port );
 
-  if( parallellist_jq )
+  if( parallel_list_jq )
   {
     int i = 0;
     peer_info * pinfo = NULL;
@@ -901,9 +900,9 @@ void AdminHTTPServer::kick( ipstream & client, char * src_ip, char * src_port )
       i++;
     }
 
-    if( parallellist_jq && pinfo )
+    if( parallel_list_jq && pinfo )
     {
-      parallellist_jq->post( STATUS_PEER_CONNECTION_KICKED, pintptr( pinfo ) );
+      parallel_list_jq->post( STATUS_PEER_CONNECTION_KICKED, pintptr( pinfo ) );
       success = true;
     }
   }

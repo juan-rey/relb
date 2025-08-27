@@ -60,7 +60,7 @@ void ThreadedConnectionManager::execute()
         i++;
       }
 
-      // let's check if it's connected	  
+      // let's check if it's connected  
       i = 0;
       while( i < connecting_peer_list.get_count() )
       {
@@ -87,10 +87,10 @@ void ThreadedConnectionManager::execute()
         }
         else
         {
-          TRACE( TRACE_CONNECTIONS )( "%s - There is ALSO an unactive peer, let's delete it\n", curr_local_time() );
+          TRACE( TRACE_CONNECTIONS )( "%s - There is ALSO an inactive peer, let's delete it\n", curr_local_time() );
           peer_list.del( connected_peers );
           delete cpeer;
-          TRACE( TRACE_CONNECTIONS )( "%s - There was ALSO an unactive peer, remain %d %d %d \n", curr_local_time(), peer_list.get_count(), connected_peers, connecting_peers );
+          TRACE( TRACE_CONNECTIONS )( "%s - There was ALSO an inactive peer, remain %d %d %d \n", curr_local_time(), peer_list.get_count(), connected_peers, connecting_peers );
           connected_peers--;
           currentconnections--;
         }
@@ -102,22 +102,22 @@ void ThreadedConnectionManager::execute()
     connecting_peers = 0;
     while( connecting_peers < connecting_peer_list.get_count() )
     {
-      TRACE( TRACE_CONNECTIONS )( "%s - Checkin ongoing server connections\n", curr_local_time() );
+      TRACE( TRACE_CONNECTIONS )( "%s - Checking ongoing server connections\n", curr_local_time() );
       cpeer = connecting_peer_list[connecting_peers];
       if( cpeer )
       {
         if( !finish && cpeer->isActive() )
         {
-          TRACE( TRACE_IOSOCKETERROR )( "%s - Addind connecting socket to select\n", curr_local_time() );
+          TRACE( TRACE_IOSOCKETERROR )( "%s - Adding connecting socket to select\n", curr_local_time() );
           cpeer->addToFDSETC( &setr, &setw );
         }
         else
         {
-          //TODO LATER 1.1 añadir notificacion desconexion aqui
-          TRACE( TRACE_CONNECTIONS )( "%s - There is an unactive peer, let's delete it\n", curr_local_time() );
+          //TODO LATER 1.1 add disconnect notification here
+          TRACE( TRACE_CONNECTIONS )( "%s - There is an inactive peer, let's delete it\n", curr_local_time() );
           connecting_peer_list.del( connecting_peers );
           delete cpeer;
-          TRACE( TRACE_CONNECTIONS )( "%s - There was an unactive peer, remain %d %d %d\n", curr_local_time(), connecting_peer_list.get_count(), connected_peers, connecting_peers );
+          TRACE( TRACE_CONNECTIONS )( "%s - There was an inactive peer, remain %d %d %d\n", curr_local_time(), connecting_peer_list.get_count(), connected_peers, connecting_peers );
           connecting_peers--;
           currentconnections--;
         }
@@ -128,14 +128,14 @@ void ThreadedConnectionManager::execute()
     // let's check changes in all active sockets
     if( !finish )
     {
-      //TODO ver fd_count de setw, sino nil	
+      //TODO check fd_count of setw; otherwise nil  
       control_socket.addToFDSET( &setr );
       if( connected_peers || connecting_peers )
       {
         TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - Checking socket changes - with SOME connections\n", curr_local_time() );
         // very old ugly trick based on old documentation of select which recommended to use FD_SETSIZE as the first parameter
         // this may lead to problems if the max number of sockets is greater than FD_SETSIZE and it is inefficient (in non-Windows systems)
-        // acording to the documentation, the first parameter is the highest file descriptor plus one
+        // according to the documentation, the first parameter is the highest file descriptor plus one
         res = ::select( FD_SETSIZE, &setr, &setw, nil, nil ); // timeout is nil, so it will block until there is a change in the sockets
         TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - Exit - Checking socket changes - with SOME connections\n", curr_local_time() );
       }
@@ -145,7 +145,7 @@ void ThreadedConnectionManager::execute()
         TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - Checking socket changes - with no connections\n", curr_local_time() );
         // very old ugly trick based on old documentation of select which recommended to use FD_SETSIZE as the first parameter
         // this may lead to problems if the max number of sockets is greater than FD_SETSIZE and it is inefficient (in non-Windows systems)
-        // acording to the documentation, the first parameter is the highest file descriptor plus one
+        // according to the documentation, the first parameter is the highest file descriptor plus one
         res = ::select( FD_SETSIZE, &setr, nil, nil, nil ); // timeout is nil, so it will block until there is a change in the control socket
         TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - Exit - Checking socket changes - with no connections\n", curr_local_time() );
       }
@@ -153,13 +153,13 @@ void ThreadedConnectionManager::execute()
       if( res > 0 )
       {
 
-#ifndef WIN32					
+#ifndef WIN32          
         control_socket.checkSocket( &setr );
 #endif
-#ifdef DEBUG						
+#ifdef DEBUG           
         if( !( connected_peers || connecting_peers ) )
           TRACE( TRACE_IOSOCKET )( "%s - Checking socket changes with res %d\n", curr_local_time(), res );
-#endif					
+#endif          
         // let's use manageConnections to check the changes in the sockets and do the necessary actions
         i = 0;
         TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - Checking socket changes\n", curr_local_time() );
@@ -182,10 +182,10 @@ void ThreadedConnectionManager::execute()
             {
               // peer status changed, so we can add it to the peer_list
               TRACE( TRACE_IOSOCKETERROR )( "%s - New peer\n", curr_local_time() );
-              connecting_peer_list.del( i ); // no risk of concurrent access issue with addConectionPeer, since using an index
+              connecting_peer_list.del( i ); // no risk of concurrent access issue with addConnectionPeer, since using an index
               peer_list.add( cpeer );
               i--;
-              //TODO LATER 1.1 añadir notificacion conexion aqui 
+              //TODO LATER 1.1 add connection notification here 
             }
           }
           i++;
@@ -197,7 +197,7 @@ void ThreadedConnectionManager::execute()
         if( res < 0 )
         {
           // there was an error in the select function
-          TRACE( TRACE_IOSOCKETERROR )( "%s - select retuned with error %d\n", curr_local_time(), socket_errno );
+          TRACE( TRACE_IOSOCKETERROR )( "%s - select returned with error %d\n", curr_local_time(), socket_errno );
 
           if( socket_errno == EBADF
 #ifdef WSAENOTSOCK
@@ -206,7 +206,7 @@ void ThreadedConnectionManager::execute()
             )
           {
             // there is a bad file descriptor, so we need to check the control socket and create a new one if necessary
-#ifndef WIN32		
+#ifndef WIN32   
             if( control_socket.checkSocket( &setr ) >= 0 )
             {
               // there was no error with the control socket, so we must check the connections
@@ -218,7 +218,7 @@ void ThreadedConnectionManager::execute()
               // there was no error with the control socket, so we must check the connections
               checkConnections();
             }
-#endif							
+#endif              
 
           }
           else
@@ -226,7 +226,7 @@ void ThreadedConnectionManager::execute()
             //TODO EINTR a signal was caught before select returned
             // EINVAL the timeout was invalid or the number of file descriptors was invalid
 
-            TRACE( TRACE_IOSOCKETERROR )( "%s - select retuned with error EINTR  or EINVAL\n", curr_local_time() );
+            TRACE( TRACE_IOSOCKETERROR )( "%s - select returned with error EINTR or EINVAL\n", curr_local_time() );
 
             // On some other UNIX systems, select() can fail with the error
             // EAGAIN if the system fails to allocate kernel - internal resources,
@@ -315,9 +315,9 @@ void ThreadedConnectionManager::cleanup()
 
 }
 
-int ThreadedConnectionManager::addConectionPeer( ConnectionPeer * peer )
+int ThreadedConnectionManager::addConnectionPeer( ConnectionPeer * peer )
 {
-  //TODO LATER 1.1 añadir notificacion conexion aqui ??
+  //TODO LATER 1.1 add connection notification here ??
   currentconnections++;
   connecting_peer_list.add( peer );
   TRACE( TRACE_CONNECTIONS )( "%s - New peer added, now %d\n", curr_local_time(), connecting_peer_list.get_count() + peer_list.get_count() );
