@@ -198,7 +198,7 @@ void AdminHTTPServer::execute()
 
         while( peer_index < peer_list.get_count() )
         {
-          // Let's clean disconnected connections from the same IP
+          // Clean disconnected connections from the same IP
           if( ( peer_list[peer_index]->src_ip == pinfo->src_ip ) && ( peer_list[peer_index]->status & STATUS_PEER_NOT_CONNECTED ) )
           {
             int server_index = 0;
@@ -240,7 +240,7 @@ void AdminHTTPServer::execute()
           {
             int i = 0;
             int peer_index = 0;
-            bool other_connections_active = false; // if there are other active connections from the same source IP, we do delete the peer info
+            bool other_connections_active = false; // if there are other active connections from the same source IP, we delete the peer info
 
             if( msg->id == STATUS_PEER_CONNECTION_DELETED )
               other_connections_active = true; // no need to check, we are deleting it
@@ -686,7 +686,7 @@ void AdminHTTPServer::list( ipstream & client, ipaddress src_filter, ipaddress d
               case SORT_BY_SRC_IP:
               {
                 if( !ip_less_than( &( pInfo->src_ip ), &( ( *pList )[j]->src_ip ) ) && !( pInfo->src_ip == ( *pList )[j]->src_ip ) )
-                  inserthere = true;
+                    inserthere = true;
                 else
                   if( ( pInfo->src_ip == ( *pList )[j]->src_ip ) && ( pInfo->src_port >= ( *pList )[j]->src_port ) )
                     inserthere = true;
@@ -695,7 +695,7 @@ void AdminHTTPServer::list( ipstream & client, ipaddress src_filter, ipaddress d
               case SORT_BY_DST_IP:
               {
                 if( !ip_less_than( &( pInfo->dst_ip ), &( ( *pList )[j]->dst_ip ) ) && !( pInfo->dst_ip == ( *pList )[j]->dst_ip ) )
-                  inserthere = true;
+                    inserthere = true;
                 else
                   if( ( pInfo->dst_ip == ( *pList )[j]->dst_ip ) && ( pInfo->dst_port >= ( *pList )[j]->dst_port ) )
                     inserthere = true;

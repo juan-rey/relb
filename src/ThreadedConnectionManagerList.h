@@ -1,5 +1,5 @@
 /*
-   ThreadedConnectionManager.h: connection manager list header file.
+   ThreadedConnectionManagerList.h: connection manager list header file.
 
    Copyright 2006, 2007, 2008, 2009 Juan Rey Saura
 

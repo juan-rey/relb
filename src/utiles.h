@@ -1,5 +1,5 @@
 /*
-   utiles.h: utiles header file.
+   utiles.h: utilities header file.
 
    Copyright 2006, 2007, 2008, 2009, 2025 Juan Rey Saura
 
@@ -145,7 +145,7 @@ struct task_info
 #define TRACE_IOSOCKET      0
 #define TRACE_IOSOCKETERROR 0
 #define TRACE_CONNECTIONS   0
-#define TRACE_BIND			    0
+#define TRACE_BIND		    0
 #define TRACE_ASSIGNATION   0
 #define TRACE_CONFIG        1
 #define TRACE_TASKS         1

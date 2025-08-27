@@ -40,7 +40,7 @@ using namespace std;
 
 int main( int argc, char * argv[] )
 {
-  bool terminar = false;
+  bool shouldExit = false;
   bool console = false;
   AppConfig config;
 
@@ -62,9 +62,9 @@ int main( int argc, char * argv[] )
     {
 #ifdef WIN32
       if( DeleteService() )
-        printf( "\n\nService UnInstalled Sucessfully\n" );
+        printf( "\n\nService uninstalled successfully\n" );
       else
-        printf( "\n\nError UnInstalling Service\n" );
+        printf( "\n\nError uninstalling service\n" );
 #else
       printf( "\n\nNot implemented yet\n" );
 #endif
@@ -72,16 +72,16 @@ int main( int argc, char * argv[] )
       {
         curr_arg++;
       }
-      terminar = true;
+      shouldExit = true;
     }
 
     if( strcmp( argv[curr_arg], INSTALL_SERVICE_TEXT ) == 0 )
     {
 #ifdef WIN32
       if( InstallService() )
-        printf( "\n\nService Installed Sucessfully\n" );
+        printf( "\n\nService installed successfully\n" );
       else
-        printf( "\n\nError Installing Service\n" );
+        printf( "\n\nError installing service\n" );
 #else
       printf( "\n\nNot implemented yet\n" );
 #endif
@@ -89,7 +89,7 @@ int main( int argc, char * argv[] )
       {
         curr_arg++;
       }
-      terminar = true;
+      shouldExit = true;
     }
 
     if( strcmp( argv[curr_arg], RUN_IN_CONSOLE_TEXT ) == 0 )
@@ -109,7 +109,7 @@ int main( int argc, char * argv[] )
       {
         curr_arg++;
       }
-      terminar = true;
+      shouldExit = true;
     }
 
     if( strcmp( argv[curr_arg], SET_CONFIG_FILE_PATH ) == 0 )
@@ -127,10 +127,10 @@ int main( int argc, char * argv[] )
     }
   }
 
-  if( !terminar )
+  if( !shouldExit )
   {
     int err;
-    char salir = ' ';
+    char exitChar = ' ';
     
 #ifdef WIN32
     WORD wVersionRequested;
@@ -151,20 +151,26 @@ int main( int argc, char * argv[] )
       printf( "I could not load config file\n" );
       return 0;
     }
+
+    // Initialize iteration to the first bind (currently we use the first bind definition)
     config.getFirstBind();
+
     Bind bind_server( config.getConnectionsPerThread() );
     bind_server.setAdmin( config.getAdminEnabled(), config.getAdminIP(), config.getAdminPort() );
 
+    // Add bind addresses
     do
     {
       bind_server.addAddress( config.getAddressPort(), config.getAddressIP() );
     } while( config.getNextAddress() );
 
+    // Add backend servers
     do
     {
       bind_server.addServer( (const char *) config.getServerName(), config.getServerIP(), config.getServerPort(), config.getServerWeight(), config.getServerMaxConnections() );
     } while( config.getNextServer() );
 
+    // Add tasks
     if( config.getTasksCount() > 0 )
     {
       while( config.getNextTask() )
@@ -177,6 +183,7 @@ int main( int argc, char * argv[] )
       }
     }
 
+    // Add filters
     if( config.getFilterCount() > 0 )
     {
       while( config.getNextFilter() )
@@ -198,10 +205,10 @@ int main( int argc, char * argv[] )
     else
     {
       printf( "Press 'x' to exit\n" );
-      salir = getchar();
-      while( salir != 'x' )
+      exitChar = getchar();
+      while( exitChar != 'x' )
       {
-        salir = getchar();
+        exitChar = getchar();
       }
     }
 #ifdef WIN32           
