@@ -687,6 +687,186 @@ void AppConfig::processConfigLine( const char * line )
   if( line[0] != '/' && line[0] != ';' && line[0] != '#' )
   {
 
+    // Process bind and alsobind tags
+    if( strncmp( (const char *) line, CONFIG_BIND_TAG, strlen( CONFIG_BIND_TAG ) ) == 0
+      || strncmp( (const char *) line, CONFIG_ALSOBIND_TAG, strlen( CONFIG_ALSOBIND_TAG ) ) == 0 )
+    {
+
+      int h, g;
+      ipaddress dst_ip = ipany;
+      unsigned short dst_port = 0;
+      bool valid = true;
+      bool alsobind = false;
+
+
+      alsobind = ( strncmp( (const char *) line, CONFIG_ALSOBIND_TAG, strlen( CONFIG_ALSOBIND_TAG ) ) == 0 );
+      if( alsobind )
+      {
+        TRACE( TRACE_CONFIG )( "%s - also bind tag\n", curr_local_time() );
+        h = strlen( CONFIG_ALSOBIND_TAG );
+      }
+      else
+      {
+        TRACE( TRACE_CONFIG )( "%s - bind tag\n", curr_local_time() );
+        h = strlen( CONFIG_BIND_TAG );
+      }
+      while( line[h] == ' ' || line[h] == '\t' )
+      {
+        h++;
+      }
+
+      g = h;
+      while( line[g] != char( NULL ) && line[g] != ',' && line[g] != ':' )
+      {
+        g++;
+      }
+
+      if( line[g] == ':' )
+      {
+        char * servername = new char[g - h + 1];
+        strncpy( servername, &( line[h] ), g - h );
+        servername[g - h] = char( NULL );
+        dst_ip = phostbyname( servername );
+
+        if( dst_ip == ipnone )
+        {
+          dst_ip = ipany;
+        }
+        TRACE( TRACE_CONFIG )( "%s - bind ip address %s\n", curr_local_time(), (const char *) iptostring( dst_ip ) );
+
+        h = g + 1;
+        delete[] servername;
+      }
+
+      dst_port = atoi( &line[h] );
+      TRACE( TRACE_CONFIG )( "%s - bind destination port %d\n", curr_local_time(), dst_port );
+      if( dst_port == 0 )
+      {
+        valid = false;
+      }
+
+      if( valid )
+      {
+        if( alsobind )
+        {
+          TRACE( TRACE_CONFIG )( "%s - valid alsobind config\n", curr_local_time() );
+          if( bind.get_count() > 0 )
+          {
+            bind[bind.get_count() - 1]->address.add( new bind_address );
+            bind[bind.get_count() - 1]->address[( bind[bind.get_count() - 1]->address.get_count() - 1 )]->src_ip = dst_ip;
+            bind[bind.get_count() - 1]->address[( bind[bind.get_count() - 1]->address.get_count() - 1 )]->src_port = dst_port;
+          }
+        }
+        else
+        {
+          TRACE( TRACE_CONFIG )( "%s - valid bind config\n", curr_local_time() );
+          bind_conf * tmp = new bind_conf;
+          bind.add( tmp );
+          tmp->address.add( new bind_address );
+          tmp->address[0]->src_ip = dst_ip;
+          tmp->address[0]->src_port = dst_port;
+
+        }
+      }
+    }
+    // End of bind and alsobind processing
+
+    // Process server tag
+    if( strncmp( (const char *) line, CONFIG_SERVER_TAG, strlen( CONFIG_SERVER_TAG ) ) == 0 )
+    {
+      int h, i = 0;
+      ipaddress dst_ip;
+      string host_name;
+      unsigned short dst_port = 0;
+      int weight = 0;
+      int max_connections = 0;
+      bool valid = true;
+
+      TRACE( TRACE_CONFIG )( "%s - server tag\n", curr_local_time() );
+
+      h = strlen( CONFIG_SERVER_TAG );
+
+      // Skip spaces
+      while( line[h] == ' ' || line[h] == '\t' )
+      {
+        h++;
+      }
+
+      i = 0;
+      while( line[h + i] != char( NULL ) && line[h + i] != ',' && line[h + i] != ':' )
+        i++;
+      char * servername = new char[i + 1];
+      strncpy( servername, &( line[h] ), i );
+      servername[i] = char( NULL );
+      dst_ip = phostbyname( servername );
+      host_name = iptostring( dst_ip );
+      if( strcmp( servername, (const char *) host_name ) )
+      {
+        host_name = servername;
+        TRACE( TRACE_CONFIG )( "%s - destination server name %s ip address %s\n", curr_local_time(), (const char *) host_name, (const char *) (const char *) iptostring( dst_ip ) );
+      }
+      else // text was an ip address
+      {
+        host_name = "";
+        TRACE( TRACE_CONFIG )( "%s - destination server ip address %s\n", curr_local_time(), (const char *) iptostring( dst_ip ) );
+      }
+
+      delete[] servername;
+
+      if( dst_ip == ipnone )
+      {
+        valid = false;
+      }
+
+      h = h + i;
+      if( line[h] == ',' || line[h] == ':' || line[h] == char( NULL ) )
+        h++;
+
+      dst_port = atoi( &line[h] );
+      TRACE( TRACE_CONFIG )( "%s - destination server port %d\n", curr_local_time(), dst_port );
+      if( dst_port == 0 )
+      {
+        valid = false;
+      }
+
+      if( line[h] != char( NULL ) )
+        h++;
+
+      while( line[h] != char( NULL ) && line[h] != ',' && line[h] != ' ' )
+        h++;
+
+      if( line[h] == ',' || line[h] == ' ' )
+        h++;
+
+      weight = atoi( &line[h] );
+
+      while( line[h] != char( NULL ) && line[h] != ',' && line[h] != ' ' )
+        h++;
+
+      if( line[h] == ',' || line[h] == ' ' )
+        h++;
+
+      max_connections = atoi( &line[h] );
+
+      if( valid )
+      {
+        TRACE( TRACE_CONFIG )( "%s - valid destination server config\n", curr_local_time() );
+        if( bind.get_count() > 0 )
+        {
+          dst_conf * tmp = new dst_conf;
+          tmp->host_name = host_name;
+          tmp->dst_ip = dst_ip;
+          tmp->dst_port = dst_port;
+          tmp->weight = weight;
+          tmp->max_connections = max_connections;
+
+          bind[bind.get_count() - 1]->dst.add( tmp );
+        }
+      }
+    }
+    // End of server processing
+
+    // Process retryserver tag
     if( strncmp( (const char *) line, CONFIG_RETRY_TAG, strlen( CONFIG_RETRY_TAG ) ) == 0 )
     {
       TRACE( TRACE_CONFIG )( "%s - retry tag\n", curr_local_time() );
@@ -703,7 +883,161 @@ void AppConfig::processConfigLine( const char * line )
       if( minimum_server_reconnection_time == 0 )
         minimum_server_reconnection_time = MINIMUM_SERVER_RECONNECTION_TIME;
     }
+    // End of retryserver processing
 
+    // Process filter tag
+    if( strncmp( (const char *) line, CONFIG_FILTER_TAG, strlen( CONFIG_FILTER_TAG ) ) == 0 )
+    {
+      bool valid = true;
+      int h, i = 0;
+      filterinfo * filter = new filterinfo;
+      filter->allow = true;
+      filter->src_ip = ipany;
+      filter->src_mask = ipany;
+      filter->dst_ip = ipany;
+      filter->dst_mask = ipany;
+
+      TRACE( TRACE_CONFIG )( "%s - filter tag\n", curr_local_time() );
+
+      h = strlen( CONFIG_FILTER_TAG );
+      // Skip spaces
+      while( line[h] == ' ' || line[h] == '\t' )
+      {
+        h++;
+      }
+
+      i = 0;
+      while( line[h + i] != char( NULL ) && line[h + i] != '/' && line[h + i] != ' ' )
+        i++;
+
+      //(char*)line)[h+i] = NULL;   
+      char * servername = new char[i + 1];
+      strncpy( servername, &( line[h] ), i );
+      servername[i] = char( NULL );
+      filter->src_ip = phostbyname( servername );
+      TRACE( TRACE_CONFIG )( "%s - filter ip server address %s\n", curr_local_time(), servername );
+      delete[] servername;
+
+      TRACE( TRACE_CONFIG )( "%s - filter ip source address %s\n", curr_local_time(), (const char *) iptostring( filter->src_ip ) );
+      if( filter->src_ip == ipnone )
+      {
+        valid = false;
+      }
+
+      h = h + i;
+      i = 0;
+
+      if( line[h] != char( NULL ) )
+        h++;
+
+      while( line[h + i] != char( NULL ) && line[h + i] != '/' && line[h + i] != ' ' )
+        i++;
+
+      if( i > 2 )
+      {
+        servername = new char[i + 1];
+        strncpy( servername, &( line[h] ), i );
+        servername[i] = char( NULL );
+        filter->src_mask = phostbyname( servername );
+        delete[] servername;
+      }
+      else
+      {
+        int mask_number = atoi( &( line[h] ) );
+        filter->src_mask = ipaddress(
+          ( mask_number > 7 ) ? 255 : ( 256 - ( 1 << ( 8 - mask_number ) ) ),
+          ( mask_number > 15 ) ? 255 : ( ( mask_number < 9 ) ? 0 : ( 256 - ( 1 << ( 8 - ( mask_number - 8 ) ) ) ) ),
+          ( mask_number > 23 ) ? 255 : ( ( mask_number < 17 ) ? 0 : ( 256 - ( 1 << ( 8 - ( mask_number - 16 ) ) ) ) ),
+          ( mask_number > 31 ) ? 255 : ( ( mask_number < 25 ) ? 0 : ( 256 - ( 1 << ( 8 - ( mask_number - 24 ) ) ) ) ) );
+
+      }
+
+      TRACE( TRACE_CONFIG )( "%s - filter ip source mask %s\n", curr_local_time(), (const char *) iptostring( filter->src_mask ) );
+
+
+      h = h + i;
+      i = 0;
+
+      if( line[h] != char( NULL ) )
+        h++;
+
+      while( line[h + i] != char( NULL ) && line[h + i] != '/' && line[h + i] != ' ' )
+        i++;
+
+      servername = new char[i + 1];
+      strncpy( servername, &( line[h] ), i );
+      servername[i] = char( NULL );
+      filter->dst_ip = phostbyname( servername );
+      delete[] servername;
+
+      TRACE( TRACE_CONFIG )( "%s - filter ip dest address %s\n", curr_local_time(), (const char *) iptostring( filter->dst_ip ) );
+      if( filter->dst_ip == ipnone )
+      {
+        valid = false;
+      }
+
+      h = h + i;
+      i = 0;
+
+      if( line[h] != char( NULL ) )
+        h++;
+
+      while( line[h + i] != char( NULL ) && line[h + i] != ' ' && line[h + i] != '\t' )
+        i++;
+
+
+      if( i > 2 )
+      {
+        servername = new char[i + 1];
+        strncpy( servername, &( line[h] ), i );
+        servername[i] = char( NULL );
+        filter->dst_mask = phostbyname( servername );
+        delete[] servername;
+      }
+      else
+      {
+        int mask_number = atoi( &( line[h] ) );
+        filter->dst_mask = ipaddress(
+          ( mask_number > 7 ) ? 255 : ( 256 - ( 1 << ( 8 - mask_number ) ) ),
+          ( mask_number > 15 ) ? 255 : ( ( mask_number < 9 ) ? 0 : ( 256 - ( 1 << ( 8 - ( mask_number - 8 ) ) ) ) ),
+          ( mask_number > 23 ) ? 255 : ( ( mask_number < 17 ) ? 0 : ( 256 - ( 1 << ( 8 - ( mask_number - 16 ) ) ) ) ),
+          ( mask_number > 31 ) ? 255 : ( ( mask_number < 25 ) ? 0 : ( 256 - ( 1 << ( 8 - ( mask_number - 24 ) ) ) ) ) );
+
+      }
+
+      TRACE( TRACE_CONFIG )( "%s - filter ip dest mask %s\n", curr_local_time(), (const char *) iptostring( filter->dst_mask ) );
+
+
+      h = h + i;
+
+      if( line[h] != char( NULL ) )
+      {
+        h++;
+
+        //      while( line[h] != char(NULL) && line[h] != ' '  && line[h] != '/t' )
+        //        h++;
+
+        if( strncmp( &line[h], "deny", strlen( "deny" ) ) == 0 )
+        {
+          filter->allow = false;
+        }
+      }
+
+
+      if( valid && bind.get_count() > 0 )
+      {
+        TRACE( TRACE_CONFIG )( "%s - valid filter\n", curr_local_time() );
+        bind[bind.get_count() - 1]->filter.add( filter );
+
+      }
+      else
+      {
+        delete filter;
+      }
+    }
+    // End of filter processing
+
+    // Process admin tag
     if( strncmp( (const char *) line, CONFIG_ADMIN_TAG, strlen( CONFIG_ADMIN_TAG ) ) == 0 )
     {
       TRACE( TRACE_CONFIG )( "%s - web admin tag\n", curr_local_time() );
@@ -760,197 +1094,9 @@ void AppConfig::processConfigLine( const char * line )
         http_admin_enabled = true;
       }
     }
+    // End of admin processing
 
-    if( strncmp( (const char *) line, CONFIG_CONNECTIONS_PER_THREAD_TAG, strlen( CONFIG_CONNECTIONS_PER_THREAD_TAG ) ) == 0 )
-    {
-      int h = strlen( CONFIG_CONNECTIONS_PER_THREAD_TAG );
-      while( line[h] == ' ' || line[h] == '\t' )
-      {
-        h++;
-      }
-
-      TRACE( TRACE_CONFIG )( "%s - connections per thread tag\n", curr_local_time() );
-      connections_per_thread = atoi( &( line[h] ) );
-      if( connections_per_thread == 0 )
-        connections_per_thread = DEFAULT_CONNECTIONS_PER_THREAD;
-    }
-
-    if( strncmp( (const char *) line, CONFIG_BIND_TAG, strlen( CONFIG_BIND_TAG ) ) == 0
-      || strncmp( (const char *) line, CONFIG_ALSOBIND_TAG, strlen( CONFIG_ALSOBIND_TAG ) ) == 0 )
-    {
-
-      int h, g;
-      ipaddress dst_ip = ipany;
-      unsigned short dst_port = 0;
-      bool valid = true;
-      bool alsobind = false;
-
-
-      alsobind = ( strncmp( (const char *) line, CONFIG_ALSOBIND_TAG, strlen( CONFIG_ALSOBIND_TAG ) ) == 0 );
-      if( alsobind )
-      {
-        TRACE( TRACE_CONFIG )( "%s - also bind tag\n", curr_local_time() );
-        h = strlen( CONFIG_ALSOBIND_TAG );
-      }
-      else
-      {
-        TRACE( TRACE_CONFIG )( "%s - bind tag\n", curr_local_time() );
-        h = strlen( CONFIG_BIND_TAG );
-      }
-      while( line[h] == ' ' || line[h] == '\t' )
-      {
-        h++;
-      }
-
-      g = h;
-      while( line[g] != char( NULL ) && line[g] != ',' && line[g] != ':' )
-      {
-        g++;
-      }
-
-      if( line[g] == ':' )
-      {
-        char * servername = new char[g - h + 1];
-        strncpy( servername, &( line[h] ), g - h );
-        servername[g - h] = char( NULL );
-        dst_ip = phostbyname( servername );
-
-        if( dst_ip == ipnone )
-        {
-          dst_ip = ipany;
-        }
-        TRACE( TRACE_CONFIG )( "%s - bind ip address %s\n", curr_local_time(), (const char *) iptostring( dst_ip ) );
-
-        h = g + 1;
-        delete [] servername;
-      }
-
-      dst_port = atoi( &line[h] );
-      TRACE( TRACE_CONFIG )( "%s - bind destination port %d\n", curr_local_time(), dst_port );
-      if( dst_port == 0 )
-      {
-        valid = false;
-      }
-
-      if( valid )
-      {
-        if( alsobind )
-        {
-          TRACE( TRACE_CONFIG )( "%s - valid alsobind config\n", curr_local_time() );
-          if( bind.get_count() > 0 )
-          {
-            bind[bind.get_count() - 1]->address.add( new bind_address );
-            bind[bind.get_count() - 1]->address[( bind[bind.get_count() - 1]->address.get_count() - 1 )]->src_ip = dst_ip;
-            bind[bind.get_count() - 1]->address[( bind[bind.get_count() - 1]->address.get_count() - 1 )]->src_port = dst_port;
-          }
-        }
-        else
-        {
-          TRACE( TRACE_CONFIG )( "%s - valid bind config\n", curr_local_time() );
-          bind_conf * tmp = new bind_conf;
-          bind.add( tmp );
-          tmp->address.add( new bind_address );
-          tmp->address[0]->src_ip = dst_ip;
-          tmp->address[0]->src_port = dst_port;
-
-        }
-      }
-    }
-
-    if( strncmp( (const char *) line, CONFIG_SERVER_TAG, strlen( CONFIG_SERVER_TAG ) ) == 0 )
-    {
-      int h, i = 0;
-      ipaddress dst_ip;
-      string host_name;
-      unsigned short dst_port = 0;
-      int weight = 0;
-      int max_connections = 0;
-      bool valid = true;
-
-      TRACE( TRACE_CONFIG )( "%s - server tag\n", curr_local_time() );
-
-      h = strlen( CONFIG_SERVER_TAG );
-
-      // Skip spaces
-      while( line[h] == ' ' || line[h] == '\t' )
-      {
-        h++;
-      }
-
-      i = 0;
-      while( line[h + i] != char( NULL ) && line[h + i] != ',' && line[h + i] != ':' )
-        i++;
-      char * servername = new char[i + 1];
-      strncpy( servername, &( line[h] ), i );
-      servername[i] = char( NULL );
-      dst_ip = phostbyname( servername );
-      host_name = iptostring( dst_ip );
-      if( strcmp( servername, (const char *) host_name ) )
-      {
-        host_name = servername;
-        TRACE( TRACE_CONFIG )( "%s - destination server name %s ip address %s\n", curr_local_time(), (const char *) host_name, (const char *) (const char *) iptostring( dst_ip ) );
-      }
-      else // text was an ip address
-      {
-        host_name = "";
-        TRACE( TRACE_CONFIG )( "%s - destination server ip address %s\n", curr_local_time(), (const char *) iptostring( dst_ip ) );
-      }
-
-     delete [] servername;
-
-     if( dst_ip == ipnone )
-      {
-        valid = false;
-      }
-
-      h = h + i;
-      if( line[h] == ',' || line[h] == ':' || line[h] == char( NULL ) )
-        h++;
-
-      dst_port = atoi( &line[h] );
-      TRACE( TRACE_CONFIG )( "%s - destination server port %d\n", curr_local_time(), dst_port );
-      if( dst_port == 0 )
-      {
-        valid = false;
-      }
-
-      if( line[h] != char( NULL ) )
-        h++;
-
-      while( line[h] != char( NULL ) && line[h] != ',' && line[h] != ' ' )
-        h++;
-
-      if( line[h] == ',' || line[h] == ' ' )
-        h++;
-
-      weight = atoi( &line[h] );
-
-      while( line[h] != char( NULL ) && line[h] != ',' && line[h] != ' ' )
-        h++;
-
-      if( line[h] == ',' || line[h] == ' ' )
-        h++;
-
-      max_connections = atoi( &line[h] );
-
-      if( valid )
-      {
-        TRACE( TRACE_CONFIG )( "%s - valid destination server config\n", curr_local_time() );
-        if( bind.get_count() > 0 )
-        {
-          dst_conf * tmp = new dst_conf;
-          tmp->host_name = host_name;
-          tmp->dst_ip = dst_ip;
-          tmp->dst_port = dst_port;
-          tmp->weight = weight;
-          tmp->max_connections = max_connections;
-
-          bind[bind.get_count() - 1]->dst.add( tmp );
-        }
-      }
-
-    }
-
+    // Process task tag
     if( strncmp( (const char *) line, CONFIG_TASK_TAG, strlen( CONFIG_TASK_TAG ) ) == 0 )
     {
       int h, i = 0;
@@ -1115,156 +1261,24 @@ void AppConfig::processConfigLine( const char * line )
       }
 
     }
+    // End of task processing
 
-    if( strncmp( (const char *) line, CONFIG_FILTER_TAG, strlen( CONFIG_FILTER_TAG ) ) == 0 )
+    // Process conperthread tag
+    if( strncmp( (const char *) line, CONFIG_CONNECTIONS_PER_THREAD_TAG, strlen( CONFIG_CONNECTIONS_PER_THREAD_TAG ) ) == 0 )
     {
-      bool valid = true;
-      int h, i = 0;
-      filterinfo * filter = new filterinfo;
-      filter->allow = true;
-      filter->src_ip = ipany;
-      filter->src_mask = ipany;
-      filter->dst_ip = ipany;
-      filter->dst_mask = ipany;
-
-      TRACE( TRACE_CONFIG )( "%s - filter tag\n", curr_local_time() );
-
-      h = strlen( CONFIG_FILTER_TAG );
-      // Skip spaces
+      int h = strlen( CONFIG_CONNECTIONS_PER_THREAD_TAG );
       while( line[h] == ' ' || line[h] == '\t' )
       {
         h++;
       }
 
-      i = 0;
-      while( line[h + i] != char( NULL ) && line[h + i] != '/' && line[h + i] != ' ' )
-        i++;
-
-      //(char*)line)[h+i] = NULL;   
-      char * servername = new char[i + 1];
-      strncpy( servername, &( line[h] ), i );
-      servername[i] = char( NULL );
-      filter->src_ip = phostbyname( servername );
-      TRACE( TRACE_CONFIG )( "%s - filter ip server address %s\n", curr_local_time(), servername );
-      delete [] servername;
-
-      TRACE( TRACE_CONFIG )( "%s - filter ip source address %s\n", curr_local_time(), (const char *) iptostring( filter->src_ip ) );
-      if( filter->src_ip == ipnone )
-      {
-        valid = false;
-      }
-
-      h = h + i;
-      i = 0;
-
-      if( line[h] != char( NULL ) )
-        h++;
-
-      while( line[h + i] != char( NULL ) && line[h + i] != '/' && line[h + i] != ' ' )
-        i++;
-
-      if( i > 2 )
-      {
-        servername = new char[i + 1];
-        strncpy( servername, &( line[h] ), i );
-        servername[i] = char( NULL );
-        filter->src_mask = phostbyname( servername );
-        delete [] servername;
-      }
-      else
-      {
-        int mask_number = atoi( &( line[h] ) );
-        filter->src_mask = ipaddress(
-          ( mask_number > 7 ) ? 255 : ( 256 - ( 1 << ( 8 - mask_number ) ) ),
-          ( mask_number > 15 ) ? 255 : ( ( mask_number < 9 ) ? 0 : ( 256 - ( 1 << ( 8 - ( mask_number - 8 ) ) ) ) ),
-          ( mask_number > 23 ) ? 255 : ( ( mask_number < 17 ) ? 0 : ( 256 - ( 1 << ( 8 - ( mask_number - 16 ) ) ) ) ),
-          ( mask_number > 31 ) ? 255 : ( ( mask_number < 25 ) ? 0 : ( 256 - ( 1 << ( 8 - ( mask_number - 24 ) ) ) ) ) );
-
-      }
-
-      TRACE( TRACE_CONFIG )( "%s - filter ip source mask %s\n", curr_local_time(), (const char *) iptostring( filter->src_mask ) );
-
-
-      h = h + i;
-      i = 0;
-
-      if( line[h] != char( NULL ) )
-        h++;
-
-      while( line[h + i] != char( NULL ) && line[h + i] != '/' && line[h + i] != ' ' )
-        i++;
-
-      servername = new char[i + 1];
-      strncpy( servername, &( line[h] ), i );
-      servername[i] = char( NULL );
-      filter->dst_ip = phostbyname( servername );
-      delete [] servername;
-
-      TRACE( TRACE_CONFIG )( "%s - filter ip dest address %s\n", curr_local_time(), (const char *) iptostring( filter->dst_ip ) );
-      if( filter->dst_ip == ipnone )
-      {
-        valid = false;
-      }
-
-      h = h + i;
-      i = 0;
-
-      if( line[h] != char( NULL ) )
-        h++;
-
-      while( line[h + i] != char( NULL ) && line[h + i] != ' ' && line[h + i] != '\t' )
-        i++;
-
-
-      if( i > 2 )
-      {
-        servername = new char[i + 1];
-        strncpy( servername, &( line[h] ), i );
-        servername[i] = char( NULL );
-        filter->dst_mask = phostbyname( servername );
-        delete [] servername;
-      }
-      else
-      {
-        int mask_number = atoi( &( line[h] ) );
-        filter->dst_mask = ipaddress(
-          ( mask_number > 7 ) ? 255 : ( 256 - ( 1 << ( 8 - mask_number ) ) ),
-          ( mask_number > 15 ) ? 255 : ( ( mask_number < 9 ) ? 0 : ( 256 - ( 1 << ( 8 - ( mask_number - 8 ) ) ) ) ),
-          ( mask_number > 23 ) ? 255 : ( ( mask_number < 17 ) ? 0 : ( 256 - ( 1 << ( 8 - ( mask_number - 16 ) ) ) ) ),
-          ( mask_number > 31 ) ? 255 : ( ( mask_number < 25 ) ? 0 : ( 256 - ( 1 << ( 8 - ( mask_number - 24 ) ) ) ) ) );
-
-      }
-
-      TRACE( TRACE_CONFIG )( "%s - filter ip dest mask %s\n", curr_local_time(), (const char *) iptostring( filter->dst_mask ) );
-
-
-      h = h + i;
-
-      if( line[h] != char( NULL ) )
-      {
-        h++;
-
-        //      while( line[h] != char(NULL) && line[h] != ' '  && line[h] != '/t' )
-        //        h++;
-
-        if( strncmp( &line[h], "deny", strlen( "deny" ) ) == 0 )
-        {
-          filter->allow = false;
-        }
-      }
-
-
-      if( valid && bind.get_count() > 0 )
-      {
-        TRACE( TRACE_CONFIG )( "%s - valid filter\n", curr_local_time() );
-        bind[bind.get_count() - 1]->filter.add( filter );
-
-      }
-      else
-      {
-        delete filter;
-      }
+      TRACE( TRACE_CONFIG )( "%s - connections per thread tag\n", curr_local_time() );
+      connections_per_thread = atoi( &( line[h] ) );
+      if( connections_per_thread == 0 )
+        connections_per_thread = DEFAULT_CONNECTIONS_PER_THREAD;
     }
+    // End of conperthread processing
+
   }
 }
 
