@@ -28,9 +28,9 @@ public:
   void close();
   void manageConnections( fd_set * setr, fd_set * setw );
   bool manageConnectingPeer( fd_set * setr, fd_set * setw );
-  void addToFDSETR( fd_set * set );
-  void addToFDSETW( fd_set * set );
-  void addToFDSETC( fd_set * setr, fd_set * setw );
+  void addToFDSETR( fd_set * set, int * p_maxfd );
+  void addToFDSETW( fd_set * set, int * p_maxfd );
+  void addToFDSETC( fd_set * setr, fd_set * setw, int * p_maxfd );
   bool isActive();
   bool checkPeers();
   bool checkConnectingPeers();

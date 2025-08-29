@@ -40,6 +40,7 @@ void ThreadedConnectionManager::execute()
   int res = 0;
   fd_set setr;
   fd_set setw;
+  int max_fd = 0;
 
   ConnectionPeer * cpeer = NULL;
 #ifdef DEBUG
@@ -72,6 +73,11 @@ void ThreadedConnectionManager::execute()
 
     FD_ZERO( &setr );
     FD_ZERO( &setw );
+#ifdef WIN32
+    max_fd = 0; // not used in Windows
+#else
+    max_fd = 0; // nfds is the highest file descriptor plus one
+#endif
 
     // let's check the peer_list to add the active peers to the fd_set otherwise they will be removed
     connected_peers = 0;
@@ -82,8 +88,8 @@ void ThreadedConnectionManager::execute()
       {
         if( !finish && cpeer->isActive() )
         {
-          cpeer->addToFDSETR( &setr );
-          cpeer->addToFDSETW( &setw );
+          cpeer->addToFDSETR( &setr, &max_fd );
+          cpeer->addToFDSETW( &setw, &max_fd );
         }
         else
         {
@@ -109,7 +115,7 @@ void ThreadedConnectionManager::execute()
         if( !finish && cpeer->isActive() )
         {
           TRACE( TRACE_IOSOCKETERROR )( "%s - Adding connecting socket to select\n", curr_local_time() );
-          cpeer->addToFDSETC( &setr, &setw );
+          cpeer->addToFDSETC( &setr, &setw, &max_fd );
         }
         else
         {
@@ -129,24 +135,21 @@ void ThreadedConnectionManager::execute()
     if( !finish )
     {
       //TODO check fd_count of setw; otherwise nil  
-      control_socket.addToFDSET( &setr );
+      control_socket.addToFDSET( &setr, &max_fd );
+
       if( connected_peers || connecting_peers )
       {
         TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - Checking socket changes - with SOME connections\n", curr_local_time() );
-        // very old ugly trick based on old documentation of select which recommended to use FD_SETSIZE as the first parameter
-        // this may lead to problems if the max number of sockets is greater than FD_SETSIZE and it is inefficient (in non-Windows systems)
-        // according to the documentation, the first parameter is the highest file descriptor plus one
-        res = ::select( FD_SETSIZE, &setr, &setw, nil, nil ); // timeout is nil, so it will block until there is a change in the sockets
+        // according to the documentation, the first parameter is the highest file descriptor plus one except in Windows where it is ignored
+        res = ::select( max_fd + 1, &setr, &setw, nil, nil ); // timeout is nil, so it will block until there is a change in the sockets
         TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - Exit - Checking socket changes - with SOME connections\n", curr_local_time() );
       }
       else
       {
         // no connections, so only check the control socket in setr
         TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - Checking socket changes - with no connections\n", curr_local_time() );
-        // very old ugly trick based on old documentation of select which recommended to use FD_SETSIZE as the first parameter
-        // this may lead to problems if the max number of sockets is greater than FD_SETSIZE and it is inefficient (in non-Windows systems)
-        // according to the documentation, the first parameter is the highest file descriptor plus one
-        res = ::select( FD_SETSIZE, &setr, nil, nil, nil ); // timeout is nil, so it will block until there is a change in the control socket
+        // according to the documentation, the first parameter is the highest file descriptor plus one except in Windows where it is ignored
+        res = ::select( max_fd + 1, &setr, nil, nil, nil ); // timeout is nil, so it will block until there is a change in the control socket
         TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - Exit - Checking socket changes - with no connections\n", curr_local_time() );
       }
 

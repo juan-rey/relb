@@ -29,7 +29,7 @@ public:
   ControlSocket( void );
   ~ControlSocket( void );
   void post();
-  void addToFDSET( fd_set * set );
+  void addToFDSET( fd_set * set, int * p_maxfd );
 #ifdef WIN32	
   int checkSocket();
 #else

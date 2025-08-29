@@ -134,6 +134,7 @@ void Bind::execute()
   }
 
   fd_set set;
+  int nfds;
   int timeout = BIND_TIMEOUT_MS;
   timeval t, to;
   to.tv_sec = timeout / 1000;
@@ -148,18 +149,20 @@ void Bind::execute()
 
   while( !finish )
   {
-    //int ret;
+    nfds = 0;
     FD_ZERO( &set );
     for( i = 0; i < addresses.get_count(); i++ )
     {
       FD_SET( socket_array[i], &set );
+      if( socket_array[i] > nfds )
+        nfds = socket_array[i];
     }
     t.tv_sec = to.tv_sec;
     t.tv_usec = to.tv_usec;
 
     TRACE( TRACE_CONNECTIONS )( "%s - waiting connection\n", curr_local_time() );
-
-    if( /*ret = */::select( FD_SETSIZE, &set, nil, nil, /*(timeout < 0) ? nil : */&t ) > 0 )
+ 
+    if( ::select( nfds + 1, &set, nil, nil, &t ) > 0 )
     {
       TRACE( TRACE_CONNECTIONS )( "%s - new connection\n", curr_local_time() );
       sockaddr_in sac;

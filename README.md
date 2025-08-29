@@ -41,9 +41,9 @@ RELB uses Hovik Melikyan's C++ Portable Types Library (PTypes): [http://www.meli
 
 ## Limitations
 
-The current implementation on Linux is limited by FD_SETSIZE (1024 file descriptors). With minor modifications, this limitation can be overcome, after which the limit will be determined by the maximum number of file descriptors per process (`ulimit -n`) and available system resources.
+The current implementation on Linux is limited by FD_SETSIZE (1024 file descriptors) and available system resources.
 
-On Windows, there is no such file descriptors limitation. The primary limits are the available ephemeral socket ports (49152–65535; 16K) and system resources.
+On Windows, the primary limits are the available ephemeral socket ports (49152–65535; 16K) and system resources.
 
 ## License
 

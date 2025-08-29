@@ -121,7 +121,7 @@ void ControlSocket::post()
  * This is used to prepare for a `select()` call.
  * @param set The file descriptor set to which the socket will be added.
  */
-void ControlSocket::addToFDSET( fd_set * set )
+void ControlSocket::addToFDSET( fd_set * set, int * p_maxfd )
 {
 #ifdef WIN32		
   // Check if the control socket is valid before adding it to the fd_set
@@ -136,6 +136,8 @@ void ControlSocket::addToFDSET( fd_set * set )
   {
     TRACE( TRACE_CONNECTIONS && TRACE_VERY_VERBOSE )( "%s - i am adding to FDSET control socket %d\n", curr_local_time(), fd[0] );
     FD_SET( fd[0], set );
+    if( fd[0] > *p_maxfd )
+      *p_maxfd = fd[0];
   }
 #endif
 }
@@ -162,7 +164,7 @@ int ControlSocket::checkSocket( fd_set * set )
     to.tv_usec = 0;
     FD_ZERO( &setr );
     FD_SET( tmpsock, &setr );
-    ret = ::select( FD_SETSIZE, &setr, nil, nil, &to ); // select with timeout 0 to check immediately
+    ret = ::select( tmpsock + 1, &setr, nil, nil, &to ); // select with timeout 0 to check immediately
     TRACE( TRACE_CONNECTIONS && TRACE_VERY_VERBOSE )( "%s - select control socket %d returned %d\n", curr_local_time(), tmpsock, ret );
   }
 

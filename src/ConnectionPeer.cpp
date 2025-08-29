@@ -56,13 +56,13 @@ ConnectionPeer::~ConnectionPeer()
 /// <summary>
 /// Adds the client and server sockets to the fd_set for reading if there is buffer space.
 /// </summary>
-void ConnectionPeer::addToFDSETR( fd_set * set )
+void ConnectionPeer::addToFDSETR( fd_set * set, int * p_maxfd )
 {
   TRACE( TRACE_CONNECTIONS && TRACE_VERY_VERBOSE )( "%s - pClient=%p, %d bytes free in buffer\n", curr_local_time(), (void *) pClient, bytes_to_receive_in_bufferforserver );
 
   if( pClient && bytes_to_receive_in_bufferforserver )
   {
-    pClient->addToFDSET( set );
+    pClient->addToFDSET( set, p_maxfd );
     TRACE( TRACE_CONNECTIONS && TRACE_VERY_VERBOSE )( "%s - Added client to FDSETR\n", curr_local_time() );
   }
 
@@ -70,7 +70,7 @@ void ConnectionPeer::addToFDSETR( fd_set * set )
 
   if( pServer && bytes_to_receive_in_bufferforclient )
   {
-    pServer->addToFDSET( set );
+    pServer->addToFDSET( set, p_maxfd );
     TRACE( TRACE_CONNECTIONS && TRACE_VERY_VERBOSE )( "%s - Added server to FDSETR\n", curr_local_time() );
   }
 }
@@ -78,37 +78,37 @@ void ConnectionPeer::addToFDSETR( fd_set * set )
 /// <summary>
 /// Adds the client and server sockets to the fd_set for writing if there is data to send.
 /// </summary>
-void ConnectionPeer::addToFDSETW( fd_set * set )
+void ConnectionPeer::addToFDSETW( fd_set * set, int * p_maxfd )
 {
   if( pClient && bytes_to_send_in_bufferforclient )
   {
-    pClient->addToFDSET( set );
+    pClient->addToFDSET( set, p_maxfd );
     TRACE( TRACE_CONNECTIONS && TRACE_VERY_VERBOSE )( "%s - Added client to FDSETW\n", curr_local_time() );
   }
 
   if( pServer && bytes_to_send_in_bufferforserver )
   {
-    pServer->addToFDSET( set );
+    pServer->addToFDSET( set, p_maxfd );
     TRACE( TRACE_CONNECTIONS && TRACE_VERY_VERBOSE )( "%s - Added server to FDSETW\n", curr_local_time() );
   }
 }
 
 /// <summary>
-/// Adds the client and server sockets to the fd_sets for checking connection status.
+/// Adds the connecting peer  client and server sockets to the fd_sets for checking connection status.
 /// </summary>
-void ConnectionPeer::addToFDSETC( fd_set * setr, fd_set * setw )
+void ConnectionPeer::addToFDSETC( fd_set * setr, fd_set * setw, int * p_maxfd )
 {
 
   if( pClient && bytes_to_receive_in_bufferforserver )
   {
     TRACE( TRACE_CONNECTIONS )( "%s - Checking ongoing connection A (client)\n", curr_local_time() );
-    pClient->addToFDSET( setr );
+    pClient->addToFDSET( setr, p_maxfd );
   }
 
   if( pServer )
   {
     TRACE( TRACE_CONNECTIONS )( "%s - Checking ongoing connection B (server)\n", curr_local_time() );
-    pServer->addToFDSET( setw );
+    pServer->addToFDSET( setw, p_maxfd );
   }
 }
 

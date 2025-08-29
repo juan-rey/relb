@@ -110,10 +110,16 @@ void Socket::cleanup()
 
 // Add this socket to an fd_set for select() monitoring
 // @param set: fd_set to add this socket to
-void Socket::addToFDSET( fd_set * set )
+void Socket::addToFDSET( fd_set * set, int * p_nfds )
 {
   //  if( sock > 0 )
   FD_SET( sock, set );
+
+#ifndef WIN32
+  // Update nfds for Unix-like systems
+  if( sock > *p_nfds )
+    *p_nfds = sock;
+#endif
 
 #ifdef DEBUG
   // Debug trace for socket state
@@ -267,7 +273,7 @@ int Socket::checkSocket()
     to.tv_usec = 0;
     FD_ZERO( &setr );
     FD_SET( sock, &setr );
-    ret = ::select( FD_SETSIZE, &setr, nil, nil, &to );
+    ret = ::select( sock + 1, &setr, nil, nil, &to );
     TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - Really checking the socket, ret was %d but not %d\n", curr_local_time(), ret, int( -1 ) );
   }
 

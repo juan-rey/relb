@@ -36,7 +36,7 @@ public:
   void close2();
 #endif
   void getSocket();
-  void addToFDSET( fd_set * set );
+  void addToFDSET( fd_set * set, int * p_nfds );
   int isInFDSET( fd_set * set );
   int checkSocket();
 private:
