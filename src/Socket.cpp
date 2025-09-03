@@ -110,16 +110,25 @@ void Socket::cleanup()
 
 // Add this socket to an fd_set for select() monitoring
 // @param set: fd_set to add this socket to
-void Socket::addToFDSET( fd_set * set, int * p_nfds )
+#ifdef ENABLE_SELECT_NFDS_CALC // see comment in utiles.h
+// @param p_max_fd: Pointer to maximum fd value for select() (updated if needed)
+void Socket::addToFDSET( fd_set * set, int * p_max_fd )
+#else// ENABLE_SELECT_NFDS_CALC
+void Socket::addToFDSET( fd_set * set )
+#endif 
 {
   //  if( sock > 0 )
   FD_SET( sock, set );
 
-#ifndef WIN32
+#ifdef ENABLE_SELECT_NFDS_CALC
+  TRACE( TRACE_UNCATEGORIZED && TRACE_VERY_VERBOSE )( "%s - Comparing nfds %d with socket %d\n", curr_local_time(), *p_max_fd, sock );
   // Update nfds for Unix-like systems
-  if( sock > *p_nfds )
-    *p_nfds = sock;
-#endif
+  if( sock > *p_max_fd )
+  {
+    *p_max_fd = sock;
+    TRACE( TRACE_UNCATEGORIZED && TRACE_VERY_VERBOSE )( "%s - Updated nfds to %d\n", curr_local_time(), *p_max_fd );
+  }
+#endif // ENABLE_SELECT_NFDS_CALC
 
 #ifdef DEBUG
   // Debug trace for socket state

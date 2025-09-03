@@ -121,7 +121,11 @@ void ControlSocket::post()
  * This is used to prepare for a `select()` call.
  * @param set The file descriptor set to which the socket will be added.
  */
+#ifdef ENABLE_SELECT_NFDS_CALC // see comment in utiles.h
 void ControlSocket::addToFDSET( fd_set * set, int * p_maxfd )
+#else
+void ControlSocket::addToFDSET( fd_set * set )
+#endif // ENABLE_SELECT_NFDS_CALC
 {
 #ifdef WIN32		
   // Check if the control socket is valid before adding it to the fd_set
@@ -137,7 +141,10 @@ void ControlSocket::addToFDSET( fd_set * set, int * p_maxfd )
     TRACE( TRACE_CONNECTIONS && TRACE_VERY_VERBOSE )( "%s - i am adding to FDSET control socket %d\n", curr_local_time(), fd[0] );
     FD_SET( fd[0], set );
     if( fd[0] > *p_maxfd )
+    {
       *p_maxfd = fd[0];
+      TRACE( TRACE_UNCATEGORIZED && TRACE_VERY_VERBOSE )( "%s - Updated nfds to %d\n", curr_local_time(), *p_maxfd );
+    }
   }
 #endif
 }

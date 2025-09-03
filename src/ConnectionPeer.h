@@ -28,9 +28,15 @@ public:
   void close();
   void manageConnections( fd_set * setr, fd_set * setw );
   bool manageConnectingPeer( fd_set * setr, fd_set * setw );
-  void addToFDSETR( fd_set * set, int * p_maxfd );
-  void addToFDSETW( fd_set * set, int * p_maxfd );
-  void addToFDSETC( fd_set * setr, fd_set * setw, int * p_maxfd );
+#ifdef ENABLE_SELECT_NFDS_CALC // see comment in utiles.h
+  void addToFDSETR( fd_set * set, int * p_max_fd );
+  void addToFDSETW( fd_set * set, int * p_max_fd );
+  void addToFDSETC( fd_set * setr, fd_set * setw, int * p_max_fd );
+#else
+  void addToFDSETR( fd_set * set );
+  void addToFDSETW( fd_set * set );
+  void addToFDSETC( fd_set * setr, fd_set * setw );
+#endif // ENABLE_SELECT_NFDS_CALC
   bool isActive();
   bool checkPeers();
   bool checkConnectingPeers();

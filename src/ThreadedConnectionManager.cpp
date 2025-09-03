@@ -73,11 +73,11 @@ void ThreadedConnectionManager::execute()
 
     FD_ZERO( &setr );
     FD_ZERO( &setw );
-#ifdef WIN32
-    max_fd = 0; // not used in Windows
+#ifdef ENABLE_SELECT_NFDS_CALC // see comment in utiles.h
+    max_fd = 0; // nfds is the highest file descriptor plus one, in Windows is ignored
 #else
-    max_fd = 0; // nfds is the highest file descriptor plus one
-#endif
+    max_fd = FD_SETSIZE - 1;         // very old ugly trick based on old documentation of select which recommended to use FD_SETSIZE as the first parameter
+#endif // ENABLE_SELECT_NFDS_CALC
 
     // let's check the peer_list to add the active peers to the fd_set otherwise they will be removed
     connected_peers = 0;
@@ -88,8 +88,13 @@ void ThreadedConnectionManager::execute()
       {
         if( !finish && cpeer->isActive() )
         {
+#ifdef ENABLE_SELECT_NFDS_CALC
           cpeer->addToFDSETR( &setr, &max_fd );
           cpeer->addToFDSETW( &setw, &max_fd );
+#else
+          cpeer->addToFDSETR( &setr );
+          cpeer->addToFDSETW( &setw );
+#endif // ENABLE_SELECT_NFDS_CALC
         }
         else
         {
@@ -115,7 +120,11 @@ void ThreadedConnectionManager::execute()
         if( !finish && cpeer->isActive() )
         {
           TRACE( TRACE_IOSOCKETERROR )( "%s - Adding connecting socket to select\n", curr_local_time() );
+#ifdef ENABLE_SELECT_NFDS_CALC
           cpeer->addToFDSETC( &setr, &setw, &max_fd );
+#else
+          cpeer->addToFDSETC( &setr, &setw );
+#endif // ENABLE_SELECT_NFDS_CALC
         }
         else
         {

@@ -36,7 +36,11 @@ public:
   void close2();
 #endif
   void getSocket();
-  void addToFDSET( fd_set * set, int * p_nfds );
+#ifdef ENABLE_SELECT_NFDS_CALC // see comment in utiles.h
+  void addToFDSET( fd_set * set, int * p_max_fd );
+#else
+  void addToFDSET( fd_set * set );
+#endif // ENABLE_SELECT_NFDS_CALC
   int isInFDSET( fd_set * set );
   int checkSocket();
 private:

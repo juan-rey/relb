@@ -14,6 +14,7 @@ Please consult the file "LICENSE.txt" for details.
 
 #include <pasync.h>
 #include <pinet.h>
+#include "utiles.h"
 
 USING_PTYPES
 
@@ -29,7 +30,11 @@ public:
   ControlSocket( void );
   ~ControlSocket( void );
   void post();
+#ifdef ENABLE_SELECT_NFDS_CALC // see comment in utiles.h
   void addToFDSET( fd_set * set, int * p_maxfd );
+#else
+  void addToFDSET( fd_set * set );
+#endif // ENABLE_SELECT_NFDS_CALC
 #ifdef WIN32	
   int checkSocket();
 #else
