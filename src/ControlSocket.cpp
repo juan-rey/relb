@@ -140,11 +140,13 @@ void ControlSocket::addToFDSET( fd_set * set )
   {
     TRACE( TRACE_CONNECTIONS && TRACE_VERY_VERBOSE )( "%s - i am adding to FDSET control socket %d\n", curr_local_time(), fd[0] );
     FD_SET( fd[0], set );
+#  ifdef ENABLE_SELECT_NFDS_CALC
     if( fd[0] > *p_maxfd )
     {
       *p_maxfd = fd[0];
       TRACE( TRACE_UNCATEGORIZED && TRACE_VERY_VERBOSE )( "%s - Updated nfds to %d\n", curr_local_time(), *p_maxfd );
     }
+#  endif // ENABLE_SELECT_NFDS_CALC
   }
 #endif
 }
