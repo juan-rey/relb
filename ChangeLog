@@ -8,6 +8,7 @@ Release Candidate
      * Added command-line option for specifying a configuration file.
      * Tasks now use local time instead of UTC.
      * Windows: Increased default FDSET_SIZE to 256.
+     * Non-Windows: Added support for nfds tracking in select() calls.
    - Performance:
      * Fixed issue with task handling degradation over time.
    - Security:

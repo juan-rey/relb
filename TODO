@@ -7,41 +7,37 @@ High Priority:
    - Add installation/setup scripts
    - Document service management commands
 
-2. Increase FDSET_SIZE in Windows (ongoing, needs testing))
-   - Research solutions to increase connection limit on Windows
-   - Consider implementing connection pooling
-
-3. Basic DDoS protection
+2. Basic DDoS protection
    - Implement connection rate limiting
    - Add IP blacklisting mechanism
    - Add configurable connection thresholds
 
 Medium Priority:
 --------------
-4. Enable IPv6
+3. Enable IPv6
    - Add IPv6 address parsing
    - Update configuration file format
    - Ensure backward compatibility with IPv4
    - Test dual-stack operation
 
-5. Performance optimization
+4. Performance optimization
    - Research epoll/IOCP alternatives to select?
    - Evaluate performance impact
    - Plan migration strategy if beneficial
 
 Low Priority:
 -----------
-6. Additional config file formats?
+5. Additional config file formats?
    - Consider adding JSON/YAML support
    - Maintain backward compatibility
    - Add config validation
 
-7. Stunnel support for web administration?
+6. Stunnel support for web administration?
    - Add stunnel/TLS support
    - Implement authentication
    - Add HTTPS support natively
 
-8. Save session content?
+7. Save session content?
    - Implement session content logging
    - Add session persistence
    - Consider memory/storage limitations
