@@ -63,10 +63,10 @@ Bind::~Bind()
   }
 }
 
-bool Bind::addServer( const char * nombre, const ipaddress server_ip, unsigned short server_port, int weight, int max_connections )
+bool Bind::addServer( const char * name, const ipaddress server_ip, unsigned short server_port, int weight, int max_connections )
 {
-  slist.addServer( nombre, &server_ip, server_port, weight, max_connections );
-  admin.addServer( nombre, &server_ip, server_port, weight, max_connections );
+  slist.addServer( name, &server_ip, server_port, weight, max_connections );
+  admin.addServer( name, &server_ip, server_port, weight, max_connections );
 
   return true;
 }
@@ -92,19 +92,18 @@ void Bind::execute()
   int * socket_array = new int[addresses.get_count()];
   while( i < addresses.get_count() )
   {
-    // set up sockaddr_in and try to bind it to the socket
+    // Configure sockaddr_in and bind it
     sockaddr_in sa;
     memset( &sa, 0, sizeof( sa ) );
     sa.sin_family = AF_INET;
     sa.sin_port = htons( u_short( addresses[i]->src_port ) );
     sa.sin_addr.s_addr = inet_addr( iptostring( addresses[i]->src_ip ) );
 
-    int sockfd;
-    sockfd = socket( sa.sin_family, SOCK_STREAM, 0 );
+    int sockfd = socket( sa.sin_family, SOCK_STREAM, 0 );
 
     if( sockfd < 0 )
     {
-      TRACE( TRACE_CONNECTIONS )( "%s - binding socket not created\n", curr_local_time() );
+      TRACE( TRACE_CONNECTIONS )( "%s - Binding socket not created\n", curr_local_time() );
     }
 
 #ifndef WIN32
@@ -114,20 +113,19 @@ void Bind::execute()
     int reuse = 1;
     if( ::setsockopt( sockfd, SOL_SOCKET, SO_REUSEADDR, (const void *) &reuse, sizeof( reuse ) ) != 0 )
     {
-      TRACE( TRACE_CONNECTIONS )( "%s - socket address was not reusable\n", curr_local_time() );
+      TRACE( TRACE_CONNECTIONS )( "%s - Socket address was not reusable\n", curr_local_time() );
     }
 #endif
 
     if( bind( sockfd, (sockaddr *) &sa, sizeof( sa ) ) != 0 )
     {
-      TRACE( TRACE_CONNECTIONS )( "%s - socket could not be binded\n", curr_local_time() );
+      TRACE( TRACE_CONNECTIONS )( "%s - Socket bind failed\n", curr_local_time() );
     }
 
     if( listen( sockfd, 100 ) != 0 )
     {
-      TRACE( TRACE_CONNECTIONS )( "%s - could not stat listening\n", curr_local_time() );
+      TRACE( TRACE_CONNECTIONS )( "%s - Listen failed\n", curr_local_time() );
     }
-
 
     socket_array[i] = sockfd;
     i++;
@@ -160,11 +158,11 @@ void Bind::execute()
     t.tv_sec = to.tv_sec;
     t.tv_usec = to.tv_usec;
 
-    TRACE( TRACE_CONNECTIONS )( "%s - waiting connection\n", curr_local_time() );
- 
+    TRACE( TRACE_CONNECTIONS )( "%s - Waiting for incoming connection\n", curr_local_time() );
+
     if( ::select( nfds + 1, &set, nil, nil, &t ) > 0 )
     {
-      TRACE( TRACE_CONNECTIONS )( "%s - new connection\n", curr_local_time() );
+      TRACE( TRACE_CONNECTIONS )( "%s - Incoming connection\n", curr_local_time() );
       sockaddr_in sac;
       memset( &sac, 0, sizeof( sac ) );
 #ifdef WIN32
@@ -177,16 +175,15 @@ void Bind::execute()
       {
         if( FD_ISSET( socket_array[i], &set ) )
         {
-          TRACE( TRACE_CONNECTIONS )( "%s - accepting connection\n", curr_local_time() );
-          int cliente = accept( socket_array[i], (sockaddr *) &sac, &addrlen );
-          TRACE( TRACE_CONNECTIONS )( "%s - accepted connection\n", curr_local_time() );
-          if( cliente > 0 )
+          TRACE( TRACE_CONNECTIONS )( "%s - Accepting connection\n", curr_local_time() );
+          int client_fd = accept( socket_array[i], (sockaddr *) &sac, &addrlen );
+          TRACE( TRACE_CONNECTIONS )( "%s - Accepted connection\n", curr_local_time() );
+          if( client_fd > 0 )
           {
-            slist.setServer( cliente, &sac );
+            slist.setServer( client_fd, &sac );
           }
         }
       }
-
     }
   }
 

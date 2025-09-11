@@ -89,7 +89,7 @@ int ServerList::cleanConnections()
   const peer_info * pinfo = NULL;
   int peer_index = 0;
 
-  TRACE( TRACE_TASKS )( "%s - i am cleaning connections\n", curr_local_time() );
+  TRACE( TRACE_TASKS )( "%s - Cleaning inactive connections\n", curr_local_time() );
 
   peer_lock.wrlock();
   while( peer_index < peer_list.get_count() )
@@ -141,7 +141,7 @@ int ServerList::cleanConnections()
 int ServerList::purgeConnections()
 {
   peer_info * pinfo = NULL;
-  TRACE( TRACE_TASKS && TRACE_VERBOSE )( "%s - i am purging connections\n", curr_local_time() );
+  TRACE( TRACE_TASKS && TRACE_VERBOSE )( "%s - Purging all connections\n", curr_local_time() );
 
   peer_lock.wrlock();
   int i = 0;
@@ -231,7 +231,7 @@ int ServerList::startUpdating()
 
 int ServerList::stopUpdating()
 {
-  TRACE( TRACE_UNCATEGORIZED && TRACE_VERBOSE )( "%s - entering stopUpdating in ServerList\n", curr_local_time() );
+  TRACE( TRACE_UNCATEGORIZED && TRACE_VERBOSE )( "%s - Stopping update loop in ServerList\n", curr_local_time() );
   update = false;
 
   return 0;
@@ -249,7 +249,7 @@ bool ServerList::addFilter( const ipaddress source_ip, const ipaddress source_ma
     pfilter->src_mask = source_mask;
     pfilter->dst_ip = dest_ip;
     pfilter->dst_mask = dest_mask;
-    TRACE( TRACE_FILTERS )( "%s - creating %s filter for %s/%s -> %s/%s \n", curr_local_time(), allow ? "allow" : "deny", (const char *) iptostring( source_ip ), (const char *) iptostring( source_mask ), (const char *) iptostring( dest_ip ), (const char *) iptostring( dest_mask ) );
+    TRACE( TRACE_FILTERS )( "%s - Creating %s filter for %s/%s -> %s/%s \n", curr_local_time(), allow ? "allow" : "deny", (const char *) iptostring( source_ip ), (const char *) iptostring( source_mask ), (const char *) iptostring( dest_ip ), (const char *) iptostring( dest_mask ) );
     filter_list.add( pfilter );
   }
 
@@ -272,7 +272,7 @@ bool ServerList::addTask( TASK_TYPE task_type, int run_interval_seconds )
     ptask->last_ran_time = 0;
     ptask->last_ran_exitcode = 0;
     ptask->fixed_time = false;
-    TRACE( TRACE_TASKS )( "%s - new task at %s \n", curr_local_time(), given_local_time( ptask->next_run_time ) );
+    TRACE( TRACE_TASKS )( "%s - Scheduled new task at %s \n", curr_local_time(), given_local_time( ptask->next_run_time ) );
     tasks_list.add( ptask );
   }
 
@@ -294,7 +294,7 @@ bool ServerList::addTask( TASK_TYPE task_type, datetime firstrun, int run_interv
     ptask->last_ran_time = 0;
     ptask->last_ran_exitcode = 0;
     ptask->fixed_time = true;
-    TRACE( TRACE_TASKS )( "%s - new task at %s \n", curr_local_time(), given_local_time( ptask->next_run_time ) );
+    TRACE( TRACE_TASKS )( "%s - Scheduled new task at %s \n", curr_local_time(), given_local_time( ptask->next_run_time ) );
     tasks_list.add( ptask );
 
     //    if( !update && tasks_list.get_count())
@@ -319,7 +319,7 @@ bool ServerList::addServer( const char * host_name, const ipaddress * ip, unsign
 {
   serverinfo * info = new serverinfo;
 
-  TRACE( TRACE_CONFIG )( "%s - adding server %s at %s:%d with weight %d and max connections %d\n", curr_local_time(), host_name?host_name:"", (const char *) iptostring(*ip), port, weight, max_connections );
+  TRACE( TRACE_CONFIG )( "%s - Adding server %s at %s:%d with weight %d and max connections %d\n", curr_local_time(), host_name?host_name : "", (const char *) iptostring( *ip ), port, weight, max_connections );
 
   if( host_name )
   {
@@ -377,17 +377,17 @@ void ServerList::execute()
 
     if( update )
     {
-      TRACE( TRACE_TASKS )( "%s - preprocessing tasks %s \n", curr_local_time(), given_local_time( next_task_run_time ) );
+      TRACE( TRACE_TASKS )( "%s - Pre-processing tasks %s \n", curr_local_time(), given_local_time( next_task_run_time ) );
       if( next_task_run_time && ( NOW_UTC >= next_task_run_time ) )
       {
-        TRACE( TRACE_TASKS )( "%s - processing tasks %s \n", curr_local_time(), given_local_time( next_task_run_time ) );
+        TRACE( TRACE_TASKS )( "%s - Executing due tasks %s \n", curr_local_time(), given_local_time( next_task_run_time ) );
         task_info * ptask = NULL;
         int task_index = 0;
         bool delete_task;
 
         while( task_index < tasks_list.get_count() )
         {
-          TRACE( TRACE_TASKS && TRACE_VERY_VERBOSE )( "%s - checking tasks - index %d \n", curr_local_time(), task_index );
+          TRACE( TRACE_TASKS && TRACE_VERY_VERBOSE )( "%s - Checking task index %d \n", curr_local_time(), task_index );
           ptask = tasks_list[task_index];
 
           if( ptask != NULL )
@@ -396,7 +396,7 @@ void ServerList::execute()
 
             if( NOW_UTC >= ptask->next_run_time )
             {
-              TRACE( TRACE_TASKS )( "%s - found a task to run\n", curr_local_time() );
+              TRACE( TRACE_TASKS )( "%s - Running task\n", curr_local_time() );
               ptask->last_ran_time = NOW_UTC;
 
               //TODO TASK_UPDATE_SERVER_INFO
@@ -416,18 +416,18 @@ void ServerList::execute()
                   if( NOW_UTC >= ptask->next_run_time )
                   {
                     ptask->next_run_time = ptask->next_run_time + ( ( ( ( NOW_UTC - ptask->next_run_time ) / ( 1000 * ptask->run_interval_seconds ) ) + 1 ) * ( 1000 * ptask->run_interval_seconds ) );
-                    TRACE( TRACE_TASKS )( "%s - next run %s\n", curr_local_time(), given_local_time( ptask->next_run_time ) );
+                    TRACE( TRACE_TASKS )( "%s - Next run %s\n", curr_local_time(), given_local_time( ptask->next_run_time ) );
                   }
                 }
                 else
                 {
                   ptask->next_run_time = NOW_UTC + ( 1000 * ptask->run_interval_seconds );
-                  TRACE( TRACE_TASKS )( "%s - the next run %s\n", curr_local_time(), given_local_time( ptask->next_run_time ) );
+                  TRACE( TRACE_TASKS )( "%s - Next run %s\n", curr_local_time(), given_local_time( ptask->next_run_time ) );
                 }
               }
               else
               {
-                TRACE( TRACE_TASKS )( "%s - Single time execution task, deleting\n", curr_local_time() );
+                TRACE( TRACE_TASKS )( "%s - One-time task executed, removing\n", curr_local_time() );
                 delete_task = true;
               }
             }
@@ -450,12 +450,11 @@ void ServerList::execute()
           }
           task_index++;
         }
-        TRACE( TRACE_TASKS )( "%s - finished processing tasks, next on %s \n", curr_local_time(), given_local_time( next_task_run_time ) );
+        TRACE( TRACE_TASKS )( "%s - Finished processing tasks, next at %s \n", curr_local_time(), given_local_time( next_task_run_time ) );
       }
 
-      //wait_ms = MIN( int( next_task_run_time - NOW_UTC + TIME_SLICE_MARGIN_MS ), MAXIMUM_UPDATE_INTERVAL_MS );
       wait_ms = ( ( ( MIN( int( next_task_run_time - NOW_UTC + TIME_SLICE_MARGIN_MS ), MAXIMUM_UPDATE_INTERVAL_MS - TIMEDSEM_PROPER_PRECISION_MS ) ) / TIMEDSEM_PROPER_PRECISION_MS ) * TIMEDSEM_PROPER_PRECISION_MS ) + TIMEDSEM_PROPER_PRECISION_MS;
-      TRACE( TRACE_TASKS )( "%s - waiting next tasks %d \n", curr_local_time(), wait_ms );
+      TRACE( TRACE_TASKS )( "%s - Waiting %d ms for next tasks\n", curr_local_time(), wait_ms );
 
     }
 
@@ -479,16 +478,14 @@ void ServerList::processMessage( message * msg )
   peer_info * pinfo = NULL;
   int current_item_index = 0;
 
-  TRACE( TRACE_UNCATEGORIZED && TRACE_VERBOSE )( "%s - processing message in ServerList\n", curr_local_time() );
+  TRACE( TRACE_UNCATEGORIZED && TRACE_VERBOSE )( "%s - Processing message in ServerList\n", curr_local_time() );
 
   peer_lock.rdlock();
   while( !pinfo && current_item_index < peer_list.get_count() )
   {
     if( peer_list[current_item_index] == (peer_info *) msg->param )
     {
-      // if it wasn't disconnected? <- not here?
       pinfo = peer_list[current_item_index];
-      //current_item_index++;
     }
     else
     {
@@ -503,7 +500,7 @@ void ServerList::processMessage( message * msg )
       case STATUS_PEER_CONNECTION_CANCELLED:
         break;
       case STATUS_PEER_CONNECTION_KICKED:
-        TRACE( TRACE_CONNECTIONS )( "%s - kick request\n", curr_local_time() );
+        TRACE( TRACE_CONNECTIONS )( "%s - Kick request\n", curr_local_time() );
         if( pinfo->manager != NULL )
           ( (ThreadedConnectionManager *) pinfo->manager )->closePInfo( pinfo );
         break;
@@ -518,6 +515,7 @@ void ServerList::processMessage( message * msg )
 
     switch( msg->id & STATUS_CLIENT_SERVER_MASK )
     {
+
       // Here the message is forwarded and more processing is performed
       case STATUS_CONNECTION_LOST:
       case STATUS_DISCONNECTED_OK:
@@ -631,7 +629,7 @@ const peer_info * ServerList::getServer( const ipaddress * client_ip, unsigned s
       int lostsessionindex = -1;
       int lostsessionserver = -1;
       int server_index = -1;
-      TRACE( TRACE_ASSIGNATION )( "%s - checking disconnections\n", curr_local_time() );
+      TRACE( TRACE_ASSIGNATION )( "%s - Checking for previous disconnected sessions\n", curr_local_time() );
 
       peer_lock.rdlock();
       // Track previous ones while no exact match is found
@@ -690,7 +688,7 @@ const peer_info * ServerList::getServer( const ipaddress * client_ip, unsigned s
               // Found but there was already a preassigned one
               if( lostsessionindex >= 0 )
               {
-                TRACE( TRACE_ASSIGNATION )( "%s - found another disconnection %d to server with ip address %s\n", curr_local_time(), peer_index, (const char *) iptostring( peer_list[peer_index]->dst_ip ) );
+                TRACE( TRACE_ASSIGNATION )( "%s - Found another disconnection %d to server with ip address %s\n", curr_local_time(), peer_index, (const char *) iptostring( peer_list[peer_index]->dst_ip ) );
 
                 // The connection is after the one that was preassigned
                 if( ( peer_list[peer_index]->modified > peer_list[lostsessionindex]->modified ) && ( peer_list[lostsessionindex]->status != STATUS_CONNECTION_FAILED ) )
@@ -708,7 +706,7 @@ const peer_info * ServerList::getServer( const ipaddress * client_ip, unsigned s
               }
               else
               {
-                TRACE( TRACE_ASSIGNATION )( "%s - found a disconnection %d to server with ip %s\n", curr_local_time(), peer_index, (const char *) iptostring( peer_list[peer_index]->dst_ip ) );
+                TRACE( TRACE_ASSIGNATION )( "%s - Found a disconnection %d to server with ip %s\n", curr_local_time(), peer_index, (const char *) iptostring( peer_list[peer_index]->dst_ip ) );
 
                 // If there was no preassigned one, accept this one
                 lostsessionindex = peer_index;
@@ -817,7 +815,7 @@ const peer_info * ServerList::getServer( const ipaddress * client_ip, unsigned s
         last_server_assigned = 0;
       }
 
-      TRACE( TRACE_ASSIGNATION )( "%s - Evaluating servers from %d\n", curr_local_time(), last_server_assigned );
+      TRACE( TRACE_ASSIGNATION )( "%s - Evaluating servers starting at %d\n", curr_local_time(), last_server_assigned );
       currentserver = last_server_assigned;
       currentserver_index = ( servers_list[currentserver]->connecting + servers_list[currentserver]->connected + ( servers_list[currentserver]->finished * finished_weight ) + ( servers_list[currentserver]->disconnected * disconnected_weight ) ) / float( MAX( 1, servers_list[currentserver]->weight ) );
       currentserver_notavailable = ( ( servers_list[currentserver]->max_connections && servers_list[currentserver]->connected >= servers_list[currentserver]->max_connections )
@@ -826,7 +824,7 @@ const peer_info * ServerList::getServer( const ipaddress * client_ip, unsigned s
       nextserver_index = currentserver_index;
       nextserver_notavailable = currentserver_notavailable;
       nextserver = currentserver;
-      TRACE( TRACE_ASSIGNATION )( "%s - Setting default server %d with index %f  weight %d and %d connections, last connection was %s %d seconds ago\n",
+      TRACE( TRACE_ASSIGNATION )( "%s - Default candidate server %d index %f weight %d connections %d last %s %d s ago\n",
         curr_local_time(), currentserver, currentserver_index, servers_list[currentserver]->weight, servers_list[currentserver]->connecting + servers_list[currentserver]->connected + servers_list[currentserver]->finished + servers_list[currentserver]->disconnected, currentserver_notavailable ? "failed" : "succeeded", int( NOW_UTC - servers_list[currentserver]->last_connection_attempt ) / 1000 );
 
       if( isServerAllowed( &( servers_list[nextserver]->ip ), client_ip ) )
@@ -849,16 +847,16 @@ const peer_info * ServerList::getServer( const ipaddress * client_ip, unsigned s
         currentserver_notavailable = ( ( servers_list[currentserver]->max_connections && servers_list[currentserver]->connected >= servers_list[currentserver]->max_connections )
           || ( servers_list[currentserver]->last_connection_failed && ( ( NOW_UTC - servers_list[currentserver]->last_connection_attempt ) < server_retry_milliseconds ) ) );
         currentserver_weight = servers_list[currentserver]->weight;
-        TRACE( TRACE_ASSIGNATION )( "%s - Analysing server %d with index %f weight %d and %d connections, last connection %s %d seconds ago\n",
+        TRACE( TRACE_ASSIGNATION )( "%s - Inspecting server %d index %f weight %d connections %d last %s %d s ago\n",
           curr_local_time(), currentserver, currentserver_index, servers_list[currentserver]->weight, ( servers_list[currentserver]->finished + servers_list[currentserver]->connected + servers_list[currentserver]->disconnected + servers_list[currentserver]->connecting ), currentserver_notavailable ? "failed" : "succeeded", int( NOW_UTC - servers_list[currentserver]->last_connection_attempt ) / 1000 );
 
         // Evaluate IP filters
         if( isServerAllowed( &( servers_list[currentserver]->ip ), client_ip ) )
         {
 
-          TRACE( TRACE_ASSIGNATION )( "%s - Allowed server %d with index %f weight %d, next index %f weight %d\n",
+          TRACE( TRACE_ASSIGNATION )( "%s - Allowed server %d index %f weight %d, next index %f weight %d\n",
             curr_local_time(), currentserver, currentserver_index, currentserver_weight, nextserver_index, nextserver_weight );
-          // here or elsewhere???
+          // here or elsewhere????
           //assigned_server = true;	
           if( !currentserver_index && !nextserver_index )
           {
@@ -904,14 +902,14 @@ const peer_info * ServerList::getServer( const ipaddress * client_ip, unsigned s
       // If nothing was found, make one last attempt including non-assignable servers
       if( !assigned_server )
       {
-        TRACE( TRACE_ASSIGNATION )( "%s - Ooops, no valid server found. Re-check even non available servers\n", curr_local_time() );
+        TRACE( TRACE_ASSIGNATION )( "%s - No valid server found. Re-checking including temporarily unavailable servers\n", curr_local_time() );
         while( currentserver != last_server_assigned )
         {
           // Calculate availability ratio for this server
           currentserver_index = ( servers_list[currentserver]->finished + servers_list[currentserver]->connected + ( servers_list[currentserver]->finished * finished_weight ) + ( servers_list[currentserver]->disconnected * disconnected_weight ) ) / float( MAX( 1, servers_list[currentserver]->weight ) );
           currentserver_notavailable = false;
           currentserver_weight = servers_list[currentserver]->weight;
-          TRACE( TRACE_ASSIGNATION )( "%s - Analizing server %d with index %f weight %d y %d connections, last connection %s %d seconds ago\n",
+          TRACE( TRACE_ASSIGNATION )( "%s - Analizing server %d index %f weight %d and %d connections, last connection %s %d seconds ago\n",
             curr_local_time(), currentserver, currentserver_index, servers_list[currentserver]->weight, ( servers_list[currentserver]->finished + servers_list[currentserver]->connected + servers_list[currentserver]->disconnected + servers_list[currentserver]->connecting ), currentserver_notavailable ? "failed" : "succeeded", int( NOW_UTC - servers_list[currentserver]->last_connection_attempt ) / 1000 );
 
           // Evaluate IP filters
@@ -920,7 +918,7 @@ const peer_info * ServerList::getServer( const ipaddress * client_ip, unsigned s
 
             TRACE( TRACE_ASSIGNATION )( "%s - Allowed server %d with index %f weight %d, next index %f weight %d\n",
               curr_local_time(), currentserver, currentserver_index, currentserver_weight, nextserver_index, nextserver_weight );
-            // here or elsewhere???
+            // here or elsewhere????
             //assigned_server = true;
             if( !currentserver_index && !nextserver_index )
             {
@@ -1004,10 +1002,10 @@ const peer_info * ServerList::getServer( const ipaddress * client_ip, unsigned s
       }
       else
       {
-        TRACE( TRACE_ASSIGNATION )( " %s - NO SERVER FOUND\n", curr_local_time() );
+        TRACE( TRACE_ASSIGNATION )( "%s - No server found for assignment\n", curr_local_time() );
       }
 
-      TRACE( TRACE_ASSIGNATION )( " %s - finishing assignment\n", curr_local_time() );
+      TRACE( TRACE_ASSIGNATION )( "%s - Finishing assignment process\n", curr_local_time() );
     }
   }
   servers_lock.unlock();
@@ -1019,7 +1017,7 @@ bool ServerList::isServerAllowed( const ipaddress * server, const ipaddress * cl
 {
   bool val = true;
 
-  TRACE( TRACE_FILTERS )( "%s - Checking filter for client %s and server %s\n", curr_local_time(), (const char *) iptostring( *client ), (const char *) iptostring( *server ) );
+  TRACE( TRACE_FILTERS )( "%s - Checking filters for client %s and server %s\n", curr_local_time(), (const char *) iptostring( *client ), (const char *) iptostring( *server ) );
 
   if( filter_list.get_count() )
   {
@@ -1027,54 +1025,53 @@ bool ServerList::isServerAllowed( const ipaddress * server, const ipaddress * cl
 
     while( i < filter_list.get_count() )
     {
-      TRACE( TRACE_FILTERS && TRACE_VERBOSE )( "%s - examining filter: client %s and server %s %s/%s %s/%s %s\n", curr_local_time(),
+      TRACE( TRACE_FILTERS && TRACE_VERBOSE )( "%s - Evaluating filter: client %s server %s %s/%s %s/%s %s\n", curr_local_time(),
         (const char *) iptostring( *client ), (const char *) iptostring( *server ), (const char *) iptostring( filter_list[i]->src_ip ), (const char *) iptostring( filter_list[i]->src_mask ),
         (const char *) iptostring( filter_list[i]->dst_ip ), (const char *) iptostring( filter_list[i]->dst_mask ), ( filter_list[i]->allow ) ? "allow" : "deny" );
-      TRACE( TRACE_FILTERS && TRACE_VERBOSE )( "%s - client %s %s and server %s %s\n",
+      TRACE( TRACE_FILTERS && TRACE_VERBOSE )( "%s - Mask compare client %s %s and server %s %s\n",
         curr_local_time(), (const char *) iptostring( masked_ip( client, &( filter_list[i]->src_mask ) ) ), (const char *) iptostring( masked_ip( &( filter_list[i]->src_ip ), &( filter_list[i]->src_mask ) ) ),
         (const char *) iptostring( masked_ip( server, &( filter_list[i]->dst_mask ) ) ), (const char *) iptostring( masked_ip( &( filter_list[i]->dst_ip ), &( filter_list[i]->dst_mask ) ) ) );
 
       if( masked_ip( client, &( filter_list[i]->src_mask ) ) == masked_ip( &( filter_list[i]->src_ip ), &( filter_list[i]->src_mask ) ) )
         if( masked_ip( server, &( filter_list[i]->dst_mask ) ) == masked_ip( &( filter_list[i]->dst_ip ), &( filter_list[i]->dst_mask ) ) )
         {
-          TRACE( TRACE_FILTERS )( "%s - %s filter match client %s and server %s %s/%s %s/%s\n", curr_local_time(), ( filter_list[i]->allow ) ? "allow" : "deny", (const char *) iptostring( *client ), (const char *) iptostring( *server ), (const char *) iptostring( filter_list[i]->src_ip ), (const char *) iptostring( filter_list[i]->src_mask ), (const char *) iptostring( filter_list[i]->dst_ip ), (const char *) iptostring( filter_list[i]->dst_mask ) );
+          TRACE( TRACE_FILTERS )( "%s - %s filter matched client %s server %s %s/%s %s/%s\n", curr_local_time(), ( filter_list[i]->allow ) ? "allow" : "deny", (const char *) iptostring( *client ), (const char *) iptostring( *server ), (const char *) iptostring( filter_list[i]->src_ip ), (const char *) iptostring( filter_list[i]->src_mask ), (const char *) iptostring( filter_list[i]->dst_ip ), (const char *) iptostring( filter_list[i]->dst_mask ) );
           val = filter_list[i]->allow;
           i = filter_list.get_count() + 1;
         }
       i++;
 #ifdef DEBUG
       if( i == filter_list.get_count() )
-        TRACE( TRACE_FILTERS )( "%s - No filter found for client %s and server %s\n", curr_local_time(), (const char *) iptostring( *client ), (const char *) iptostring( *server ) );
+        TRACE( TRACE_FILTERS )( "%s - No matching filter for client %s and server %s\n", curr_local_time(), (const char *) iptostring( *client ), (const char *) iptostring( *server ) );
 #endif
     }
   }
 
-  TRACE( TRACE_FILTERS )( "%s - Connection for client %s to server %s is %s\n", curr_local_time(), (const char *) iptostring( *client ), (const char *) iptostring( *server ), ( val ) ? "allowed" : "denied" );
+  TRACE( TRACE_FILTERS )( "%s - Connection client %s -> server %s is %s\n", curr_local_time(), (const char *) iptostring( *client ), (const char *) iptostring( *server ), ( val ) ? "allowed" : "denied" );
   return val;
 }
-
 
 void ServerList::setServer( int client_socket, sockaddr_in * sac )
 {
   ipaddress temp( sac->sin_addr.s_addr );
   ThreadedConnectionManager * pcm = cmlist.getFreeThreadedConnectionManager();
-  Socket * pCliente = new Socket( client_socket, &temp, ntohs( sac->sin_port ) );
-  Socket * pServidor = NULL;
+  Socket * pClient = new Socket( client_socket, &temp, ntohs( sac->sin_port ) );
+  Socket * pServer = NULL;
   peer_info * pinfo = NULL;
 
-  if( pinfo = (peer_info *) getServer( (ipaddress *) &( sac->sin_addr.s_addr ), ntohs( sac->sin_port ), pcm ) )
+  if( ( pinfo = (peer_info *) getServer( (ipaddress *) &( sac->sin_addr.s_addr ), ntohs( sac->sin_port ), pcm ) ) )
   {
-    TRACE( TRACE_CONNECTIONS )( "%s - Assigned server with ip %s\n", curr_local_time(), (const char *) iptostring( pinfo->dst_ip ) );
-    pServidor = new Socket( &( pinfo->dst_ip ), pinfo->dst_port );
-    ConnectionPeer * cpeer = new ConnectionPeer( pCliente, pServidor, getQueue(), pinfo );
+    TRACE( TRACE_CONNECTIONS )( "%s - Assigned backend server with ip %s\n", curr_local_time(), (const char *) iptostring( pinfo->dst_ip ) );
+    pServer = new Socket( &( pinfo->dst_ip ), pinfo->dst_port );
+    ConnectionPeer * cpeer = new ConnectionPeer( pClient, pServer, getQueue(), pinfo );
     pcm->addConnectionPeer( cpeer );
   }
   else
   {
-    TRACE( TRACE_CONNECTIONS )( "%s - No server was assigned for the client\n", curr_local_time() );
-    if( pCliente )
-      delete pCliente;
-    pCliente = NULL;
+    TRACE( TRACE_CONNECTIONS )( "%s - No server assigned for the client\n", curr_local_time() );
+    if( pClient )
+      delete pClient;
+    pClient = NULL;
   }
 }
 

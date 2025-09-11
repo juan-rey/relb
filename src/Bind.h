@@ -20,18 +20,18 @@ USING_PTYPES
 #include "ThreadedConnectionManager.h"
 #include "AdminHTTPServer.h"
 
-class  Bind: public thread
+class Bind: public thread
 {
 protected:
   virtual void execute();
   virtual void cleanup();
 
 public:
-  Bind( /*unsigned short listeningPort, ipaddress listeningIP = ipnone,*/ int peers_per_thread = MAX_CONNECTIONS_PER_THREAD );
+  Bind( int peers_per_thread = MAX_CONNECTIONS_PER_THREAD );
   virtual ~Bind();
   int startListening();
   int stopListening();
-  bool addServer( const char * nombre, const ipaddress server_ip, unsigned short server_port, int weight = 0, int max_connections = 0 );
+  bool addServer( const char * name, const ipaddress server_ip, unsigned short server_port, int weight = 0, int max_connections = 0 );
   void setAdmin( bool enable, const ipaddress server_ip, unsigned short server_port );
   bool addTask( TASK_TYPE type, int run_interval_ms );
   bool addTask( TASK_TYPE type, datetime firstrun, int run_interval_ms );
@@ -43,8 +43,6 @@ public:
 private:
   AdminHTTPServer admin;
   tpodlist<bind_address *> addresses;
-  //ipaddress ip;
-  //unsigned short port;
   bool adminEnabled;
   ipaddress adminIP;
   unsigned short adminPort;
