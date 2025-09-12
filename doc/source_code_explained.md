@@ -138,3 +138,25 @@ Memory usage is influenced by the number of concurrent connections. Each `Connec
 ### 4.3. Threads
 
 RELB uses a multi-threaded model to handle connections. A main thread is responsible for accepting new connections, and a pool of worker threads, managed by `ThreadedConnectionManager`, handles the data transfer for established connections, also `ServerList` and `AdminHTTPServer` run as separate threads. The number of worker threads is configurable, allowing for tuning based on the expected load and available system resources.
+
+## 5. Code and comments formatting:
+
+- File header: C-style block comment with filename, brief description, copyright, license notice.
+- Indentation: 2 spaces (not tabs) in project sources; continuation lines aligned under first token.
+- Braces: Opening brace on the next line for functions, methods, control blocks; closing brace on its own line.
+- Separation: Logical blocks divided by blank lines; no trailing whitespace intentionally.
+- Macros/constants: Uppercase with underscores; multi-line string macros use backslash line continuations.
+- Comments:
+  - Block comments (`/* ... */`) for file headers and large sections.
+  - Inline single-line comments (`//`) for brief explanations.
+  - Sentences generally start capitalized; some legacy comments were normalized to English.
+- Trace/log macros: Uppercase names; conditional with `TRACE(x)(\"...\")` pattern.
+- Naming: snake_case for variables/functions; PascalCase for classes; ALL_CAPS for macros and constants; member variables not specially prefixed.
+- #include order: Local headers after standard/library headers; project headers use quotes.
+- Line length: Often exceeds 80 chars (not strictly wrapped), but long parameter lists sometimes split.
+- Casting: C-style casts used.
+- Function definitions: Return type on same line; parameters spaced `type name`.
+- Pointer style: Space before `*` in declarations inside `new char[...]` etc. (mixed consistency).
+- Spaces: Space after `(` in `if`, `while`, `for` and function calls; spaces around binary operators.
+
+An .editorconfig file is included in doc folder to help maintain consistent formatting across different editors.
