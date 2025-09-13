@@ -1,6 +1,6 @@
 # RELB Easy Load Balancer
 
-RELB (RELB Easy Load Balancer) is a high-performance, cross-platform TCP load balancer designed for reliability, flexibility, and ease of use. It is suitable for most TCP services and applications and can also function as a port redirector.
+RELB (RELB Easy Load Balancer) is a tiny, cross-platform TCP load balancer designed for high-performance, reliability, flexibility, and ease of use. It is suitable for most TCP services and applications and can also function as a port redirector.
 
 ## Features
 
