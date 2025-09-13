@@ -60,7 +60,7 @@ Socket::Socket( const ipaddress * dstip, unsigned short dstport )
 
   // Create TCP socket
   sock = socket( AF_INET, SOCK_STREAM, 0 );
-  TRACE( TRACE_CONNECTIONS )( "%s - Creating the socket %d\n", curr_local_time(), sock );
+  TRACE( TRACE_CONNECTIONS )( "%s - Creating socket %d\n", curr_local_time(), sock );
   TRACE( TRACE_CONNECTIONS )( "%s - Trying to connect to port %d IP %s\n", curr_local_time(), port, (const char *) iptostring( ip ) );
 
   if( sock < 0 )
@@ -69,7 +69,7 @@ Socket::Socket( const ipaddress * dstip, unsigned short dstport )
   }
   else
   {
-    TRACE( TRACE_CONNECTIONS )( "%s - socket created properly\n", curr_local_time() );
+    TRACE( TRACE_CONNECTIONS )( "%s - Socket created properly\n", curr_local_time() );
   }
 
 #ifdef WIN32
@@ -85,7 +85,7 @@ Socket::Socket( const ipaddress * dstip, unsigned short dstport )
   sa.sin_port = htons( port );
   sa.sin_addr.s_addr = ip;
   connect( sock, (sockaddr *) &sa, sizeof( sa ) );
-  TRACE( TRACE_CONNECTIONS )( "%s - exiting from connect()\n", curr_local_time() );
+  TRACE( TRACE_CONNECTIONS )( "%s - Exiting from connect()\n", curr_local_time() );
 }
 
 // Constructor using hostname instead of IP
@@ -117,7 +117,6 @@ void Socket::addToFDSET( fd_set * set, int * p_max_fd )
 void Socket::addToFDSET( fd_set * set )
 #endif 
 {
-  //  if( sock > 0 )
   FD_SET( sock, set );
 
 #ifdef ENABLE_SELECT_NFDS_CALC
@@ -158,7 +157,7 @@ int Socket::sendNB( const char * buffer, int max )
   if( sock > 0 )
   {
     ret = send( sock, buffer, max, NONBLOCKINGFLAGS );
-    TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - could wrote %d\n", curr_local_time(), ret );
+    TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - Could write %d\n", curr_local_time(), ret );
     if( ret < 0 )
     {
       if( ( socket_errno == EAGAIN ) || ( socket_errno == EWOULDBLOCK ) )
@@ -168,8 +167,7 @@ int Socket::sendNB( const char * buffer, int max )
       }
       else // ECONNRESET Connection reset or other errors
       {
-
-        TRACE( TRACE_IOSOCKET )( "%s - I could not write all in socket\n", curr_local_time() );
+        TRACE( TRACE_IOSOCKET )( "%s - Could not write all in socket\n", curr_local_time() );
 #ifdef WIN32
         TRACE( TRACE_IOSOCKET )( "%s - Error %d %d\n", curr_local_time(), socket_errno, WSAGetLastError() );
 #endif
@@ -181,7 +179,7 @@ int Socket::sendNB( const char * buffer, int max )
       if( ( ret == 0 ) )
       {
         // Peer closed connection
-        TRACE( TRACE_CONNECTIONS )( "%s - peer closed properly, detected on write\n", curr_local_time() );
+        TRACE( TRACE_CONNECTIONS )( "%s - Peer closed properly, detected on write\n", curr_local_time() );
         close();
         ret = -2;
       }
@@ -202,23 +200,22 @@ int Socket::receiveNB( char * buffer, int max )
   if( sock > 0 )
   {
     ret = recv( sock, buffer, max, NONBLOCKINGFLAGS );
-    TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - could read %d\n", curr_local_time(), ret );
+    TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - Could read %d\n", curr_local_time(), ret );
     if( ret < 0 )
     {
       if( ( socket_errno == EAGAIN ) || ( socket_errno == EWOULDBLOCK ) )
       {
         // Would block - try again later
-        TRACE( TRACE_IOSOCKETERROR )( "%s - I could not read all from socket EWOULDBLOCK \n", curr_local_time() );
+        TRACE( TRACE_IOSOCKETERROR )( "%s - Could not read all from socket EWOULDBLOCK \n", curr_local_time() );
         ret = 0;
       }
       else
       {
-        TRACE( TRACE_IOSOCKETERROR )( "%s -I could not read all from socket\n", curr_local_time() );
+        TRACE( TRACE_IOSOCKETERROR )( "%s - Could not read all from socket\n", curr_local_time() );
 #ifdef WIN32
         TRACE( TRACE_IOSOCKET )( "%s - Error %d %d\n", curr_local_time(), errno, WSAGetLastError() );
 #endif
         close();
-
       }
     }
     else
@@ -226,11 +223,11 @@ int Socket::receiveNB( char * buffer, int max )
       if( ret == 0 )
       {
         // Peer closed connection
-        TRACE( TRACE_CONNECTIONS )( "%s - peer closed properly, detected on read\n", curr_local_time() );
+        TRACE( TRACE_CONNECTIONS )( "%s - Peer closed properly, detected on read\n", curr_local_time() );
         close();
+        // return -2 to indicate peer closed
         ret = -2;
       }
-
     }
   }
 
@@ -254,7 +251,7 @@ void Socket::close2()
 {
   if( sock > 0 )
   {
-    TRACE( TRACE_IOSOCKET )( "%s - closing DEBUG socket\n", curr_local_time() );
+    TRACE( TRACE_IOSOCKET )( "%s - Closing DEBUG socket\n", curr_local_time() );
     ::closesocket( sock );
   }
 }
@@ -271,7 +268,7 @@ int Socket::checkSocket()
 {
   int ret = -1;
 
-  TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - I am going to check the socket %d\n", curr_local_time(), sock );
+  TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - Checking socket %d\n", curr_local_time(), sock );
 
   if( sock > 0 )
   {
@@ -283,7 +280,7 @@ int Socket::checkSocket()
     FD_ZERO( &setr );
     FD_SET( sock, &setr );
     ret = ::select( sock + 1, &setr, nil, nil, &to );
-    TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - Really checking the socket, ret was %d but not %d\n", curr_local_time(), ret, int( -1 ) );
+    TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - Socket check result was %d but not %d\n", curr_local_time(), ret, int( -1 ) );
   }
 
   return ret;

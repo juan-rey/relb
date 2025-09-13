@@ -14,8 +14,8 @@ Please consult the file "LICENSE.txt" for details.
 #include <stdio.h>
 #include "utiles.h"
 
-//Testing option
-//disable it if unsure
+// Testing option
+// Disable it if unsure
 //#define OPTIMIZE_PEER_READING 
 
 // Constructor: Initializes a ConnectionPeer with client/server sockets, message queue, and peer info
@@ -118,7 +118,7 @@ void ConnectionPeer::addToFDSETW( fd_set * set )
 }
 
 /// <summary>
-/// Adds the connecting peer  client and server sockets to the fd_sets for checking connection status.
+/// Adds the connecting peer client and server sockets to the fd_sets for checking connection status.
 /// </summary>
 #ifdef ENABLE_SELECT_NFDS_CALC // see comment in utiles.h
 void ConnectionPeer::addToFDSETC( fd_set * setr, fd_set * setw, int * p_max_fd )
@@ -282,7 +282,7 @@ bool ConnectionPeer::manageConnectingPeer( fd_set * setr, fd_set * setw )
     if( pClient->isInFDSET( setr ) )
     {
       // There is data to read from the client
-      TRACE( TRACE_IOSOCKET )( "%s - reading from client during connect\n", curr_local_time() );
+      TRACE( TRACE_IOSOCKET )( "%s - Reading from client during connect\n", curr_local_time() );
       getMissingDataFromClient();
     }
 
@@ -291,7 +291,7 @@ bool ConnectionPeer::manageConnectingPeer( fd_set * setr, fd_set * setw )
       if( pServer->isInFDSET( setw ) )
       {
         // Server socket is ready to write, so connection is established
-        TRACE( TRACE_IOSOCKET )( "%s - connecting to server (established)\n", curr_local_time() );
+        TRACE( TRACE_IOSOCKET )( "%s - Connecting to server (established)\n", curr_local_time() );
         pServerConnected = true;
         if( pjq && pinfo )
         {
@@ -309,13 +309,13 @@ bool ConnectionPeer::manageConnectingPeer( fd_set * setr, fd_set * setw )
     {
       if( pClient->isInFDSET( setw ) )
       {
-        TRACE( TRACE_IOSOCKET )( "%s - able to write to client during connect\n", curr_local_time() );
+        TRACE( TRACE_IOSOCKET )( "%s - Able to write to client during connect\n", curr_local_time() );
         sendMissingDataToClient();
       }
 
       if( !bytes_to_send_in_bufferforclient )
       {
-        TRACE( TRACE_CONNECTIONS )( "%s - killing client, nothing to be sent from server (connect)\n", curr_local_time() );
+        TRACE( TRACE_CONNECTIONS )( "%s - Killing client, nothing to be sent from server (connect)\n", curr_local_time() );
         closeClient();
         if( pjq && pinfo )
         {
@@ -332,8 +332,8 @@ bool ConnectionPeer::manageConnectingPeer( fd_set * setr, fd_set * setw )
 
     if( pServer )
     {
-      // client was already disconnected, so we can close the server
-      TRACE( TRACE_CONNECTIONS && TRACE_VERY_VERBOSE )( "%s - killing server, nothing to be sent from client (connect)\n", curr_local_time() );
+      // Client was already disconnected, so we can close the server
+      TRACE( TRACE_CONNECTIONS && TRACE_VERY_VERBOSE )( "%s - Killing server, nothing to be sent from client (connect)\n", curr_local_time() );
       closeServer();
       if( pjq && pinfo )
       {
@@ -359,7 +359,7 @@ void ConnectionPeer::manageConnections( fd_set * setr, fd_set * setw )
     if( pClient->isInFDSET( setr ) )
     {
       // There is data to read from the client
-      TRACE( TRACE_IOSOCKET )( "%s - reading from the client\n", curr_local_time() );
+      TRACE( TRACE_IOSOCKET )( "%s - Reading from the client\n", curr_local_time() );
       getMissingDataFromClient();
 #ifndef OPTIMIZE_PEER_READING 
       sendMissingDataToServer();
@@ -372,7 +372,7 @@ void ConnectionPeer::manageConnections( fd_set * setr, fd_set * setw )
       // Server socket is ready to write
       if( pServer->isInFDSET( setw ) )
       {
-        TRACE( TRACE_IOSOCKET )( "%s - i can send to server\n", curr_local_time() );
+        TRACE( TRACE_IOSOCKET )( "%s - Can send to server\n", curr_local_time() );
         sendMissingDataToServer();
       }
 #ifndef OPTIMIZE_PEER_READING 
@@ -384,7 +384,7 @@ void ConnectionPeer::manageConnections( fd_set * setr, fd_set * setw )
       if( pServer->isInFDSET( setr ) )
       {
         // There is data to read from the server  
-        TRACE( TRACE_IOSOCKET )( "%s - reading from server\n", curr_local_time() );
+        TRACE( TRACE_IOSOCKET )( "%s - Reading from server\n", curr_local_time() );
         getMissingDataFromServer();
 #ifndef OPTIMIZE_PEER_READING 
         sendMissingDataToClient();
@@ -397,7 +397,7 @@ void ConnectionPeer::manageConnections( fd_set * setr, fd_set * setw )
         // Client socket is ready to write
         if( pClient->isInFDSET( setw ) )
         {
-          TRACE( TRACE_IOSOCKET )( "%s - i can send to client\n", curr_local_time() );
+          TRACE( TRACE_IOSOCKET )( "%s - Can send to client\n", curr_local_time() );
           sendMissingDataToClient();
         }
 #ifndef OPTIMIZE_PEER_READING 
@@ -412,13 +412,13 @@ void ConnectionPeer::manageConnections( fd_set * setr, fd_set * setw )
     {
       if( pClient->isInFDSET( setw ) )
       {
-        TRACE( TRACE_IOSOCKET )( "%s - i can send to client (single)\n", curr_local_time() );
+        TRACE( TRACE_IOSOCKET )( "%s - Can send to client (single)\n", curr_local_time() );
         sendMissingDataToClient();
       }
-      // if there is no data to send to the client, otherwise peer will be not been removed from the list in the ThreadedConnectionManager
+      // If there is no data to send to the client, otherwise peer will be not been removed from the list in the ThreadedConnectionManager
       if( !bytes_to_send_in_bufferforclient )
       {
-        TRACE( TRACE_CONNECTIONS )( "%s - killing client, nothing to be sent to server (single)\n", curr_local_time() );
+        TRACE( TRACE_CONNECTIONS )( "%s - Killing client, nothing to be sent to server (single)\n", curr_local_time() );
         closeClient();
         if( pjq && pinfo )
         {
@@ -431,13 +431,13 @@ void ConnectionPeer::manageConnections( fd_set * setr, fd_set * setw )
     {
       if( pServer->isInFDSET( setw ) )
       {
-        TRACE( TRACE_IOSOCKET )( "%s - i can send to server (single)\n", curr_local_time() );
+        TRACE( TRACE_IOSOCKET )( "%s - Can send to server (single)\n", curr_local_time() );
         sendMissingDataToServer();
       }
 
       if( !bytes_to_send_in_bufferforserver )
       {
-        TRACE( TRACE_CONNECTIONS )( "%s - killing server, nothing else to send to client (single)\n", curr_local_time() );
+        TRACE( TRACE_CONNECTIONS )( "%s - Killing server, nothing else to send to client (single)\n", curr_local_time() );
         closeServer();
         if( pjq && pinfo )
         {
@@ -459,7 +459,7 @@ void ConnectionPeer::getMissingDataFromClient()
     ret = pClient->receiveNB( &bufferforserver[w_offset_bufferforserver], bytes_to_receive_in_bufferforserver );
     if( ret > 0 )
     {
-      TRACE( TRACE_IOSOCKET )( "%s - received %d/%d bytes from client\n", curr_local_time(), ret, bytes_to_receive_in_bufferforserver );
+      TRACE( TRACE_IOSOCKET )( "%s - Received %d/%d bytes from client\n", curr_local_time(), ret, bytes_to_receive_in_bufferforserver );
       w_offset_bufferforserver += ret;
       bytes_to_send_in_bufferforserver += ret;
       bytes_to_receive_in_bufferforserver -= ret;
@@ -470,7 +470,7 @@ void ConnectionPeer::getMissingDataFromClient()
       {
         if( ret == -2 )
         {
-          TRACE( TRACE_CONNECTIONS )( "%s - graceful client disconnection, could not receive\n", curr_local_time() );
+          TRACE( TRACE_CONNECTIONS )( "%s - Graceful client disconnection, could not receive\n", curr_local_time() );
           closeClient();
           if( pjq && pinfo )
           {
@@ -482,7 +482,7 @@ void ConnectionPeer::getMissingDataFromClient()
         }
         else
         {
-          TRACE( TRACE_CONNECTIONS )( "%s - unexpected client disconnection, could not receive\n", curr_local_time() );
+          TRACE( TRACE_CONNECTIONS )( "%s - Unexpected client disconnection, could not receive\n", curr_local_time() );
           closeClient();
           if( pjq && pinfo )
           {
@@ -490,7 +490,6 @@ void ConnectionPeer::getMissingDataFromClient()
               pjq->post( STATUS_CLIENT_CONNECTION_LOST, pintptr( pinfo ) );
             else
               pjq->post( STATUS_CONNECTION_FAILED, pintptr( pinfo ) );
-
           }
         }
       }
@@ -508,7 +507,7 @@ void ConnectionPeer::getMissingDataFromServer()
     ret = pServer->receiveNB( &bufferforclient[w_offset_bufferforclient], bytes_to_receive_in_bufferforclient );
     if( ret > 0 )
     {
-      TRACE( TRACE_IOSOCKET )( "%s - read %d/%d bytes from server\n", curr_local_time(), ret, bytes_to_receive_in_bufferforclient );
+      TRACE( TRACE_IOSOCKET )( "%s - Read %d/%d bytes from server\n", curr_local_time(), ret, bytes_to_receive_in_bufferforclient );
       w_offset_bufferforclient += ret;
       bytes_to_receive_in_bufferforclient -= ret;
       bytes_to_send_in_bufferforclient += ret;
@@ -519,7 +518,7 @@ void ConnectionPeer::getMissingDataFromServer()
       {
         if( ret == -2 )
         {
-          TRACE( TRACE_CONNECTIONS )( "%s - graceful server disconnection, could not receive\n", curr_local_time() );
+          TRACE( TRACE_CONNECTIONS )( "%s - Graceful server disconnection, could not receive\n", curr_local_time() );
           closeServer();
           if( pjq && pinfo )
           {
@@ -528,7 +527,7 @@ void ConnectionPeer::getMissingDataFromServer()
         }
         else
         {
-          TRACE( TRACE_CONNECTIONS )( "%s - unexpected server disconnection, could not receive\n", curr_local_time() );
+          TRACE( TRACE_CONNECTIONS )( "%s - Unexpected server disconnection, could not receive\n", curr_local_time() );
           closeServer();
           if( pjq && pinfo )
           {
@@ -550,7 +549,7 @@ void ConnectionPeer::sendMissingDataToClient()
     ret = pClient->sendNB( &bufferforclient[r_offset_bufferforclient], bytes_to_send_in_bufferforclient );
     if( ret > 0 )
     {
-      TRACE( TRACE_IOSOCKET )( "%s - sent %d/%d bytes to client\n", curr_local_time(), ret, bytes_to_send_in_bufferforclient );
+      TRACE( TRACE_IOSOCKET )( "%s - Sent %d/%d bytes to client\n", curr_local_time(), ret, bytes_to_send_in_bufferforclient );
       r_offset_bufferforclient += ret;
       bytes_to_send_in_bufferforclient -= ret;
 
@@ -563,7 +562,7 @@ void ConnectionPeer::sendMissingDataToClient()
 
       if( !pServer )
       {
-        TRACE( TRACE_CONNECTIONS )( "%s - sent to client but server already disconnected\n", curr_local_time() );
+        TRACE( TRACE_CONNECTIONS )( "%s - Sent to client but server already disconnected\n", curr_local_time() );
         if( !bytes_to_send_in_bufferforclient )
         {
           closeClient();
@@ -581,7 +580,7 @@ void ConnectionPeer::sendMissingDataToClient()
       {
         if( ret == -2 )
         {
-          TRACE( TRACE_CONNECTIONS )( "%s - graceful client disconnection, could not send\n", curr_local_time() );
+          TRACE( TRACE_CONNECTIONS )( "%s - Graceful client disconnection, could not send\n", curr_local_time() );
           closeClient();
           if( pjq && pinfo )
           {
@@ -590,7 +589,7 @@ void ConnectionPeer::sendMissingDataToClient()
         }
         else
         {
-          TRACE( TRACE_CONNECTIONS )( "%s - unexpected client disconnection, could not send\n", curr_local_time() );
+          TRACE( TRACE_CONNECTIONS )( "%s - Unexpected client disconnection, could not send\n", curr_local_time() );
           closeClient();
           if( pjq && pinfo )
           {
@@ -612,7 +611,7 @@ void ConnectionPeer::sendMissingDataToServer()
     ret = pServer->sendNB( &bufferforserver[r_offset_bufferforserver], bytes_to_send_in_bufferforserver );
     if( ret > 0 )
     {
-      TRACE( TRACE_IOSOCKET )( "%s - sent %d/%d bytes to server\n", curr_local_time(), ret, bytes_to_send_in_bufferforserver );
+      TRACE( TRACE_IOSOCKET )( "%s - Sent %d/%d bytes to server\n", curr_local_time(), ret, bytes_to_send_in_bufferforserver );
       r_offset_bufferforserver += ret;
       bytes_to_send_in_bufferforserver -= ret;
 
@@ -625,7 +624,7 @@ void ConnectionPeer::sendMissingDataToServer()
 
       if( !pClient )
       {
-        TRACE( TRACE_CONNECTIONS )( "%s - sent to server but client already disconnected\n", curr_local_time() );
+        TRACE( TRACE_CONNECTIONS )( "%s - Sent to server but client already disconnected\n", curr_local_time() );
         if( !bytes_to_send_in_bufferforserver )
         {
           closeServer();
@@ -643,7 +642,7 @@ void ConnectionPeer::sendMissingDataToServer()
       {
         if( ret == -2 )
         {
-          TRACE( TRACE_CONNECTIONS )( "%s - graceful server disconnection, could not send\n", curr_local_time() );
+          TRACE( TRACE_CONNECTIONS )( "%s - Graceful server disconnection, could not send\n", curr_local_time() );
           closeServer();
           if( pjq && pinfo )
           {
@@ -652,7 +651,7 @@ void ConnectionPeer::sendMissingDataToServer()
         }
         else
         {
-          TRACE( TRACE_CONNECTIONS )( "%s - unexpected server disconnection, could not send\n", curr_local_time() );
+          TRACE( TRACE_CONNECTIONS )( "%s - Unexpected server disconnection, could not send\n", curr_local_time() );
           closeServer();
           if( pjq && pinfo )
           {
@@ -673,8 +672,8 @@ bool ConnectionPeer::checkPeers()
   {
     if( pServer->checkSocket() < 0 )
     {
-      TRACE( TRACE_IOSOCKET )( "%s - error with server socket\n", curr_local_time() );
-      TRACE( TRACE_CONNECTIONS )( "%s - unexpected server disconnection, select() failed\n", curr_local_time() );
+      TRACE( TRACE_IOSOCKET )( "%s - Error with server socket\n", curr_local_time() );
+      TRACE( TRACE_CONNECTIONS )( "%s - Unexpected server disconnection, select() failed\n", curr_local_time() );
       closeServer();
       if( pjq && pinfo )
       {
@@ -687,8 +686,8 @@ bool ConnectionPeer::checkPeers()
   {
     if( pClient->checkSocket() < 0 )
     {
-      TRACE( TRACE_IOSOCKET )( "%s - error with client socket\n", curr_local_time() );
-      TRACE( TRACE_CONNECTIONS )( "%s - unexpected client disconnection, select() failed\n", curr_local_time() );
+      TRACE( TRACE_IOSOCKET )( "%s - Error with client socket\n", curr_local_time() );
+      TRACE( TRACE_CONNECTIONS )( "%s - Unexpected client disconnection, select() failed\n", curr_local_time() );
       closeClient();
       if( pjq && pinfo )
       {
@@ -709,7 +708,7 @@ bool ConnectionPeer::checkConnectingPeers( /*fd_set * setr*/ )
   {
     if( pServer->checkSocket() < 0 )
     {
-      TRACE( TRACE_CONNECTIONS )( "%s - unexpected server disconnection, select() failed (connect)\n", curr_local_time() );
+      TRACE( TRACE_CONNECTIONS )( "%s - Unexpected server disconnection, select() failed (connect)\n", curr_local_time() );
       closeServer();
       if( pjq && pinfo )
       {
@@ -722,7 +721,7 @@ bool ConnectionPeer::checkConnectingPeers( /*fd_set * setr*/ )
   {
     if( pClient->checkSocket() < 0 )
     {
-      TRACE( TRACE_CONNECTIONS )( "%s - unexpected client disconnection, select() failed (connect)\n", curr_local_time() );
+      TRACE( TRACE_CONNECTIONS )( "%s - Unexpected client disconnection, select() failed (connect)\n", curr_local_time() );
       closeClient();
       if( pjq && pinfo )
       {

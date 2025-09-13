@@ -148,7 +148,7 @@ int main( int argc, char * argv[] )
 
     if( !config.loadConfig() )
     {
-      printf( "I could not load config file\n" );
+      printf( "Could not load config file\n" );
       return 0;
     }
 
@@ -179,7 +179,6 @@ int main( int argc, char * argv[] )
           bind_server.addTask( config.getTaskType(), config.getTaskFirstRun(), config.getTaskInterval() );
         else
           bind_server.addTask( config.getTaskType(), config.getTaskInterval() );
-
       }
     }
 
