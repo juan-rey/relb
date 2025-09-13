@@ -143,7 +143,7 @@ void ThreadedConnectionManager::execute()
     // let's check changes in all active sockets
     if( !finish )
     {
-      //TODO check fd_count of setw; otherwise nil  
+      //TODO check fd_count of setw; otherwise nil  ???
       control_socket.addToFDSET( &setr, &max_fd );
 
       if( connected_peers || connecting_peers )
@@ -197,7 +197,7 @@ void ThreadedConnectionManager::execute()
               connecting_peer_list.del( i ); // no risk of concurrent access issue with addConnectionPeer, since using an index
               peer_list.add( cpeer );
               i--;
-              //TODO LATER 1.1 add connection notification here 
+              //TODO LATER 1.1 add connection notification here ???
             }
           }
           i++;
@@ -329,7 +329,7 @@ void ThreadedConnectionManager::cleanup()
 
 int ThreadedConnectionManager::addConnectionPeer( ConnectionPeer * peer )
 {
-  //TODO LATER 1.1 add connection notification here ??
+  //TODO LATER 1.1 add connection notification here ???
   currentconnections++;
   connecting_peer_list.add( peer );
   TRACE( TRACE_CONNECTIONS )( "%s - New peer added, now %d\n", curr_local_time(), connecting_peer_list.get_count() + peer_list.get_count() );
