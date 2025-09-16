@@ -19,7 +19,7 @@ Please consult the file "LICENSE.txt" for details.
 
 #include <stdio.h>
 
-#ifdef WIN32 
+#ifndef WIN32 
 // Uncomment the following line to enable nfds calculation for select in Unix-like systems insted of , but it may have a small performance impact
 #define ENABLE_SELECT_NFDS_CALC // to enable the calculation of nfds for select in Unix-like systems
 #endif // WIN32
@@ -149,15 +149,15 @@ struct task_info
 #define TRACE_IOSOCKET      0
 #define TRACE_IOSOCKETERROR 0
 #define TRACE_CONNECTIONS   0
-#define TRACE_BIND		    0
+#define TRACE_BIND		      0
 #define TRACE_ASSIGNATION   0
-#define TRACE_CONFIG        1
-#define TRACE_TASKS         1
+#define TRACE_CONFIG        0
+#define TRACE_TASKS         0
 #define TRACE_FILTERS       0
 #define TRACE_UNCATEGORIZED 1
 
 #define TRACE_VERBOSE       0
-#define TRACE_VERY_VERBOSE  0
+#define TRACE_VERY_VERBOSE  1
 
 
 #ifdef WIN32
