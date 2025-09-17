@@ -143,7 +143,7 @@ void ControlSocket::addToFDSET( fd_set * set )
     if( fd[0] > *p_maxfd )
     {
       *p_maxfd = fd[0];
-      TRACE( TRACE_UNCATEGORIZED && TRACE_VERY_VERBOSE )( "%s - Updated nfds to %d\n", curr_local_time(), *p_maxfd );
+      TRACE( TRACE_NFDS && TRACE_VERY_VERBOSE )( "%s - Updated nfds to %d\n", curr_local_time(), *p_maxfd );
     }
 #  endif // ENABLE_SELECT_NFDS_CALC
   }

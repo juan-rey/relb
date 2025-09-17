@@ -146,10 +146,10 @@ void ThreadedConnectionManager::execute()
       //TODO check fd_count of setw; otherwise nil  ???
 #ifdef ENABLE_SELECT_NFDS_CALC // see comment in utiles.h
       control_socket.addToFDSET( &setr, &max_fd );
-      TRACE( TRACE_UNCATEGORIZED && TRACE_VERY_VERBOSE )( "%s - max_fd=%d\n", curr_local_time(), max_fd );
+      TRACE( TRACE_NFDS && TRACE_VERY_VERBOSE )( "%s - max_fd=%d\n", curr_local_time(), max_fd );
 #else
       control_socket.addToFDSET( &setr );
-      TRACE( TRACE_UNCATEGORIZED && TRACE_VERY_VERBOSE )( "%s - NO NFDS CALC, max_fd=%d\n", curr_local_time(), max_fd );
+      TRACE( TRACE_NFDS && TRACE_VERY_VERBOSE )( "%s - NO NFDS CALC, max_fd=%d\n", curr_local_time(), max_fd );
 #endif // ENABLE_SELECT_NFDS_CALC
 
       if( connected_peers || connecting_peers )
