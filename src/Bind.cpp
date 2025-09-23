@@ -103,7 +103,7 @@ void Bind::execute()
 
     if( sockfd < 0 )
     {
-      TRACE( TRACE_CONNECTIONS )( "%s - Binding socket not created\n", curr_local_time() );
+      TRACE( ( TRACE_CONNECTIONS && TRACE_VERBOSE ) )( "%s - Binding socket not created\n", curr_local_time() );
     }
 
 #ifndef WIN32
@@ -113,18 +113,18 @@ void Bind::execute()
     int reuse = 1;
     if( ::setsockopt( sockfd, SOL_SOCKET, SO_REUSEADDR, (const void *) &reuse, sizeof( reuse ) ) != 0 )
     {
-      TRACE( TRACE_CONNECTIONS )( "%s - Socket address was not reusable\n", curr_local_time() );
+      TRACE( ( TRACE_CONNECTIONS && TRACE_VERBOSE ) )( "%s - Socket address was not reusable\n", curr_local_time() );
     }
 #endif
 
     if( bind( sockfd, (sockaddr *) &sa, sizeof( sa ) ) != 0 )
     {
-      TRACE( TRACE_CONNECTIONS )( "%s - Socket bind failed\n", curr_local_time() );
+      TRACE( ( TRACE_CONNECTIONS && TRACE_VERBOSE ) )( "%s - Socket bind failed\n", curr_local_time() );
     }
 
     if( listen( sockfd, 100 ) != 0 )
     {
-      TRACE( TRACE_CONNECTIONS )( "%s - Listen failed\n", curr_local_time() );
+      TRACE( ( TRACE_CONNECTIONS && TRACE_VERBOSE ) )( "%s - Listen failed\n", curr_local_time() );
     }
 
     socket_array[i] = sockfd;
@@ -158,11 +158,11 @@ void Bind::execute()
     t.tv_sec = to.tv_sec;
     t.tv_usec = to.tv_usec;
 
-    TRACE( TRACE_CONNECTIONS )( "%s - Waiting for incoming connection\n", curr_local_time() );
+    TRACE( ( TRACE_CONNECTIONS && TRACE_VERBOSE ) )( "%s - Waiting for incoming connection\n", curr_local_time() );
 
     if( ::select( nfds + 1, &set, nil, nil, &t ) > 0 )
     {
-      TRACE( TRACE_CONNECTIONS )( "%s - Incoming connection\n", curr_local_time() );
+      TRACE( ( TRACE_CONNECTIONS && TRACE_VERBOSE ) )( "%s - Incoming connection\n", curr_local_time() );
       sockaddr_in sac;
       memset( &sac, 0, sizeof( sac ) );
 #ifdef WIN32
@@ -175,7 +175,7 @@ void Bind::execute()
       {
         if( FD_ISSET( socket_array[i], &set ) )
         {
-          TRACE( TRACE_CONNECTIONS )( "%s - Accepting connection\n", curr_local_time() );
+          TRACE( ( TRACE_CONNECTIONS && TRACE_VERBOSE ) )( "%s - Accepting connection\n", curr_local_time() );
           int client_fd = accept( socket_array[i], (sockaddr *) &sac, &addrlen );
           TRACE( TRACE_CONNECTIONS )( "%s - Accepted connection\n", curr_local_time() );
           if( client_fd > 0 )

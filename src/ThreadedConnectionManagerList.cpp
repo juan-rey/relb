@@ -101,7 +101,7 @@ ThreadedConnectionManager * ThreadedConnectionManagerList::getFreeThreadedConnec
 
 ThreadedConnectionManager * ThreadedConnectionManagerList::addNew()
 {
-  TRACE( TRACE_UNCATEGORIZED && TRACE_VERY_VERBOSE )( "%s - creating new connection manager to handle up to %d connections\n", curr_local_time(), peers_per_thread );
+  TRACE( ( TRACE_UNCATEGORIZED && TRACE_VERY_VERBOSE ) )( "%s - creating new connection manager to handle up to %d connections\n", curr_local_time(), peers_per_thread );
   m_list.add( new ThreadedConnectionManager( peers_per_thread ) );
   return m_list.top();
 }

@@ -141,7 +141,7 @@ int ServerList::cleanConnections()
 int ServerList::purgeConnections()
 {
   peer_info * pinfo = NULL;
-  TRACE( TRACE_TASKS && TRACE_VERBOSE )( "%s - Purging all connections\n", curr_local_time() );
+  TRACE( ( TRACE_TASKS && TRACE_VERBOSE ) )( "%s - Purging all connections\n", curr_local_time() );
 
   peer_lock.wrlock();
   int i = 0;
@@ -231,7 +231,7 @@ int ServerList::startUpdating()
 
 int ServerList::stopUpdating()
 {
-  TRACE( TRACE_UNCATEGORIZED && TRACE_VERBOSE )( "%s - Stopping update loop in ServerList\n", curr_local_time() );
+  TRACE( ( TRACE_UNCATEGORIZED && TRACE_VERBOSE ) )( "%s - Stopping update loop in ServerList\n", curr_local_time() );
   update = false;
 
   return 0;
@@ -319,7 +319,7 @@ bool ServerList::addServer( const char * host_name, const ipaddress * ip, unsign
 {
   serverinfo * info = new serverinfo;
 
-  TRACE( TRACE_CONFIG )( "%s - Adding server %s at %s:%d with weight %d and max connections %d\n", curr_local_time(), host_name?host_name : "", (const char *) iptostring( *ip ), port, weight, max_connections );
+  TRACE( ( TRACE_CONFIG && TRACE_VERBOSE ) )( "%s - Adding server %s at %s:%d with weight %d and max connections %d\n", curr_local_time(), host_name?host_name : "", (const char *) iptostring( *ip ), port, weight, max_connections );
 
   if( host_name )
   {
@@ -387,7 +387,7 @@ void ServerList::execute()
 
         while( task_index < tasks_list.get_count() )
         {
-          TRACE( TRACE_TASKS && TRACE_VERY_VERBOSE )( "%s - Checking task index %d \n", curr_local_time(), task_index );
+          TRACE( ( TRACE_TASKS && TRACE_VERY_VERBOSE ) )( "%s - Checking task index %d \n", curr_local_time(), task_index );
           ptask = tasks_list[task_index];
 
           if( ptask != NULL )
@@ -458,12 +458,12 @@ void ServerList::execute()
 
     }
 
-    //TRACE( TRACE_UNCATEGORIZED && TRACE_VERY_VERBOSE )( "%s - entering wait for %d ms\n", curr_local_time(), wait_ms );
+    //TRACE( ( TRACE_UNCATEGORIZED && TRACE_VERY_VERBOSE ) )( "%s - entering wait for %d ms\n", curr_local_time(), wait_ms );
     // IMPORTANT - WORKAROUND
     // Found a performance issue in Ptypes timedsem.wait() on non Win32 platforms 
     // The wait time should be a multiple of a whole second to avoid any performance penalty 
     status.wait( wait_ms );
-    //TRACE( TRACE_UNCATEGORIZED && TRACE_VERY_VERBOSE )( "%s - exiting wait for %d ms\n", curr_local_time(), wait_ms );
+    //TRACE( ( TRACE_UNCATEGORIZED && TRACE_VERY_VERBOSE ) )( "%s - exiting wait for %d ms\n", curr_local_time(), wait_ms );
   }
 
   if( msg != NULL )
@@ -478,7 +478,7 @@ void ServerList::processMessage( message * msg )
   peer_info * pinfo = NULL;
   int current_item_index = 0;
 
-  TRACE( TRACE_UNCATEGORIZED && TRACE_VERBOSE )( "%s - Processing message in ServerList\n", curr_local_time() );
+  TRACE( ( TRACE_UNCATEGORIZED && TRACE_VERBOSE ) )( "%s - Processing message in ServerList\n", curr_local_time() );
 
   peer_lock.rdlock();
   while( !pinfo && current_item_index < peer_list.get_count() )
@@ -500,7 +500,7 @@ void ServerList::processMessage( message * msg )
       case STATUS_PEER_CONNECTION_CANCELLED:
         break;
       case STATUS_PEER_CONNECTION_KICKED:
-        TRACE( TRACE_CONNECTIONS )( "%s - Kick request\n", curr_local_time() );
+        TRACE( ( TRACE_CONNECTIONS && TRACE_VERBOSE ) )( "%s - Kick request\n", curr_local_time() );
         if( pinfo->manager != NULL )
           ( (ThreadedConnectionManager *) pinfo->manager )->closePInfo( pinfo );
         break;
@@ -565,7 +565,7 @@ void ServerList::processMessage( message * msg )
                 servers_list[i]->finished++;
             }
 
-            TRACE( TRACE_CONNECTIONS )( "%s - ServerList - server %d, connecting %d, connected %d, finished %d, disconnected %d, total %d connections\n", curr_local_time(), i, servers_list[i]->connecting, servers_list[i]->connected, servers_list[i]->finished, servers_list[i]->disconnected, servers_list[i]->connecting + servers_list[i]->connected + servers_list[i]->finished + servers_list[i]->disconnected );
+            TRACE( ( TRACE_CONNECTIONS && TRACE_VERBOSE ) )( "%s - ServerList - server %d, connecting %d, connected %d, finished %d, disconnected %d, total %d connections\n", curr_local_time(), i, servers_list[i]->connecting, servers_list[i]->connected, servers_list[i]->finished, servers_list[i]->disconnected, servers_list[i]->connecting + servers_list[i]->connected + servers_list[i]->finished + servers_list[i]->disconnected );
             i = servers_list.get_count();
           }
           i++;
@@ -585,7 +585,7 @@ void ServerList::processMessage( message * msg )
             servers_list[i]->connecting = MAX( servers_list[i]->connecting - 1, 0 );
             servers_list[i]->last_connection_failed = false;
             servers_list[i]->last_connection_attempt = NOW_UTC;
-            TRACE( TRACE_CONNECTIONS )( "%s - ServerList - server %d, connecting %d, connected %d, finished %d, disconnected %d, total %d connections\n", curr_local_time(), i, servers_list[i]->connecting, servers_list[i]->connected, servers_list[i]->finished, servers_list[i]->disconnected, servers_list[i]->connecting + servers_list[i]->connected + servers_list[i]->finished + servers_list[i]->disconnected );
+            TRACE( ( TRACE_CONNECTIONS && TRACE_VERBOSE ) )( "%s - ServerList - server %d, connecting %d, connected %d, finished %d, disconnected %d, total %d connections\n", curr_local_time(), i, servers_list[i]->connecting, servers_list[i]->connected, servers_list[i]->finished, servers_list[i]->disconnected, servers_list[i]->connecting + servers_list[i]->connected + servers_list[i]->finished + servers_list[i]->disconnected );
             i = servers_list.get_count();
           }
           i++;
@@ -737,7 +737,7 @@ const peer_info * ServerList::getServer( const ipaddress * client_ip, unsigned s
             if( lostsessionserver >= 0 && lostsessionserver < servers_list.get_count() )
             {
               servers_list[lostsessionserver]->connecting++;
-              TRACE( TRACE_CONNECTIONS )( "%s - ServerList - server %d, connecting %d, connected %d, finished %d, disconnected %d, total %d connections\n", curr_local_time(), lostsessionserver, servers_list[lostsessionserver]->connecting, servers_list[lostsessionserver]->connected, servers_list[lostsessionserver]->finished, servers_list[lostsessionserver]->disconnected, servers_list[lostsessionserver]->connecting + servers_list[lostsessionserver]->connected + servers_list[lostsessionserver]->finished + servers_list[lostsessionserver]->disconnected );
+              TRACE( ( TRACE_CONNECTIONS && TRACE_VERBOSE ) )( "%s - ServerList - server %d, connecting %d, connected %d, finished %d, disconnected %d, total %d connections\n", curr_local_time(), lostsessionserver, servers_list[lostsessionserver]->connecting, servers_list[lostsessionserver]->connected, servers_list[lostsessionserver]->finished, servers_list[lostsessionserver]->disconnected, servers_list[lostsessionserver]->connecting + servers_list[lostsessionserver]->connected + servers_list[lostsessionserver]->finished + servers_list[lostsessionserver]->disconnected );
             }
 
             pinfo = new peer_info;
@@ -971,7 +971,7 @@ const peer_info * ServerList::getServer( const ipaddress * client_ip, unsigned s
           last_server_assigned = 0;
         }
         servers_list[last_server_assigned]->connecting++;
-        TRACE( TRACE_CONNECTIONS )( "%s - ServerList - server %d, connecting %d, connected %d, finished %d, disconnected %d, total %d connections\n", curr_local_time(), last_server_assigned, servers_list[last_server_assigned]->connecting, servers_list[last_server_assigned]->connected, servers_list[last_server_assigned]->finished, servers_list[last_server_assigned]->disconnected, servers_list[last_server_assigned]->connecting + servers_list[last_server_assigned]->connected + servers_list[last_server_assigned]->finished + servers_list[last_server_assigned]->disconnected );
+        TRACE( ( TRACE_CONNECTIONS && TRACE_VERBOSE ) )( "%s - ServerList - server %d, connecting %d, connected %d, finished %d, disconnected %d, total %d connections\n", curr_local_time(), last_server_assigned, servers_list[last_server_assigned]->connecting, servers_list[last_server_assigned]->connected, servers_list[last_server_assigned]->finished, servers_list[last_server_assigned]->disconnected, servers_list[last_server_assigned]->connecting + servers_list[last_server_assigned]->connected + servers_list[last_server_assigned]->finished + servers_list[last_server_assigned]->disconnected );
 
         pinfo = new peer_info;
         pinfo->src_ip = *client_ip;
@@ -1025,10 +1025,10 @@ bool ServerList::isServerAllowed( const ipaddress * server, const ipaddress * cl
 
     while( i < filter_list.get_count() )
     {
-      TRACE( TRACE_FILTERS && TRACE_VERBOSE )( "%s - Evaluating filter: client %s server %s %s/%s %s/%s %s\n", curr_local_time(),
+      TRACE( ( TRACE_FILTERS && TRACE_VERBOSE ) )( "%s - Evaluating filter: client %s server %s %s/%s %s/%s %s\n", curr_local_time(),
         (const char *) iptostring( *client ), (const char *) iptostring( *server ), (const char *) iptostring( filter_list[i]->src_ip ), (const char *) iptostring( filter_list[i]->src_mask ),
         (const char *) iptostring( filter_list[i]->dst_ip ), (const char *) iptostring( filter_list[i]->dst_mask ), ( filter_list[i]->allow ) ? "allow" : "deny" );
-      TRACE( TRACE_FILTERS && TRACE_VERBOSE )( "%s - Mask compare client %s %s and server %s %s\n",
+      TRACE( ( TRACE_FILTERS && TRACE_VERBOSE ) )( "%s - Mask compare client %s %s and server %s %s\n",
         curr_local_time(), (const char *) iptostring( masked_ip( client, &( filter_list[i]->src_mask ) ) ), (const char *) iptostring( masked_ip( &( filter_list[i]->src_ip ), &( filter_list[i]->src_mask ) ) ),
         (const char *) iptostring( masked_ip( server, &( filter_list[i]->dst_mask ) ) ), (const char *) iptostring( masked_ip( &( filter_list[i]->dst_ip ), &( filter_list[i]->dst_mask ) ) ) );
 
@@ -1061,14 +1061,14 @@ void ServerList::setServer( int client_socket, sockaddr_in * sac )
 
   if( ( pinfo = (peer_info *) getServer( (ipaddress *) &( sac->sin_addr.s_addr ), ntohs( sac->sin_port ), pcm ) ) )
   {
-    TRACE( TRACE_CONNECTIONS )( "%s - Assigned backend server with ip %s\n", curr_local_time(), (const char *) iptostring( pinfo->dst_ip ) );
+    TRACE( ( TRACE_CONNECTIONS && TRACE_VERBOSE ) )( "%s - Assigned backend server with ip %s\n", curr_local_time(), (const char *) iptostring( pinfo->dst_ip ) );
     pServer = new Socket( &( pinfo->dst_ip ), pinfo->dst_port );
     ConnectionPeer * cpeer = new ConnectionPeer( pClient, pServer, getQueue(), pinfo );
     pcm->addConnectionPeer( cpeer );
   }
   else
   {
-    TRACE( TRACE_CONNECTIONS )( "%s - No server assigned for the client\n", curr_local_time() );
+    TRACE( ( TRACE_CONNECTIONS && TRACE_VERBOSE ) )( "%s - No server assigned for the client\n", curr_local_time() );
     if( pClient )
       delete pClient;
     pClient = NULL;

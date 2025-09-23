@@ -166,7 +166,7 @@ void AdminHTTPServer::execute()
   int current_item_index = 0;
   while( !finish )
   {
-    TRACE( TRACE_UNCATEGORIZED && TRACE_VERY_VERBOSE )( "%s - checking admin web server\n", curr_local_time() );
+    TRACE( ( TRACE_UNCATEGORIZED && TRACE_VERY_VERBOSE ) )( "%s - checking admin web server\n", curr_local_time() );
     while( ( msg = jq.getmessage( 0 ) ) != NULL )
     {
       pinfo = NULL;
@@ -211,7 +211,7 @@ void AdminHTTPServer::execute()
                 else
                   server_list[server_index]->finished = MAX( server_list[server_index]->finished - 1, 0 );
 
-                TRACE( TRACE_CONNECTIONS )( "%s - AdminHttp - server %d, connecting %d, connected %d, finished %d, disconnected %d, total %d connections\n", curr_local_time(), server_index, server_list[server_index]->connecting, server_list[server_index]->connected, server_list[server_index]->finished, server_list[server_index]->disconnected, server_list[server_index]->connecting + server_list[server_index]->connected + server_list[server_index]->finished + server_list[server_index]->disconnected );
+                TRACE( ( TRACE_CONNECTIONS && TRACE_VERBOSE ) )( "%s - AdminHttp - server %d, connecting %d, connected %d, finished %d, disconnected %d, total %d connections\n", curr_local_time(), server_index, server_list[server_index]->connecting, server_list[server_index]->connected, server_list[server_index]->finished, server_list[server_index]->disconnected, server_list[server_index]->connecting + server_list[server_index]->connected + server_list[server_index]->finished + server_list[server_index]->disconnected );
 
                 server_index = server_list.get_count();
               }
@@ -285,7 +285,7 @@ void AdminHTTPServer::execute()
                     server_list[i]->finished++;
                 }
 
-                TRACE( TRACE_CONNECTIONS )( "%s - AdminHttp - server %d, connecting %d, connected %d, finished %d, disconnected %d, total %d connections\n", curr_local_time(), i, server_list[i]->connecting, server_list[i]->connected, server_list[i]->finished, server_list[i]->disconnected, server_list[i]->connecting + server_list[i]->connected + server_list[i]->finished + server_list[i]->disconnected );
+                TRACE( ( TRACE_CONNECTIONS && TRACE_VERBOSE ) )( "%s - AdminHttp - server %d, connecting %d, connected %d, finished %d, disconnected %d, total %d connections\n", curr_local_time(), i, server_list[i]->connecting, server_list[i]->connected, server_list[i]->finished, server_list[i]->disconnected, server_list[i]->connecting + server_list[i]->connected + server_list[i]->finished + server_list[i]->disconnected );
                 i = server_list.get_count();
               }
               i++;
@@ -303,7 +303,7 @@ void AdminHTTPServer::execute()
                 server_list[i]->connecting = MAX( server_list[i]->connecting - 1, 0 );
                 server_list[i]->last_connection_failed = false;
                 server_list[i]->last_connection_attempt = NOW_UTC;
-                TRACE( TRACE_CONNECTIONS )( "%s - AdminHttp - server %d, connecting %d, connected %d, finished %d, disconnected %d, total %d connections\n", curr_local_time(), i, server_list[i]->connecting, server_list[i]->connected, server_list[i]->finished, server_list[i]->disconnected, server_list[i]->connecting + server_list[i]->connected + server_list[i]->finished + server_list[i]->disconnected );
+                TRACE( ( TRACE_CONNECTIONS && TRACE_VERBOSE ) )( "%s - AdminHttp - server %d, connecting %d, connected %d, finished %d, disconnected %d, total %d connections\n", curr_local_time(), i, server_list[i]->connecting, server_list[i]->connected, server_list[i]->finished, server_list[i]->disconnected, server_list[i]->connecting + server_list[i]->connected + server_list[i]->finished + server_list[i]->disconnected );
                 i = server_list.get_count();
               }
               i++;
@@ -319,7 +319,7 @@ void AdminHTTPServer::execute()
               if( ( server_list[i]->ip == pinfo->dst_ip ) && ( server_list[i]->port == pinfo->dst_port ) )
               {
                 server_list[i]->connecting++;
-                TRACE( TRACE_CONNECTIONS )( "%s - AdminHttp - server %d, connecting %d, connected %d, finished %d, disconnected %d, total %d connections\n", curr_local_time(), i, server_list[i]->connecting, server_list[i]->connected, server_list[i]->finished, server_list[i]->disconnected, server_list[i]->connecting + server_list[i]->connected + server_list[i]->finished + server_list[i]->disconnected );
+                TRACE( ( TRACE_CONNECTIONS && TRACE_VERBOSE ) )( "%s - AdminHttp - server %d, connecting %d, connected %d, finished %d, disconnected %d, total %d connections\n", curr_local_time(), i, server_list[i]->connecting, server_list[i]->connected, server_list[i]->finished, server_list[i]->disconnected, server_list[i]->connecting + server_list[i]->connected + server_list[i]->finished + server_list[i]->disconnected );
                 i = server_list.get_count();
               }
               i++;
@@ -352,7 +352,7 @@ void AdminHTTPServer::execute()
             i++;
           }
 
-          TRACE( TRACE_CONNECTIONS )( "%s - Request was %s\n", curr_local_time(), buff + 4 );
+          TRACE( ( TRACE_CONNECTIONS && TRACE_VERBOSE ) )( "%s - Request was %s\n", curr_local_time(), buff + 4 );
 
           if( strcmp( buff + 5, WEB_PAGE_LIST ) == 0 )
           {

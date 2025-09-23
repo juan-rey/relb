@@ -148,17 +148,17 @@ struct task_info
 
 #define TRACE_ASSIGNATION   0
 #define TRACE_BIND          0
-#define TRACE_CONFIG        0
-#define TRACE_CONNECTIONS   0
+#define TRACE_CONFIG        1
+#define TRACE_CONNECTIONS   1
 #define TRACE_FILTERS       0
-#define TRACE_IOSOCKET      0
+#define TRACE_IOSOCKET      1
 #define TRACE_IOSOCKETERROR 0
 #define TRACE_NFDS          1
 #define TRACE_TASKS         0
 #define TRACE_UNCATEGORIZED 0
 
 #define TRACE_VERBOSE       0
-#define TRACE_VERY_VERBOSE  1
+#define TRACE_VERY_VERBOSE  0
 
 
 #ifdef WIN32

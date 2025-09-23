@@ -16,9 +16,9 @@ USING_PTYPES
 
 ThreadedConnectionManager::ThreadedConnectionManager( int connections ): thread( false )
 {
-  TRACE( TRACE_UNCATEGORIZED && TRACE_VERY_VERBOSE )( "%s - New connection manager to handle up to %d connections\n", curr_local_time(), connections );
+  TRACE( ( TRACE_UNCATEGORIZED && TRACE_VERY_VERBOSE ) )( "%s - New connection manager to handle up to %d connections\n", curr_local_time(), connections );
   max_connections = MIN( connections, MAX_PEERS_PER_FDSET );
-  TRACE( TRACE_UNCATEGORIZED && TRACE_VERY_VERBOSE )( "%s - Actually, up to %d connections\n", curr_local_time(), max_connections );
+  TRACE( ( TRACE_UNCATEGORIZED && TRACE_VERY_VERBOSE ) )( "%s - Actually, up to %d connections\n", curr_local_time(), max_connections );
   currentconnections = 0;
   finish = false;
   start();
@@ -98,10 +98,10 @@ void ThreadedConnectionManager::execute()
         }
         else
         {
-          TRACE( TRACE_CONNECTIONS )( "%s - There is an inactive peer, deleting it\n", curr_local_time() );
+          TRACE( ( TRACE_CONNECTIONS && TRACE_VERBOSE ) )( "%s - There is an inactive peer, deleting it\n", curr_local_time() );
           peer_list.del( connected_peers );
           delete cpeer;
-          TRACE( TRACE_CONNECTIONS )( "%s - There was an inactive peer, remain %d %d %d \n", curr_local_time(), peer_list.get_count(), connected_peers, connecting_peers );
+          TRACE( ( TRACE_CONNECTIONS && TRACE_VERBOSE ) )( "%s - There was an inactive peer, remain %d %d %d \n", curr_local_time(), peer_list.get_count(), connected_peers, connecting_peers );
           connected_peers--;
           currentconnections--;
         }
@@ -113,7 +113,7 @@ void ThreadedConnectionManager::execute()
     connecting_peers = 0;
     while( connecting_peers < connecting_peer_list.get_count() )
     {
-      TRACE( TRACE_CONNECTIONS )( "%s - Checking ongoing server connections\n", curr_local_time() );
+      TRACE( ( TRACE_CONNECTIONS && TRACE_VERBOSE ) )( "%s - Checking ongoing server connections\n", curr_local_time() );
       cpeer = connecting_peer_list[connecting_peers];
       if( cpeer )
       {
@@ -129,10 +129,10 @@ void ThreadedConnectionManager::execute()
         else
         {
           // TODO LATER 1.1 add disconnect notification here
-          TRACE( TRACE_CONNECTIONS )( "%s - There is an inactive peer, deleting it\n", curr_local_time() );
+          TRACE( ( TRACE_CONNECTIONS && TRACE_VERBOSE ) )( "%s - There is an inactive peer, deleting it\n", curr_local_time() );
           connecting_peer_list.del( connecting_peers );
           delete cpeer;
-          TRACE( TRACE_CONNECTIONS )( "%s - There was an inactive peer, remain %d %d %d\n", curr_local_time(), connecting_peer_list.get_count(), connected_peers, connecting_peers );
+          TRACE( ( TRACE_CONNECTIONS && TRACE_VERBOSE ) )( "%s - There was an inactive peer, remain %d %d %d\n", curr_local_time(), connecting_peer_list.get_count(), connected_peers, connecting_peers );
           connecting_peers--;
           currentconnections--;
         }
@@ -146,26 +146,26 @@ void ThreadedConnectionManager::execute()
       //TODO check fd_count of setw; otherwise nil  ???
 #ifdef ENABLE_SELECT_NFDS_CALC // see comment in utiles.h
       control_socket.addToFDSET( &setr, &max_fd );
-      TRACE( TRACE_NFDS && TRACE_VERY_VERBOSE )( "%s - max_fd=%d\n", curr_local_time(), max_fd );
+      TRACE( ( TRACE_NFDS && 1 ) )( "%s - max_fd=%d\n", curr_local_time(), max_fd );
 #else
       control_socket.addToFDSET( &setr );
-      TRACE( TRACE_NFDS && TRACE_VERY_VERBOSE )( "%s - NO NFDS CALC, max_fd=%d\n", curr_local_time(), max_fd );
+      TRACE( ( TRACE_NFDS && 1 ) )( "%s - NO NFDS CALC, max_fd=%d\n", curr_local_time(), max_fd );
 #endif // ENABLE_SELECT_NFDS_CALC
 
       if( connected_peers || connecting_peers )
       {
-        TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - Checking socket changes - with some connections\n", curr_local_time() );
+        TRACE( ( TRACE_IOSOCKET && TRACE_VERY_VERBOSE ) )( "%s - Checking socket changes - with some connections\n", curr_local_time() );
         // According to the documentation, the first parameter is the highest file descriptor plus one except in Windows where it is ignored
         res = ::select( max_fd + 1, &setr, &setw, nil, nil ); // timeout is nil, so it will block until there is a change in the sockets
-        TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - Exit - Checking socket changes - with some connections\n", curr_local_time() );
+        TRACE( ( TRACE_IOSOCKET && TRACE_VERY_VERBOSE ) )( "%s - Exit - Checking socket changes - with some connections\n", curr_local_time() );
       }
       else
       {
         // No connections, so only check the control socket in setr
-        TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - Checking socket changes - with no connections\n", curr_local_time() );
+        TRACE( ( TRACE_IOSOCKET && TRACE_VERY_VERBOSE ) )( "%s - Checking socket changes - with no connections\n", curr_local_time() );
         // According to the documentation, the first parameter is the highest file descriptor plus one except in Windows where it is ignored
         res = ::select( max_fd + 1, &setr, nil, nil, nil ); // timeout is nil, so it will block until there is a change in the control socket
-        TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - Exit - Checking socket changes - with no connections\n", curr_local_time() );
+        TRACE( ( TRACE_IOSOCKET && TRACE_VERY_VERBOSE ) )( "%s - Exit - Checking socket changes - with no connections\n", curr_local_time() );
       }
 
       if( res > 0 )
@@ -175,12 +175,12 @@ void ThreadedConnectionManager::execute()
 #endif
 #ifdef DEBUG           
         if( !( connected_peers || connecting_peers ) )
-          TRACE( TRACE_IOSOCKET )( "%s - Checking socket changes with res %d\n", curr_local_time(), res );
+          TRACE( ( TRACE_IOSOCKET && TRACE_VERBOSE ) )( "%s - Checking socket changes with res %d\n", curr_local_time(), res );
 #endif         
 
         // Use manageConnections to check the changes in the sockets and do the necessary actions
         i = 0;
-        TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - Checking socket changes\n", curr_local_time() );
+        TRACE( ( TRACE_IOSOCKET && TRACE_VERY_VERBOSE ) )( "%s - Checking socket changes\n", curr_local_time() );
         while( i < peer_list.get_count() )
         {
           cpeer = peer_list[i];
@@ -252,7 +252,7 @@ void ThreadedConnectionManager::execute()
         else
         {
           // res == 0 means that there was a timeout in the select function
-          TRACE( TRACE_IOSOCKET && TRACE_VERY_VERBOSE )( "%s - select function finished with timeout\n", curr_local_time() );
+          TRACE( ( TRACE_IOSOCKET && TRACE_VERY_VERBOSE ) )( "%s - select function finished with timeout\n", curr_local_time() );
         }
       }
     }
@@ -267,7 +267,7 @@ void ThreadedConnectionManager::checkConnections()
   int i = 0;
   ConnectionPeer * cpeer = NULL;
 
-  TRACE( TRACE_CONNECTIONS )( "%s - Checking connections in ThreadedConnectionManager\n", curr_local_time() );
+  TRACE( ( TRACE_CONNECTIONS && TRACE_VERBOSE ) )( "%s - Checking connections in ThreadedConnectionManager\n", curr_local_time() );
 
   while( i < connecting_peer_list.get_count() )
   {
@@ -333,7 +333,7 @@ int ThreadedConnectionManager::addConnectionPeer( ConnectionPeer * peer )
   //TODO LATER 1.1 add connection notification here ???
   currentconnections++;
   connecting_peer_list.add( peer );
-  TRACE( TRACE_CONNECTIONS )( "%s - New peer added, now %d\n", curr_local_time(), connecting_peer_list.get_count() + peer_list.get_count() );
+  TRACE( ( TRACE_CONNECTIONS && TRACE_VERBOSE ) )( "%s - New peer added, now %d\n", curr_local_time(), connecting_peer_list.get_count() + peer_list.get_count() );
   control_socket.post();
   return 0;
 }
@@ -346,7 +346,7 @@ void ThreadedConnectionManager::closePInfo( peer_info * pinfo )
 
 int ThreadedConnectionManager::getFreeConnections()
 {
-  TRACE( TRACE_CONNECTIONS )( "%s - Connection manager can handle up to %d connections, now %d\n", curr_local_time(), max_connections, currentconnections );
+  TRACE( ( TRACE_CONNECTIONS && TRACE_VERBOSE ) )( "%s - Connection manager can handle up to %d connections, now %d\n", curr_local_time(), max_connections, currentconnections );
 
   return MAX( max_connections - currentconnections, 0 );
 }

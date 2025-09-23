@@ -25,7 +25,7 @@ MessageQueue::~MessageQueue( void )
 
 bool MessageQueue::post( message * msg )
 {
-  TRACE( TRACE_UNCATEGORIZED && TRACE_VERBOSE )( "%s - Posting message via post()\n", curr_local_time() );
+  TRACE( ( TRACE_UNCATEGORIZED && TRACE_VERBOSE ) )( "%s - Posting message via post()\n", curr_local_time() );
 
   bool val = jobqueue::post( msg );
 
@@ -38,7 +38,7 @@ bool MessageQueue::post( message * msg )
 
 bool MessageQueue::post( int id, pintptr param )
 {
-  TRACE( TRACE_UNCATEGORIZED && TRACE_VERBOSE )( "%s - Posting message via post()\n", curr_local_time() );
+  TRACE( ( TRACE_UNCATEGORIZED && TRACE_VERBOSE ) )( "%s - Posting message via post()\n", curr_local_time() );
   bool val = jobqueue::post( id, param );
 
   if( pts )

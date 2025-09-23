@@ -539,21 +539,21 @@ bool AppConfig::loadConfig()
 
   if( !isempty( configfile ) )
   {
-    TRACE( TRACE_CONFIG )( "%s - trying the set file\n", curr_local_time() );
+    TRACE( ( TRACE_CONFIG && TRACE_VERBOSE ) )( "%s - trying the set file\n", curr_local_time() );
     loaded = loadFile();
   }
   else
   {
     if( !loaded )
     {
-      TRACE( TRACE_CONFIG )( "%s - trying with the working path\n", curr_local_time() );
+      TRACE( ( TRACE_CONFIG && TRACE_VERBOSE ) )( "%s - trying with the working path\n", curr_local_time() );
       configfile = DEFAULT_CONFIG_FILENAME;
       loaded = loadFile();
     }
 
     if( !loaded )
     {
-      TRACE( TRACE_CONFIG )( "%s - trying the default path\n", curr_local_time() );
+      TRACE( ( TRACE_CONFIG && TRACE_VERBOSE ) )( "%s - trying the default path\n", curr_local_time() );
 #ifdef WIN32
       CHAR windir[MAX_WINDIR_PATH];
       GetWindowsDirectoryA( windir, MAX_WINDIR_PATH );
@@ -610,7 +610,7 @@ bool AppConfig::checkConfig()
   {
     if( !check_ip_bindable( &( http_admin_ip ) ) )
     {
-      TRACE( TRACE_CONFIG )( "%s - admin web IP %s was not available\n", curr_local_time(), (const char *) iptostring( http_admin_ip ) );
+      TRACE( ( TRACE_CONFIG && TRACE_VERBOSE ) )( "%s - admin web IP %s was not available\n", curr_local_time(), (const char *) iptostring( http_admin_ip ) );
       printf( "admin web IP %s was not available\n", (const char *) iptostring( http_admin_ip ) );
       val = false;
     }
@@ -618,7 +618,7 @@ bool AppConfig::checkConfig()
     {
       if( !check_ip_port_bindable( &( http_admin_ip ), http_admin_port ) )
       {
-        TRACE( TRACE_CONFIG )( "%s - admin web: %d port was not available\n", curr_local_time(), http_admin_port );
+        TRACE( ( TRACE_CONFIG && TRACE_VERBOSE ) )( "%s - admin web: %d port was not available\n", curr_local_time(), http_admin_port );
         printf( "admin web port %d was not available\n", http_admin_port );
         val = false;
       }
@@ -629,7 +629,7 @@ bool AppConfig::checkConfig()
   if( bind.get_count() == 0 )
   {
     val = false;
-    TRACE( TRACE_CONFIG )( "%s - no binding ports set\n", curr_local_time() );
+    TRACE( ( TRACE_CONFIG && TRACE_VERBOSE ) )( "%s - no binding ports set\n", curr_local_time() );
   }
 
   // Check each bind for valid addresses and servers
@@ -641,7 +641,7 @@ bool AppConfig::checkConfig()
       {
         if( !check_ip_bindable( &( bind[i]->address[j]->src_ip ) ) )
         {
-          TRACE( TRACE_CONFIG )( "%s - IP %s was not available\n", curr_local_time(), (const char *) iptostring( bind[i]->address[j]->src_ip ) );
+          TRACE( ( TRACE_CONFIG && TRACE_VERBOSE ) )( "%s - IP %s was not available\n", curr_local_time(), (const char *) iptostring( bind[i]->address[j]->src_ip ) );
           printf( "IP %s was not available\n", (const char *) iptostring( bind[i]->address[j]->src_ip ) );
           val = false;
         }
@@ -649,7 +649,7 @@ bool AppConfig::checkConfig()
         {
           if( !check_ip_port_bindable( &( bind[i]->address[j]->src_ip ), bind[i]->address[j]->src_port ) )
           {
-            TRACE( TRACE_CONFIG )( "%s - %d port was not available\n", curr_local_time(), bind[i]->address[j]->src_port );
+            TRACE( ( TRACE_CONFIG && TRACE_VERBOSE ) )( "%s - %d port was not available\n", curr_local_time(), bind[i]->address[j]->src_port );
             printf( "port %d was not available\n", bind[i]->address[j]->src_port );
             val = false;
           }
@@ -659,13 +659,13 @@ bool AppConfig::checkConfig()
     else
     {
       val = false;
-      TRACE( TRACE_CONFIG )( "%s - no bind address\n", curr_local_time() );
+      TRACE( ( TRACE_CONFIG && TRACE_VERBOSE ) )( "%s - no bind address\n", curr_local_time() );
     }
 
     if( bind[i]->dst.get_count() == 0 )
     {
       val = false;
-      TRACE( TRACE_CONFIG )( "%s - no destination server\n", curr_local_time() );
+      TRACE( ( TRACE_CONFIG && TRACE_VERBOSE ) )( "%s - no destination server\n", curr_local_time() );
     }
 
     i++;
@@ -673,7 +673,7 @@ bool AppConfig::checkConfig()
 
   //Check if additional needed variables are set
 
-  TRACE( TRACE_CONFIG )( "%s - %s configuration\n", curr_local_time(), val ? "valid" : "invalid" );
+  TRACE( ( TRACE_CONFIG && TRACE_VERBOSE ) )( "%s - %s configuration\n", curr_local_time(), val ? "valid" : "invalid" );
 
   return val;
 }
@@ -681,7 +681,7 @@ bool AppConfig::checkConfig()
 // Parse a single line from the configuration file
 void AppConfig::processConfigLine( const char * line )
 {
-  TRACE( TRACE_CONFIG )( "%s - file line - %s\n", curr_local_time(), (const char *) line );
+  TRACE( ( TRACE_CONFIG && TRACE_VERY_VERBOSE ) )( "%s - file line - %s\n", curr_local_time(), (const char *) line );
 
   // Ignore comment lines
   if( line[0] != '/' && line[0] != ';' && line[0] != '#' )
@@ -702,12 +702,12 @@ void AppConfig::processConfigLine( const char * line )
       alsobind = ( strncmp( (const char *) line, CONFIG_ALSOBIND_TAG, strlen( CONFIG_ALSOBIND_TAG ) ) == 0 );
       if( alsobind )
       {
-        TRACE( TRACE_CONFIG )( "%s - also bind tag\n", curr_local_time() );
+        TRACE( ( TRACE_CONFIG && TRACE_VERY_VERBOSE ) )( "%s - also bind tag\n", curr_local_time() );
         h = strlen( CONFIG_ALSOBIND_TAG );
       }
       else
       {
-        TRACE( TRACE_CONFIG )( "%s - bind tag\n", curr_local_time() );
+        TRACE( ( TRACE_CONFIG && TRACE_VERY_VERBOSE ) )( "%s - bind tag\n", curr_local_time() );
         h = strlen( CONFIG_BIND_TAG );
       }
       while( line[h] == ' ' || line[h] == '\t' )
@@ -732,14 +732,14 @@ void AppConfig::processConfigLine( const char * line )
         {
           dst_ip = ipany;
         }
-        TRACE( TRACE_CONFIG )( "%s - bind ip address %s\n", curr_local_time(), (const char *) iptostring( dst_ip ) );
+        TRACE( ( TRACE_CONFIG && TRACE_VERY_VERBOSE ) )( "%s - bind ip address %s\n", curr_local_time(), (const char *) iptostring( dst_ip ) );
 
         h = g + 1;
         delete[] servername;
       }
 
       dst_port = atoi( &line[h] );
-      TRACE( TRACE_CONFIG )( "%s - bind destination port %d\n", curr_local_time(), dst_port );
+      TRACE( ( TRACE_CONFIG && TRACE_VERY_VERBOSE ) )( "%s - bind destination port %d\n", curr_local_time(), dst_port );
       if( dst_port == 0 )
       {
         valid = false;
@@ -749,7 +749,7 @@ void AppConfig::processConfigLine( const char * line )
       {
         if( alsobind )
         {
-          TRACE( TRACE_CONFIG )( "%s - valid alsobind config\n", curr_local_time() );
+          TRACE( ( TRACE_CONFIG && TRACE_VERY_VERBOSE ) )( "%s - valid alsobind config\n", curr_local_time() );
           if( bind.get_count() > 0 )
           {
             bind[bind.get_count() - 1]->address.add( new bind_address );
@@ -759,7 +759,7 @@ void AppConfig::processConfigLine( const char * line )
         }
         else
         {
-          TRACE( TRACE_CONFIG )( "%s - valid bind config\n", curr_local_time() );
+          TRACE( ( TRACE_CONFIG && TRACE_VERY_VERBOSE ) )( "%s - valid bind config\n", curr_local_time() );
           bind_conf * tmp = new bind_conf;
           bind.add( tmp );
           tmp->address.add( new bind_address );
@@ -782,7 +782,7 @@ void AppConfig::processConfigLine( const char * line )
       int max_connections = 0;
       bool valid = true;
 
-      TRACE( TRACE_CONFIG )( "%s - server tag\n", curr_local_time() );
+      TRACE( ( TRACE_CONFIG && TRACE_VERY_VERBOSE ) )( "%s - server tag\n", curr_local_time() );
 
       h = strlen( CONFIG_SERVER_TAG );
 
@@ -803,12 +803,12 @@ void AppConfig::processConfigLine( const char * line )
       if( strcmp( servername, (const char *) host_name ) )
       {
         host_name = servername;
-        TRACE( TRACE_CONFIG )( "%s - destination server name %s ip address %s\n", curr_local_time(), (const char *) host_name, (const char *) (const char *) iptostring( dst_ip ) );
+        TRACE( ( TRACE_CONFIG && TRACE_VERY_VERBOSE ) )( "%s - destination server name %s ip address %s\n", curr_local_time(), (const char *) host_name, (const char *) (const char *) iptostring( dst_ip ) );
       }
       else // text was an ip address
       {
         host_name = "";
-        TRACE( TRACE_CONFIG )( "%s - destination server ip address %s\n", curr_local_time(), (const char *) iptostring( dst_ip ) );
+        TRACE( ( TRACE_CONFIG && TRACE_VERY_VERBOSE ) )( "%s - destination server ip address %s\n", curr_local_time(), (const char *) iptostring( dst_ip ) );
       }
 
       delete[] servername;
@@ -823,7 +823,7 @@ void AppConfig::processConfigLine( const char * line )
         h++;
 
       dst_port = atoi( &line[h] );
-      TRACE( TRACE_CONFIG )( "%s - destination server port %d\n", curr_local_time(), dst_port );
+      TRACE( ( TRACE_CONFIG && TRACE_VERY_VERBOSE ) )( "%s - destination server port %d\n", curr_local_time(), dst_port );
       if( dst_port == 0 )
       {
         valid = false;
@@ -850,7 +850,7 @@ void AppConfig::processConfigLine( const char * line )
 
       if( valid )
       {
-        TRACE( TRACE_CONFIG )( "%s - valid destination server config\n", curr_local_time() );
+        TRACE( ( TRACE_CONFIG && TRACE_VERY_VERBOSE ) )( "%s - valid destination server config\n", curr_local_time() );
         if( bind.get_count() > 0 )
         {
           dst_conf * tmp = new dst_conf;
@@ -869,7 +869,7 @@ void AppConfig::processConfigLine( const char * line )
     // Process retryserver tag
     if( strncmp( (const char *) line, CONFIG_RETRY_TAG, strlen( CONFIG_RETRY_TAG ) ) == 0 )
     {
-      TRACE( TRACE_CONFIG )( "%s - retry tag\n", curr_local_time() );
+      TRACE( ( TRACE_CONFIG && TRACE_VERY_VERBOSE ) )( "%s - retry tag\n", curr_local_time() );
       int h;
       bool valid = true;
 
@@ -897,7 +897,7 @@ void AppConfig::processConfigLine( const char * line )
       filter->dst_ip = ipany;
       filter->dst_mask = ipany;
 
-      TRACE( TRACE_CONFIG )( "%s - filter tag\n", curr_local_time() );
+      TRACE( ( TRACE_CONFIG && TRACE_VERY_VERBOSE ) )( "%s - filter tag\n", curr_local_time() );
 
       h = strlen( CONFIG_FILTER_TAG );
       // Skip spaces
@@ -915,10 +915,10 @@ void AppConfig::processConfigLine( const char * line )
       strncpy( servername, &( line[h] ), i );
       servername[i] = char( NULL );
       filter->src_ip = phostbyname( servername );
-      TRACE( TRACE_CONFIG )( "%s - filter ip server address %s\n", curr_local_time(), servername );
+      TRACE( ( TRACE_CONFIG && TRACE_VERY_VERBOSE ) )( "%s - filter ip server address %s\n", curr_local_time(), servername );
       delete[] servername;
 
-      TRACE( TRACE_CONFIG )( "%s - filter ip source address %s\n", curr_local_time(), (const char *) iptostring( filter->src_ip ) );
+      TRACE( ( TRACE_CONFIG && TRACE_VERY_VERBOSE ) )( "%s - filter ip source address %s\n", curr_local_time(), (const char *) iptostring( filter->src_ip ) );
       if( filter->src_ip == ipnone )
       {
         valid = false;
@@ -952,7 +952,7 @@ void AppConfig::processConfigLine( const char * line )
 
       }
 
-      TRACE( TRACE_CONFIG )( "%s - filter ip source mask %s\n", curr_local_time(), (const char *) iptostring( filter->src_mask ) );
+      TRACE( ( TRACE_CONFIG && TRACE_VERY_VERBOSE ) )( "%s - filter ip source mask %s\n", curr_local_time(), (const char *) iptostring( filter->src_mask ) );
 
 
       h = h + i;
@@ -970,7 +970,7 @@ void AppConfig::processConfigLine( const char * line )
       filter->dst_ip = phostbyname( servername );
       delete[] servername;
 
-      TRACE( TRACE_CONFIG )( "%s - filter ip dest address %s\n", curr_local_time(), (const char *) iptostring( filter->dst_ip ) );
+      TRACE( ( TRACE_CONFIG && TRACE_VERY_VERBOSE ) )( "%s - filter ip dest address %s\n", curr_local_time(), (const char *) iptostring( filter->dst_ip ) );
       if( filter->dst_ip == ipnone )
       {
         valid = false;
@@ -1005,7 +1005,7 @@ void AppConfig::processConfigLine( const char * line )
 
       }
 
-      TRACE( TRACE_CONFIG )( "%s - filter ip dest mask %s\n", curr_local_time(), (const char *) iptostring( filter->dst_mask ) );
+      TRACE( ( TRACE_CONFIG && TRACE_VERY_VERBOSE ) )( "%s - filter ip dest mask %s\n", curr_local_time(), (const char *) iptostring( filter->dst_mask ) );
 
 
       h = h + i;
@@ -1026,7 +1026,7 @@ void AppConfig::processConfigLine( const char * line )
 
       if( valid && bind.get_count() > 0 )
       {
-        TRACE( TRACE_CONFIG )( "%s - valid filter\n", curr_local_time() );
+        TRACE( ( TRACE_CONFIG && TRACE_VERY_VERBOSE ) )( "%s - valid filter\n", curr_local_time() );
         bind[bind.get_count() - 1]->filter.add( filter );
 
       }
@@ -1040,7 +1040,7 @@ void AppConfig::processConfigLine( const char * line )
     // Process admin tag
     if( strncmp( (const char *) line, CONFIG_ADMIN_TAG, strlen( CONFIG_ADMIN_TAG ) ) == 0 )
     {
-      TRACE( TRACE_CONFIG )( "%s - web admin tag\n", curr_local_time() );
+      TRACE( ( TRACE_CONFIG && TRACE_VERY_VERBOSE ) )( "%s - web admin tag\n", curr_local_time() );
       int h, g;
       ipaddress dst_ip = DEFAULT_HTTP_ADMIN_IPADDRESS;
       unsigned short dst_port = 0;
@@ -1072,14 +1072,14 @@ void AppConfig::processConfigLine( const char * line )
           dst_ip = ipany;
         }
 
-        TRACE( TRACE_CONFIG )( "%s - web admin binding ip address %s\n", curr_local_time(), (const char *) iptostring( dst_ip ) );
+        TRACE( ( TRACE_CONFIG && TRACE_VERY_VERBOSE ) )( "%s - web admin binding ip address %s\n", curr_local_time(), (const char *) iptostring( dst_ip ) );
 
         h = g + 1;
         delete [] servername;
       }
 
       dst_port = atoi( &line[h] );
-      TRACE( TRACE_CONFIG )( "%s - web admin binding port %d\n", curr_local_time(), dst_port );
+      TRACE( ( TRACE_CONFIG && TRACE_VERY_VERBOSE ) )( "%s - web admin binding port %d\n", curr_local_time(), dst_port );
 
       if( dst_port == 0 )
       {
@@ -1088,7 +1088,7 @@ void AppConfig::processConfigLine( const char * line )
 
       if( valid )
       {
-        TRACE( TRACE_CONFIG )( "%s - web admin valid config\n", curr_local_time() );
+        TRACE( ( TRACE_CONFIG && TRACE_VERY_VERBOSE ) )( "%s - web admin valid config\n", curr_local_time() );
         http_admin_ip = dst_ip;
         http_admin_port = dst_port;
         http_admin_enabled = true;
@@ -1106,7 +1106,7 @@ void AppConfig::processConfigLine( const char * line )
       bool fixed_time = false;
       bool valid = true;
 
-      TRACE( TRACE_CONFIG )( "%s - TASK tag\n", curr_local_time() );
+      TRACE( ( TRACE_CONFIG && TRACE_VERY_VERBOSE ) )( "%s - TASK tag\n", curr_local_time() );
 
       h = strlen( CONFIG_TASK_TAG );
 
@@ -1132,7 +1132,7 @@ void AppConfig::processConfigLine( const char * line )
         h++;
 
       interval = atoi( &line[h] );
-      TRACE( TRACE_CONFIG )( "%s - task interval %d\n", curr_local_time(), interval );
+      TRACE( ( TRACE_CONFIG && TRACE_VERY_VERBOSE ) )( "%s - task interval %d\n", curr_local_time(), interval );
       if( interval <= 0 )
       {
         valid = false;
@@ -1237,17 +1237,17 @@ void AppConfig::processConfigLine( const char * line )
             valid = false;
         }
 
-        TRACE( TRACE_CONFIG )( "%s - First run %s\n", curr_local_time(), given_local_time( first_run ) );
+        TRACE( ( TRACE_CONFIG && TRACE_VERY_VERBOSE ) )( "%s - First run %s\n", curr_local_time(), given_local_time( first_run ) );
       }
       else
       {
-        TRACE( TRACE_CONFIG )( "%s - No first run set\n", curr_local_time() );
+        TRACE( ( TRACE_CONFIG && TRACE_VERY_VERBOSE ) )( "%s - No first run set\n", curr_local_time() );
         first_run = NOW_UTC + interval;
       }
 
       if( valid )
       {
-        TRACE( TRACE_CONFIG )( "%s - valid destination server config\n", curr_local_time() );
+        TRACE( ( TRACE_CONFIG && TRACE_VERY_VERBOSE ) )( "%s - valid task config\n", curr_local_time() );
         if( bind.get_count() > 0 )
         {
           task_info * tmp = new task_info;
@@ -1272,7 +1272,7 @@ void AppConfig::processConfigLine( const char * line )
         h++;
       }
 
-      TRACE( TRACE_CONFIG )( "%s - connections per thread tag\n", curr_local_time() );
+      TRACE( ( TRACE_CONFIG && TRACE_VERY_VERBOSE ) )( "%s - connections per thread tag\n", curr_local_time() );
       connections_per_thread = atoi( &( line[h] ) );
       if( connections_per_thread == 0 )
         connections_per_thread = DEFAULT_CONNECTIONS_PER_THREAD;
