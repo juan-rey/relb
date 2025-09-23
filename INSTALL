@@ -1,23 +1,87 @@
-# Installation Instructions
+# Installation Guide
 
-To build and install RELB from source, follow these steps:
+Prebuilt binaries for Windows and packages for several Linux distributions are available on the RELB Releases page:
+https://github.com/juan-rey/relb/releases
 
-1. Generate the build system files:
-   aclocal
-   autoconf
-   autoheader
-   automake --add-missing
+RELB is statically linked to a slightly patched version of Hovik Melikyan's C++ Portable Types Library (ptypes).
 
-2. Configure the build for your system:
-   ./configure
+## Source layout expectation
+Place the two projects side by side using the following directory layout:
+```
+<parent>/
+  ptypes/
+  relb/
+```
 
-3. Compile the source code:
+## Prerequisites
+- C++ toolchain with C++14 support
+- Windows: Visual Studio (with Desktop development with C++ workload), Windows SDK
+- Linux: gcc/g++ or clang, make, pkg-config (if available), and the GNU Autotools: autoconf, automake, libtool; also coreutils
+
+# Building on Windows (Visual Studio)
+1. Obtain sources for both projects and place them as described above (ptypes and relb as siblings).
+2. Open `relb/relb.sln` in Visual Studio.
+3. Select your desired configuration (e.g., Release | Win32).
+4. Build the solution (Build > Build Solution). This produces `relb.exe`.
+
+### Notes
+- The Visual Studio solution is configured to use the ptypes sources from the sibling ptypes directory.
+- If the IDE cannot find headers or sources from ptypes, verify the directory layout and that ptypes exists at ..\\ptypes relative to the relb project.
+
+# Building on Linux (Autotools)
+1. Build ptypes first:
+   ```
+   cd ptypes
    make
+   ```
 
-4. (Optional) Install the binaries (may require root privileges):
+2. Generate the build system files for relb (choose one of the following):
+   - Recommended single command:
+     ```
+     cd ../relb
+     autoreconf -fi
+     ```
+   - Manual sequence (equivalent to the above):
+     ```
+     aclocal
+     autoconf
+     autoheader
+     automake --add-missing
+     ```
+
+3. Configure for your system:
+   ```
+   ./configure
+   ```
+   Optional: Common options:
+   - `./configure --prefix=/usr/local`
+   - `./configure --enable-debug`
+   - See `./configure --help` for all options
+
+4. Compile the source code:
+   ```
+   make
+   ```
+   Optional: Parallel build:
+   ```
+   make -j$(nproc)
+   ```
+
+5. (Optional) Install the binaries (may require root privileges):
+   ```
    make install
+   ```
 
-For additional configuration options, run:
-   ./configure --help
+## Additional commands
+- Uninstall: `make uninstall`
+- Clean build products: `make clean`
+- Clean including configure results: `make distclean`
 
-See the README.md for more information about configuration and usage.
+## Troubleshooting
+- If you see "aclocal: command not found" or similar, install the GNU Autotools (autoconf, automake, libtool) from your distribution.
+- If configure fails due to missing compilers, install a C/C++ toolchain (e.g., build-essential on Debian/Ubuntu or base-devel on Arch).
+- Ensure the ptypes and relb directories are siblings so the relative includes and build scripts can find ptypes.
+
+## Configuration and usage
+- A sample configuration file is provided at `relb.conf.sample`.
+- See `README.md` for more information about configuration and usage.
