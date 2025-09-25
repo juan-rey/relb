@@ -1,7 +1,7 @@
 /*
    ThreadedConnectionManager.cpp: connection manager source file.
 
-   Copyright 2006, 2007, 2008, 2009 Juan Rey Saura
+   Copyright 2006, 2007, 2008, 2009, 2025 Juan Rey Saura
 
 This file is part of RELB Easy Load Balancer.
 

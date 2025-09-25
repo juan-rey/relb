@@ -464,7 +464,7 @@ void AppConfig::printErrors()
 
   while( i < error_list.get_count() )
   {
-    TRACE( TRACE_CONFIG )( "%s - %s\n", curr_local_time(), (const char *)*( error_list[i] ) );
+    TRACE( TRACE_CONFIG )( "%s - %s\n", curr_local_time(), (const char *) *( error_list[i] ) );
     i++;
   }
 
@@ -1075,7 +1075,7 @@ void AppConfig::processConfigLine( const char * line )
         TRACE( ( TRACE_CONFIG && TRACE_VERY_VERBOSE ) )( "%s - web admin binding ip address %s\n", curr_local_time(), (const char *) iptostring( dst_ip ) );
 
         h = g + 1;
-        delete [] servername;
+        delete[] servername;
       }
 
       dst_port = atoi( &line[h] );

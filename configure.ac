@@ -1,4 +1,4 @@
-AC_INIT([relb],[0.9.12_20250430],[Juan Rey])
+AC_INIT([relb],[0.9.12_20250928],[Juan Rey])
 AM_INIT_AUTOMAKE([foreign])
 AC_CONFIG_HEADERS([config.h])
 AC_SEARCH_LIBS([strerror],[cposix])

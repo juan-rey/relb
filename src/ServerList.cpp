@@ -319,7 +319,7 @@ bool ServerList::addServer( const char * host_name, const ipaddress * ip, unsign
 {
   serverinfo * info = new serverinfo;
 
-  TRACE( ( TRACE_CONFIG && TRACE_VERBOSE ) )( "%s - Adding server %s at %s:%d with weight %d and max connections %d\n", curr_local_time(), host_name?host_name : "", (const char *) iptostring( *ip ), port, weight, max_connections );
+  TRACE( ( TRACE_CONFIG && TRACE_VERBOSE ) )( "%s - Adding server %s at %s:%d with weight %d and max connections %d\n", curr_local_time(), host_name ? host_name : "", (const char *) iptostring( *ip ), port, weight, max_connections );
 
   if( host_name )
   {
@@ -620,7 +620,7 @@ const peer_info * ServerList::getServer( const ipaddress * client_ip, unsigned s
   // Only if there are servers  
   if( servers_list.get_count() )
   {
-   
+
 
     if( reconnect_lost_sessions )
     {

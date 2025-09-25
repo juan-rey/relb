@@ -1,7 +1,7 @@
 /*
   AdminHTTPServer.cpp: Web Admin class source file.
 
-   Copyright 2006, 2007, 2008, 2009 Juan Rey Saura
+   Copyright 2006, 2007, 2008, 2009, 2025 Juan Rey Saura
 
 This file is part of RELB Easy Load Balancer.
 
@@ -686,7 +686,7 @@ void AdminHTTPServer::list( ipstream & client, ipaddress src_filter, ipaddress d
               case SORT_BY_SRC_IP:
               {
                 if( !ip_less_than( &( pInfo->src_ip ), &( ( *pList )[j]->src_ip ) ) && !( pInfo->src_ip == ( *pList )[j]->src_ip ) )
-                    inserthere = true;
+                  inserthere = true;
                 else
                   if( ( pInfo->src_ip == ( *pList )[j]->src_ip ) && ( pInfo->src_port >= ( *pList )[j]->src_port ) )
                     inserthere = true;
@@ -695,7 +695,7 @@ void AdminHTTPServer::list( ipstream & client, ipaddress src_filter, ipaddress d
               case SORT_BY_DST_IP:
               {
                 if( !ip_less_than( &( pInfo->dst_ip ), &( ( *pList )[j]->dst_ip ) ) && !( pInfo->dst_ip == ( *pList )[j]->dst_ip ) )
-                    inserthere = true;
+                  inserthere = true;
                 else
                   if( ( pInfo->dst_ip == ( *pList )[j]->dst_ip ) && ( pInfo->dst_port >= ( *pList )[j]->dst_port ) )
                     inserthere = true;

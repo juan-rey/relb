@@ -1,7 +1,7 @@
 /*
    ControlSocket.cpp: ControlSocket class source file.
 
-   Copyright 2006, 2007, 2008, 2009 Juan Rey Saura
+   Copyright 2006, 2007, 2008, 2009, 2025 Juan Rey Saura
 
 This file is part of RELB Easy Load Balancer.
 
@@ -33,7 +33,7 @@ USING_PTYPES
  * - On Windows, it uses a socket-based "self-pipe" trick.
  * - On Unix-like systems, it uses a standard pipe.
  */
-ControlSocket::ControlSocket( void )
+  ControlSocket::ControlSocket( void )
 {
 #ifdef WIN32
   // On Windows, create a standard TCP socket. This socket isn't meant to connect
