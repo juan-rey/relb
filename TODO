@@ -3,41 +3,41 @@ TODO
 High Priority:
 ------------
 1. Install service for Linux
-   - Create systemd service unit file
+   - Create a systemd service unit file
    - Add installation/setup scripts
-   - Document service management commands
+   - Document service management commands (start/stop/status)
 
 2. Basic DDoS protection
    - Implement connection rate limiting
-   - Add IP blacklisting mechanism
+   - Add IP blacklisting / temporary banning
    - Add configurable connection thresholds
 
 Medium Priority:
 --------------
 3. Enable IPv6
    - Add IPv6 address parsing
-   - Update configuration file format
+   - Update configuration syntax
    - Ensure backward compatibility with IPv4
    - Test dual-stack operation
 
 4. Performance optimization
-   - Research epoll/IOCP alternatives to select?
+   - Research epoll / IOCP (alternatives to select)
    - Evaluate performance impact
    - Plan migration strategy if beneficial
 
 Low Priority:
 -----------
-5. Additional config file formats?
-   - Consider adding JSON/YAML support
+5. Additional configuration file formats
+   - Consider adding JSON or YAML support
    - Maintain backward compatibility
-   - Add config validation
+   - Add configuration validation
 
 6. Stunnel support for web administration?
    - Add stunnel/TLS support
    - Implement authentication
-   - Add HTTPS support natively
+   - Add HTTPS support (native preferred if feasible)
 
-7. Save session content?
-   - Implement session content logging
-   - Add session persistence
-   - Consider memory/storage limitations
+7. Save session content
+   - Implement optional session content logging
+   - Add persistence strategy
+   - Evaluate memory / storage impact

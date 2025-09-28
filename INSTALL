@@ -5,8 +5,8 @@ https://github.com/juan-rey/relb/releases
 
 RELB is statically linked to a slightly patched version of Hovik Melikyan's C++ Portable Types Library (ptypes).
 
-## Source layout expectation
-Place the two projects side by side using the following directory layout:
+## Expected source layout
+Place both projects side by side using the following directory structure:
 ```
 <parent>/
   ptypes/
@@ -14,34 +14,34 @@ Place the two projects side by side using the following directory layout:
 ```
 
 ## Prerequisites
-- C++ toolchain with C++14 support
-- Windows: Visual Studio (with Desktop development with C++ workload), Windows SDK
-- Linux: gcc/g++ or clang, make, pkg-config (if available), and the GNU Autotools: autoconf, automake, libtool; also coreutils
+- A C++ toolchain with C++14 support
+- Windows: Visual Studio (Desktop development with C++ workload) and the Windows SDK
+- Linux: gcc/g++ or clang, make, pkg-config (optional), and GNU Autotools components (autoconf, automake, libtool), plus coreutils
 
 # Building on Windows (Visual Studio)
-1. Obtain sources for both projects and place them as described above (ptypes and relb as siblings).
+1. Obtain the sources for both projects and place them as described above (`ptypes` and `relb` as siblings).
 2. Open `relb/relb.sln` in Visual Studio.
-3. Select your desired configuration (e.g., Release | Win32).
+3. Select the desired configuration (e.g., `Release | Win32`).
 4. Build the solution (Build > Build Solution). This produces `relb.exe`.
 
 ### Notes
-- The Visual Studio solution is configured to use the ptypes sources from the sibling ptypes directory.
-- If the IDE cannot find headers or sources from ptypes, verify the directory layout and that ptypes exists at ..\\ptypes relative to the relb project.
+- The Visual Studio solution is configured to use the `ptypes` sources from the sibling `ptypes` directory.
+- If the IDE cannot find headers or sources in `ptypes`, verify the directory layout and that `ptypes` exists at `..\\ptypes` relative to the `relb` project.
 
 # Building on Linux (Autotools)
-1. Build ptypes first:
+1. Build `ptypes` first:
    ```
    cd ptypes
    make
    ```
 
-2. Generate the build system files for relb (choose one of the following):
+2. Generate the build system files for `relb` (choose one):
    - Recommended single command:
      ```
      cd ../relb
      autoreconf -fi
      ```
-   - Manual sequence (equivalent to the above):
+   - Manual sequence (equivalent):
      ```
      aclocal
      autoconf
@@ -53,16 +53,16 @@ Place the two projects side by side using the following directory layout:
    ```
    ./configure
    ```
-   Optional: Common options:
+   Common examples:
    - `./configure --prefix=/usr/local`
    - `./configure --enable-debug`
-   - See `./configure --help` for all options
+   - Run `./configure --help` to list all options.
 
 4. Compile the source code:
    ```
    make
    ```
-   Optional: Parallel build:
+   Optional (parallel build):
    ```
    make -j$(nproc)
    ```
@@ -74,13 +74,13 @@ Place the two projects side by side using the following directory layout:
 
 ## Additional commands
 - Uninstall: `make uninstall`
-- Clean build products: `make clean`
-- Clean including configure results: `make distclean`
+- Remove build outputs: `make clean`
+- Remove build outputs and configuration results: `make distclean`
 
 ## Troubleshooting
-- If you see "aclocal: command not found" or similar, install the GNU Autotools (autoconf, automake, libtool) from your distribution.
-- If configure fails due to missing compilers, install a C/C++ toolchain (e.g., build-essential on Debian/Ubuntu or base-devel on Arch).
-- Ensure the ptypes and relb directories are siblings so the relative includes and build scripts can find ptypes.
+- If you see "aclocal: command not found" (or similar), install the GNU Autotools packages (autoconf, automake, libtool) from your distribution.
+- If `configure` fails due to a missing compiler, install a C/C++ toolchain (e.g., `build-essential` on Debian/Ubuntu or `base-devel` on Arch).
+- Ensure the `ptypes` and `relb` directories are siblings so relative includes and build scripts can locate `ptypes`.
 
 ## Configuration and usage
 - A sample configuration file is provided at `relb.conf.sample`.

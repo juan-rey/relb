@@ -150,7 +150,7 @@ RELB uses a multi-threaded model to handle connections. A main thread is respons
   - Block comments (`/* ... */`) for file headers and large sections.
   - Inline single-line comments (`//`) for brief explanations.
   - Sentences generally start capitalized; some legacy comments were normalized to English.
-- Trace/log macros: Uppercase names; conditional with `TRACE(x)(\"...\")` pattern.
+- Trace/log macros: Uppercase names; conditional with `TRACE(x)(\"...\")` pattern. See switchable tracing in `utiles.h`.
 - Naming: snake_case for variables/functions; PascalCase for classes; ALL_CAPS for macros and constants; member variables not specially prefixed.
 - #include order: Local headers after standard/library headers; project headers use quotes.
 - Line length: Often exceeds 80 chars (not strictly wrapped), but long parameter lists sometimes split.

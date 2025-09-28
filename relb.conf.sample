@@ -1,33 +1,33 @@
 #
-# Sample relb configuration file 
+# Sample relb configuration file
 #
-# Plain text format 
+# Plain-text format
 # Comment lines start with '#', ';', or '/'
 #
-# Default configuration file path 
-# Linux -> /etc/relb.conf
-# Windows -> %system32%\drivers\etc\relb.conf
+# Default configuration file path:
+#   Linux  -> /etc/relb.conf
+#   Windows -> %system32%\drivers\etc\relb.conf
 #
 
 # TAG bind (mandatory)
-# Where to listen for incoming connections
-# Format -> bind: [[server_name | IPv4_address]:]port
+# Listen address and port for incoming connections.
+# Format: bind: [[hostname | IPv4_address]:]port
 # Example: bind: 0.0.0.0:4389 (listen on all interfaces)
 #
 bind: 4389
 
-# TAG alsobind (optional, multiple)
-# Additional address to listen for incoming connections, in addition to the main bind address.
-# Useful for listening on multiple interfaces or ports.
-# Format -> alsobind: [[server_name | IPv4_address]:]port
+# TAG alsobind (optional, repeatable)
+# Additional listening addresses/ports.
+# Use multiple lines to listen on more interfaces or ports.
+# Format: alsobind: [[hostname | IPv4_address]:]port
 # Example: alsobind: 127.0.0.1:4390
 #
 
-# TAG server (mandatory, multiple)
-# Servers available for incoming connections. Each entry defines a backend server.
-# Format -> server: (server_name | IPv4_address):port[,weight[,max_connections]]
-#   weight: (optional) load balancing weight; higher means more traffic to this server
-#   max_connections: (optional) maximum simultaneous connections to this server
+# TAG server (mandatory, repeatable)
+# Backend servers available for assignment.
+# Format: server: (hostname | IPv4_address):port[,weight[,max_connections]]
+#   weight: (optional) load balancing weight. Higher = more traffic.
+#   max_connections: (optional) maximum simultaneous client connections.
 # Example: server: myserver:3389,100,20
 #
 server: 192.168.1.201:3389,100,20
@@ -35,20 +35,20 @@ server: 192.168.1.202:3389,120
 server: 192.168.1.203:3389,130
 
 # TAG retryserver (optional)
-# How many seconds to wait before retrying a server that was unavailable
-# Format -> retryserver: seconds
-# Default value: 30 seconds
+# Seconds to wait before retrying a server that was previously unavailable.
+# Format: retryserver: seconds
+# Default: 30
 # Example: retryserver:60
 #
 retryserver:60
 
-# TAG filter (optional, multiple)
-# Use filters, in the same order as in the config file, as rules to skip denied servers
-# until finding the first allowed server using the assignment algorithm
-# Format -> client_ip/mask server_ip/mask "allow"/"deny"
-#   mask: can be in dotted format (255.255.255.0) or as a number (8 for /8)
-#   allow: permit connections matching this rule
-#   deny: block connections matching this rule
+# TAG filter (optional, repeatable)
+# Filters are processed in order. They are used to skip denied servers
+# until the first allowed server is selected using the assignment algorithm.
+# Format: filter: client_ip/mask server_ip/mask allow|deny
+#   mask: dotted (255.255.255.0) or number form (8 for /8)
+#   allow: permit assignments matching the rule
+#   deny: block assignments matching the rule
 # Example: filter: 192.168.102.1/24 192.168.1.201/32 allow
 #
 filter: 192.168.102.1/255.255.255.0 192.168.1.201/255.255.255.255 allow
@@ -56,40 +56,43 @@ filter: 127.0.0.1/8 192.168.1.203/31 allow
 filter: 127.0.0.1/8 192.168.1.203/16 deny
 
 # TAG admin (optional)
-# Enables (unencrypted and unauthenticated) web administration on a specific port.
-# Warning: This is insecure; use at your own risk!
-# Format -> admin: [[server_name | IPv4_address]:]port
-# Default IPv4_address is 127.0.0.1 (localhost)
-# If you want to listen on all interfaces, use 0.0.0.0 (ip any)
+# Enables an (unencrypted and unauthenticated) web administration interface.
+# WARNING: Insecure; restrict access (firewall, localhost binding, tunnel, etc.).
+# Format: admin: [[hostname | IPv4_address]:]port
+# Default address: 127.0.0.1
+# To bind to all interfaces use: 0.0.0.0
 # Default port: 8182
 # Example: admin: 0.0.0.0:8182
 #
 admin: 8182
 
-# TAG task (optional, multiple)
-# Configure basic tasks to automate server management.
-# Format -> task: task_type interval_seconds [first_run_datetime]
+# TAG task (optional, repeatable)
+# Schedule periodic tasks.
+# Format: task: task_type interval_seconds [first_run]
 #   task_type: update | clean | purge
-#     update: update server IPs with hostnames (not implemented yet)
-#     clean: clean inactive connections
-#     purge: close all connections to servers
-#   interval_seconds: seconds between runs, or 0 for a one-time task
-#   first_run_datetime: (optional) when to run the task first; can be date, time, or both
-#     Date format: YYYYMMDD or YYYY/MM/DD
+#     update: refresh server IPs from hostnames (not yet implemented)
+#     clean: remove inactive connections
+#     purge: close all active connections
+#   interval_seconds: seconds between runs (0 = one-time task)
+#   first_run: (optional) date/time for the first execution
+#     Date formats: YYYYMMDD or YYYY/MM/DD
 #     Time format: HH:mm:ss (24-hour)
-# Example: task: clean 3600 08:00:00 (run every hour, first at 8am)
+#     You can specify only a time (runs today at that time) or only a date (midnight), or both.
+# Example: task: clean 3600 08:00:00              (runs every hour, first at 08:00)
+# Example: task: purge 86400 2025/12/15 17:15:00  (runs daily, first on Dec 15, 2025 at 17:15)
+# Example: task: update 60                        (runs every minute, first immediately)
 #
 task: update 60 20090605 21:22:23
 task: clean 3600 08:00:00
-task: purge 86400 2009/09/07
+task: purge 86400 2025/12/15 17:15:00
 
 # TAG conperthread (optional)
-# Advanced: number of connections per thread for internal load balancing.
-# Increase for high concurrency, decrease for minimum latency.
-# Format -> conperthread: num_connections
-# Default value: 16 (recommended for most setups)
-# Warning: Current implementation is limited by FD_SETSIZE (usually 1024, 256 in Windows with some magic)
-# So, 510 client connections per thread is the maximum for Linux, and 126 for Windows.
+# Advanced: number of client connections managed per thread.
+# Increase to support higher concurrency on Windows; decrease to reduce per-thread latency.
+# Format: conperthread: number
+# Default: 16 (typical)
+# Warning: Limited by FD_SETSIZE (usually 1024; often 256 on Windows builds).
+# Rough maximums: ~510 client connections/thread on Linux, ~126 on Windows.
 # Example: conperthread: 32
 #
 
