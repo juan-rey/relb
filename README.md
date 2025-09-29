@@ -2,7 +2,7 @@
 
 RELB (RELB Easy Load Balancer) is a tiny, cross-platform TCP load balancer focused on performance, reliability, flexibility, and simplicity. It works with most TCP services and applications and can also act as a port redirector.
 
-Basicly, RELB listens for incoming TCP connections on specified IP addresses and ports, then forwards these connections to a pool of backend servers based on configurable rules and algorithms.
+At its core, RELB listens for incoming TCP connections on specified IP addresses and ports, then forwards these connections to a pool of backend servers based on configurable rules and algorithms.
 
 ## Features
 
@@ -36,10 +36,12 @@ The configuration defines bind addresses, backend servers, filters, tasks, and o
 
 ## Acknowledgments
 
-RELB uses Hovik Melikyan's C++ Portable Types Library (PTypes) originally from [http://www.melikyan.com/](http://www.melikyan.com/). Slightly patched version for compilation with modern C++ compilers can be found at https://github.com/juan-rey/ptypes
+RELB uses Hovik Melikyan's C++ Portable Types Library (PTypes) originally from [http://www.melikyan.com/](http://www.melikyan.com/). A patched version, updated for compatibility with modern C++ compilers, is available here: https://github.com/juan-rey/ptypes
 
 ## Limitations
 
+- RELB only supports TCP connections; UDP is not supported.
+- IPv6 is not yet supported.
 - On Linux, the number of connections is limited by `FD_SETSIZE` (commonly 1024) and system resources.
 - On Windows, limits are mainly the available ephemeral ports (49152–65535) and system resources.
 
@@ -49,4 +51,6 @@ Licensed under the Open Software License version 3.0. See `LICENSE.txt`.
 
 ## Support
 
-Report issues, request features, or contribute (see `doc/source_code_explained.md` for code structure) via the project repository: https://github.com/juan-rey/relb
+Report issues, request features, or contribute via the project repository: https://github.com/juan-rey/relb
+
+See `doc/source_code_explained.md` for details on code structure.
